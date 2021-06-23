@@ -1,0 +1,3 @@
+picturebed:
+  rootpath: c:\picture
+  baseurl: http://localhost:8080
