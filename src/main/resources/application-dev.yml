@@ -1,3 +1,6 @@
 picturebed:
   rootpath: c:\picture
   baseurl: http://localhost:8080
+
+logging:
+  config: classpath:logback-spring-dev.xml

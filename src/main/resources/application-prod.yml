@@ -2,3 +2,5 @@ picturebed:
   rootpath:
   baseurl:
 
+logging:
+  config: classpath:logback-spring-prod.xml
