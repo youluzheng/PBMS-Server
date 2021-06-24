@@ -1,3 +1,9 @@
+server:
+  port: ${PBMS_PORT:8080}
+
 picturebed:
-  rootpath: c:\picture
-  baseurl: http://localhost:8080
+  rootpath: ${PBMS_ROOTPATH:upload}
+  baseurl: ${PBMS_BASEURL:http://localhost:8080}
+
+logging:
+  config: classpath:logback-spring-dev.xml

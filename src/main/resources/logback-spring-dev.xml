@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- dev环境日志全部都输出到终端，不写入文件 -->
+<configuration>
+
+    <!--参数设置-->
+    <property name="logback.base.package" value="org.pbms.pbmsserver" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss}] %-5p (%file:%line\) [%M] %m %n</pattern>
+            <!--  		<pattern>===%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger %Line:%-3L - %msg%n</pattern> -->
+            <!-- 控制台也要使用UTF-8，不要使用GBK，否则会中文乱码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 控制台输出日志级别 -->
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- 指定项目中某个包，当有日志操作行为时的日志记录级别 -->
+    <!-- com.appley为根包，也就是只要是发生在这个根包下面的所有日志操作行为的权限都是DEBUG -->
+    <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
+    <logger name="${logback.base.package}" additivity="false" level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </logger>
+</configuration>
