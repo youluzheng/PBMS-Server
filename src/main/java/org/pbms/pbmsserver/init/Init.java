@@ -23,7 +23,7 @@ public class Init implements CommandLineRunner {
 
         File rootPath = new File(GlobalConstant.ROOT_PATH);
         if (!rootPath.exists()) {
-            log.info("{}不存在, 创建中...", GlobalConstant.ROOT_PATH);
+            log.warn("{}不存在, 创建中...", GlobalConstant.ROOT_PATH);
             rootPath.mkdirs();
             log.info("{}创建完成", GlobalConstant.ROOT_PATH);
             return;
