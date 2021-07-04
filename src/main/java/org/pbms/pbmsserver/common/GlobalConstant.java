@@ -29,4 +29,5 @@ public class GlobalConstant {
         log.info("set baseurl:{}", baseurl);
         GlobalConstant.BASEURL = baseurl;
     }
+
 }

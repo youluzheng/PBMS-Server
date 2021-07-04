@@ -1,6 +1,25 @@
-picturebed:
-  rootpath:
-  baseurl:
+server:
+  port: ${PBMS_PORT:8080}
 
+picturebed:
+  rootpath: ${PBMS_ROOTPATH:upload}
+  baseurl: ${PBMS_BASEURL:http://localhost:8080}
+
+waterMask:
+  # 开启水印
+  enable: true
+  logo:
+    # 默认文字水印
+    enable: false
+    #水印logo路径,必须命名为logo.jpg
+    path: /home/wj/workspace/PBMS_Server/upload/logo
+    #默认logo会重复
+    repeat: true
+    #logo倾斜角度
+    gradient: 30
+  #透明度0-1
+  alpha: 0.3
+  #水印文字
+  text: 一夜暴富，一夜暴富
 logging:
-  config: classpath:logback-spring-prod.xml
+  config: classpath:logback-spring-dev.xml

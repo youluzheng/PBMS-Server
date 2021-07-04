@@ -1,20 +1,32 @@
 package org.pbms.pbmsserver.controller;
 
 
-import lombok.extern.slf4j.Slf4j;
-import org.pbms.pbmsserver.common.GlobalConstant;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.awt.FontFormatException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.pbms.pbmsserver.common.GlobalConstant;
+import org.pbms.pbmsserver.common.WaterMaskConstant;
+import org.pbms.pbmsserver.service.UploadService;
+import org.pbms.pbmsserver.service.WaterMaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author 王俊
@@ -23,47 +35,39 @@ import java.net.URI;
 @RestController
 @Slf4j
 public class UploadController {
+    @Autowired
+    WaterMaskService waterMaskService;
+
+    @Autowired
+    UploadService uploadService;
+
     @PostMapping("/image")
     public ResponseEntity<String> upload(@RequestParam(required = false) String path, @RequestBody MultipartFile image) {
         if (image == null || image.isEmpty()) {
             return ResponseEntity.badRequest().body("请选择上传文件");
         }
-
-        String fullName = image.getOriginalFilename();
-        // 不带后缀文件名
-        String fileName = fullName.substring(0, fullName.lastIndexOf("."));
-        // 服务器上存储路径
-        String storagePath;
-
-        // 两种路径方式1：root+pictureName 2：root+path+pictureName
-        if (path == null || "".equals(path)) {
-            storagePath = GlobalConstant.ROOT_PATH + File.separator + fullName;
-        } else {
-            storagePath = GlobalConstant.ROOT_PATH + File.separator + path + File.separator + fullName;
-            File parentPath = new File(GlobalConstant.ROOT_PATH + File.separator + path);
-            if (!parentPath.exists()) {
-                parentPath.mkdirs();
-            }
-        }
-        File dest = new File(storagePath);
+        //添加水印
         try {
-            image.transferTo(dest);
-            log.info("上传成功！");
-
-            // 拼接markdown图片格式
-            StringBuilder mdFormatStr = new StringBuilder("![");
-            mdFormatStr.append(fileName).append("](").append(GlobalConstant.BASEURL)
-                    .append("/")
-                    .append((path == null || "".equals(path)) ? "" : (path + "/"))
-                    .append(fullName)
-                    .append(")");
-
-            return ResponseEntity.created(new URI(GlobalConstant.BASEURL + fullName)).body(mdFormatStr.toString());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            if (WaterMaskConstant.WATER_MASK_ENABLE) {
+                MultipartFile multipart;
+                if (WaterMaskConstant.WATER_MASK_LOGO_ENABLE) {
+                    multipart = waterMaskService.addImgWaterMask(image);
+                } else {
+                    multipart = waterMaskService.addTextWaterMask(image);
+                }
+                ResponseEntity<String> result = uploadService.Upload(path, multipart);
+                return new ResponseEntity<>(result.getBody(), result.getStatusCode());
+            } else {
+                ResponseEntity<String> result = uploadService.Upload(path, image);
+                return new ResponseEntity<>(result.getBody(), result.getStatusCode());
+            }
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        } catch (FontFormatException e1) {
+            return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.internalServerError().body("上传失败！");
     }
+
 
     @GetMapping("**/{image}")
     public ResponseEntity<Void> getImage(@PathVariable String image, HttpServletRequest request, HttpServletResponse response) {
