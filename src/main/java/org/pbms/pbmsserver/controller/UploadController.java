@@ -1,6 +1,5 @@
 package org.pbms.pbmsserver.controller;
 
-
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,8 +10,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pbms.pbmsserver.common.GlobalConstant;
-import org.pbms.pbmsserver.common.WaterMaskConstant;
+import org.pbms.pbmsserver.common.constant.ServerConstant;
+import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
 import org.pbms.pbmsserver.service.UploadService;
 import org.pbms.pbmsserver.service.WaterMaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +41,12 @@ public class UploadController {
     UploadService uploadService;
 
     @PostMapping("/image")
-    public ResponseEntity<String> upload(@RequestParam(required = false) String path, @RequestBody MultipartFile image) {
+    public ResponseEntity<String> upload(@RequestParam(required = false) String path,
+            @RequestBody MultipartFile image) {
         if (image == null || image.isEmpty()) {
             return ResponseEntity.badRequest().body("请选择上传文件");
         }
-        //添加水印
+        // 添加水印
         try {
             if (WaterMaskConstant.WATER_MASK_ENABLE) {
                 MultipartFile multipart;
@@ -68,14 +68,14 @@ public class UploadController {
         }
     }
 
-
     @GetMapping("**/{image}")
-    public ResponseEntity<Void> getImage(@PathVariable String image, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> getImage(@PathVariable String image, HttpServletRequest request,
+            HttpServletResponse response) {
         // 去掉第一个'/'
         String path = request.getServletPath().substring(1);
 
         // 拼接图片路径
-        try (FileInputStream in = new FileInputStream(GlobalConstant.ROOT_PATH + File.separator + path)) {
+        try (FileInputStream in = new FileInputStream(ServerConstant.SERVER_ROOT_PATH + File.separator + path)) {
             byte[] data = new byte[in.available()];
             in.read(data);
             ServletOutputStream outputStream = response.getOutputStream();

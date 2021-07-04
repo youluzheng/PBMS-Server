@@ -3,7 +3,7 @@ package org.pbms.pbmsserver.service.impl;
 import java.io.File;
 import java.net.URI;
 
-import org.pbms.pbmsserver.common.GlobalConstant;
+import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.service.UploadService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UploadServiceImpl implements UploadService{
+public class UploadServiceImpl implements UploadService {
 
     @Override
     public ResponseEntity<String> Upload(String path, MultipartFile image) {
@@ -29,10 +29,10 @@ public class UploadServiceImpl implements UploadService{
 
         // 两种路径方式1：root+pictureName 2：root+path+pictureName
         if (path == null || "".equals(path)) {
-            storagePath = GlobalConstant.ROOT_PATH + File.separator + fullName;
+            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + fullName;
         } else {
-            storagePath = GlobalConstant.ROOT_PATH + File.separator + path + File.separator + fullName;
-            File parentPath = new File(GlobalConstant.ROOT_PATH + File.separator + path);
+            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + path + File.separator + fullName;
+            File parentPath = new File(ServerConstant.SERVER_ROOT_PATH + File.separator + path);
             if (!parentPath.exists()) {
                 parentPath.mkdirs();
             }
@@ -44,10 +44,11 @@ public class UploadServiceImpl implements UploadService{
 
             // 拼接markdown图片格式
             StringBuilder mdFormatStr = new StringBuilder("![");
-            mdFormatStr.append(fileName).append("](").append(GlobalConstant.BASEURL).append("/")
+            mdFormatStr.append(fileName).append("](").append(ServerConstant.SERVER_BASEURL).append("/")
                     .append((path == null || "".equals(path)) ? "" : (path + "/")).append(fullName).append(")");
             log.debug(mdFormatStr.toString());
-            return ResponseEntity.created(new URI(GlobalConstant.BASEURL + fullName)).body(mdFormatStr.toString());
+            return ResponseEntity.created(new URI(ServerConstant.SERVER_BASEURL + fullName))
+                    .body(mdFormatStr.toString());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

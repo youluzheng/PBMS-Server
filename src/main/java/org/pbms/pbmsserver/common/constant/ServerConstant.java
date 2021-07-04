@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.common;
+package org.pbms.pbmsserver.common.constant;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,22 +12,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class GlobalConstant {
+public class ServerConstant {
 
-    public static String ROOT_PATH;
+    public static String SERVER_ROOT_PATH;
 
     @Value("${picturebed.rootpath:pictureBed}")
     public void setRootPath(String rootPath) {
         log.info("set rootPath:{}", rootPath);
-        GlobalConstant.ROOT_PATH = rootPath;
+        ServerConstant.SERVER_ROOT_PATH = rootPath;
     }
 
-    public static String BASEURL;
+    public static String SERVER_BASEURL;
 
     @Value("${picturebed.baseurl:http://127.0.0.1:8080}")
     public void setBaseurl(String baseurl) {
         log.info("set baseurl:{}", baseurl);
-        GlobalConstant.BASEURL = baseurl;
+        ServerConstant.SERVER_BASEURL = baseurl;
     }
 
 }

@@ -1,13 +1,16 @@
 package org.pbms.pbmsserver.service.impl;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.pbms.pbmsserver.common.WaterMaskConstant;
+import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
 import org.pbms.pbmsserver.service.WaterMaskService;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
@@ -19,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class WaterMaskServiceImpl implements WaterMaskService {
-
 
     @Override
     public MultipartFile addTextWaterMask(MultipartFile srcImg) throws FontFormatException, IOException {
@@ -60,7 +62,8 @@ public class WaterMaskServiceImpl implements WaterMaskService {
             throw e;
         }
         g = bufferedImage.createGraphics();
-        BufferedImage imageLogo = ImageIO.read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
+        BufferedImage imageLogo = ImageIO
+                .read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
         if (WaterMaskConstant.WATER_MASK_REPEAT) {
             log.debug("开始对图片：{}绘制重复logo水印", srcImg.getName());
             drawRepeat(g, imageLogo, bufferedImage);
@@ -85,7 +88,8 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         int height = bufferedImage.getHeight();
         double count = 2;
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMaskConstant.WATER_MASK_ALPHA));
-        g.rotate(Math.toRadians(WaterMaskConstant.WATER_MASK_GRADIENT), bufferedImage.getWidth() / 2, bufferedImage.getHeight() / 2);
+        g.rotate(Math.toRadians(WaterMaskConstant.WATER_MASK_GRADIENT), bufferedImage.getWidth() / 2,
+                bufferedImage.getHeight() / 2);
         // 循环添加多个水印logo
         while (x < width * count) {
             y = -height / 2;
@@ -110,7 +114,7 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         g.drawString(text, 10, 30);
     }
 
-    private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) throws IOException{
+    private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) throws IOException {
         try {
             ImageIO.write(bufferedImage, "jpg", file);
         } catch (IOException e) {
