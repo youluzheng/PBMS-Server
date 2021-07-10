@@ -22,8 +22,6 @@ public class UploadServiceImpl implements UploadService {
         }
 
         String fullName = image.getOriginalFilename();
-        // 不带后缀文件名
-        String fileName = fullName.substring(0, fullName.lastIndexOf("."));
         // 服务器上存储路径
         String storagePath;
 
@@ -42,13 +40,12 @@ public class UploadServiceImpl implements UploadService {
             image.transferTo(dest);
             log.info("{}上传成功！", fullName);
 
-            // 拼接markdown图片格式
-            StringBuilder mdFormatStr = new StringBuilder("![");
-            mdFormatStr.append(fileName).append("](").append(ServerConstant.SERVER_BASEURL).append("/")
-                    .append((path == null || "".equals(path)) ? "" : (path + "/")).append(fullName).append(")");
-            log.debug(mdFormatStr.toString());
-            return ResponseEntity.created(new URI(ServerConstant.SERVER_BASEURL + fullName))
-                    .body(mdFormatStr.toString());
+            // 生成图片url
+            StringBuilder imageURL = new StringBuilder();
+            imageURL.append(ServerConstant.SERVER_BASEURL).append("/")
+                    .append((path == null || "".equals(path)) ? "" : (path + "/")).append(fullName);
+            log.debug(imageURL.toString());
+            return ResponseEntity.created(new URI(ServerConstant.SERVER_BASEURL + fullName)).body(imageURL.toString());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

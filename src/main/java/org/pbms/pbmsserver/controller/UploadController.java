@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
+import org.pbms.pbmsserver.service.ResponseService;
 import org.pbms.pbmsserver.service.UploadService;
 import org.pbms.pbmsserver.service.WaterMaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UploadController {
     @Autowired
-    WaterMaskService waterMaskService;
+    private WaterMaskService waterMaskService;
 
     @Autowired
-    UploadService uploadService;
+    private UploadService uploadService;
+
+    @Autowired
+    private ResponseService responseService;
 
     @PostMapping("/image")
     public ResponseEntity<String> upload(@RequestParam(required = false) String path,
@@ -48,6 +52,7 @@ public class UploadController {
         }
         // 添加水印
         try {
+            ResponseEntity<String> result = null;
             if (WaterMaskConstant.WATER_MASK_ENABLE) {
                 MultipartFile multipart;
                 if (WaterMaskConstant.WATER_MASK_LOGO_ENABLE) {
@@ -55,12 +60,12 @@ public class UploadController {
                 } else {
                     multipart = waterMaskService.addTextWaterMask(image);
                 }
-                ResponseEntity<String> result = uploadService.Upload(path, multipart);
-                return new ResponseEntity<>(result.getBody(), result.getStatusCode());
+                result = uploadService.Upload(path, multipart);
             } else {
-                ResponseEntity<String> result = uploadService.Upload(path, image);
-                return new ResponseEntity<>(result.getBody(), result.getStatusCode());
+                result = uploadService.Upload(path, image);
             }
+            String responseContent = this.responseService.responseHandler(image, result.getBody());
+            return new ResponseEntity<>(responseContent, result.getStatusCode());
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
         } catch (FontFormatException e1) {

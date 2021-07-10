@@ -21,5 +21,11 @@ waterMask:
   alpha: 0.3
   #水印文字
   text: 一夜暴富，一夜暴富
+
+# 返回内容
+response:
+  # 目前支持markdown、url, 默认为markdown
+  type: markdown
+
 logging:
   config: classpath:logback-spring-dev.xml
