@@ -2,9 +2,6 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB
-  mvc:
-    favicon:
-      enabled: false
   profiles:
     active: dev
 
