@@ -1,5 +1,7 @@
 package org.pbms.pbmsserver.common.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandle {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandle.class);
+    
+
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public String businessException(BusinessException e) {
@@ -29,6 +34,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public String runtimeException(RuntimeException e) {
+        log.error(e.getMessage(), e);
         return "服务器异常";
     }
 
