@@ -2,6 +2,7 @@ package org.pbms.pbmsserver.service.impl;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
+import org.pbms.pbmsserver.common.exception.ServerErrorException;
 import org.pbms.pbmsserver.service.WaterMaskService;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
@@ -24,23 +26,41 @@ import lombok.extern.slf4j.Slf4j;
 public class WaterMaskServiceImpl implements WaterMaskService {
 
     @Override
-    public MultipartFile addTextWaterMask(MultipartFile srcImg) throws FontFormatException, IOException {
+    public MultipartFile addWaterMask(MultipartFile srcImg) {
+        MultipartFile result = srcImg;
+        if (!WaterMaskConstant.WATER_MASK_ENABLE) {
+            return result;
+        }
+        if (WaterMaskConstant.WATER_MASK_LOGO_ENABLE) {
+            result = addImgWaterMask(result);
+        }
+        if (WaterMaskConstant.WATER_MASK_ENABLE) {
+            result = addTextWaterMask(result);
+        }
+        return result;
+    }
 
+    public MultipartFile addTextWaterMask(MultipartFile srcImg) {
         Graphics2D g;
         BufferedImage bufferedImage;
         File tempFile;
-        java.awt.Font f;
-        try {
-            f = FontUtil.getSIMSUN(java.awt.Font.BOLD, 30);
+        Font font;
+
+        try{
+            font = FontUtil.getSIMSUN(Font.BOLD, 30);
             tempFile = new File(srcImg.getOriginalFilename());
             bufferedImage = ImageIO.read(srcImg.getInputStream());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw e;
+            throw new ServerErrorException("文件处理异常");
+        } catch (FontFormatException e) {
+            log.error(e.getMessage(), e);
+            throw new ServerErrorException("字体文件处理异常");
         }
+
         g = bufferedImage.createGraphics();
         g.setColor(Color.BLACK);
-        g.setFont(f);
+        g.setFont(font);
         log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), WaterMaskConstant.WATER_MASK_TEXT);
         drawText(g, WaterMaskConstant.WATER_MASK_TEXT, bufferedImage);
         log.debug("水印绘制完成");
@@ -48,33 +68,36 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         return multipart;
     }
 
-    @Override
-    public MultipartFile addImgWaterMask(MultipartFile srcImg) throws IOException {
-
+    public MultipartFile addImgWaterMask(MultipartFile srcImg) {
         Graphics2D g;
         BufferedImage bufferedImage;
         File tempFile;
+        tempFile = new File(srcImg.getOriginalFilename());
         try {
-            tempFile = new File(srcImg.getOriginalFilename());
             bufferedImage = ImageIO.read(srcImg.getInputStream());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw e;
+            throw new ServerErrorException("文件处理异常");
         }
+
         g = bufferedImage.createGraphics();
-        BufferedImage imageLogo = ImageIO
-                .read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
+        BufferedImage imageLogo = null;
+        try {
+            imageLogo = ImageIO
+                    .read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new ServerErrorException("文件处理异常");
+        }
         if (WaterMaskConstant.WATER_MASK_REPEAT) {
             log.debug("开始对图片：{}绘制重复logo水印", srcImg.getName());
             drawRepeat(g, imageLogo, bufferedImage);
-            log.info("水印绘制完成");
         } else {
             log.debug("开始对图片：{}绘制logo水印", srcImg.getName());
             drawImage(g, imageLogo, bufferedImage);
-            log.debug("水印绘制完成");
         }
-        MultipartFile multipart = toMultipartFile(bufferedImage, tempFile);
-        return multipart;
+        log.debug("水印绘制完成");
+        return toMultipartFile(bufferedImage, tempFile);
     }
 
     private void drawRepeat(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
@@ -114,16 +137,15 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         g.drawString(text, 10, 30);
     }
 
-    private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) throws IOException {
+    private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) {
         try {
             ImageIO.write(bufferedImage, "jpg", file);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw e;
+            throw new ServerErrorException("文件处理异常");
         }
         MultipartFile multipartFile = MultipartFileUtil.fileToMultipartFile(file);
         file.delete();
-
         return multipartFile;
     }
 }

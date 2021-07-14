@@ -16,11 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UploadServiceImpl implements UploadService {
 
     @Override
-    public ResponseEntity<String> Upload(String path, MultipartFile image) {
-        if (image == null || image.isEmpty()) {
-            return ResponseEntity.badRequest().body("请选择上传文件");
-        }
-
+    public ResponseEntity<String> upload(String path, MultipartFile image) {
         String fullName = image.getOriginalFilename();
         // 服务器上存储路径
         String storagePath;
@@ -51,5 +47,4 @@ public class UploadServiceImpl implements UploadService {
         }
         return ResponseEntity.internalServerError().body(fullName + "上传失败！");
     }
-
 }

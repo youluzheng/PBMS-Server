@@ -14,16 +14,24 @@ waterMask:
   logo:
     # 默认文字水印
     enable: false
-    #水印logo路径,必须命名为logo.jpg
-    path: /home/wj/workspace/PBMS_Server/upload/logo
-    #默认logo会重复
+    # 水印logo路径,必须命名为logo.jpg
+    path: ${PBMS_LOGO_PATH:logo}
+    # 默认logo会重复
     repeat: true
-    #logo倾斜角度
+    # logo倾斜角度
     gradient: 30
-  #透明度0-1
+  # 透明度0-1
   alpha: 0.3
-  #水印文字
-  text: 一夜暴富，一夜暴富
+  # 水印文字
+  text:
+    enable: true
+    content: 一夜暴富，一夜暴富
+# 压缩相关
+compress:
+  # 默认关闭压缩
+  enable: false
+  # 压缩比率(0-1]
+  scale: 0.8
 
 # 返回内容
 response:

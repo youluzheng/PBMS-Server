@@ -8,6 +8,9 @@ import java.io.OutputStream;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.pbms.pbmsserver.common.exception.ServerErrorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -15,23 +18,28 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
  * File转MultipartFile工具类
  */
 public class MultipartFileUtil {
-    public static MultipartFile fileToMultipartFile(File file) throws IOException{
+    
+    private static final Logger log = LoggerFactory.getLogger(MultipartFileUtil.class);
+
+    public static MultipartFile fileToMultipartFile(File file) {
         FileItem fileItem = createFileItem(file);
+
         MultipartFile multipartFile = new CommonsMultipartFile(fileItem);
         return multipartFile;
     }
 
-    private static FileItem createFileItem(File file) throws IOException {
+    private static FileItem createFileItem(File file) {
         FileItemFactory factory = new DiskFileItemFactory(16, null);
         FileItem item = factory.createItem("textField", "text/plain", true, file.getName());
         int bytesRead = 0;
         byte[] buffer = new byte[8192];
-        try (FileInputStream fis = new FileInputStream(file); OutputStream os = item.getOutputStream()){
+        try (FileInputStream fis = new FileInputStream(file); OutputStream os = item.getOutputStream()) {
             while ((bytesRead = fis.read(buffer, 0, 8192)) != -1) {
                 os.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            throw e;
+            log.error(e.getMessage(), e);
+            throw new ServerErrorException("文件处理异常");
         }
         return item;
     }

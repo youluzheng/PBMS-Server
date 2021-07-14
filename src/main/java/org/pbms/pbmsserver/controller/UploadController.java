@@ -1,6 +1,5 @@
 package org.pbms.pbmsserver.controller;
 
-import java.awt.FontFormatException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
-import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
 import org.pbms.pbmsserver.service.PreUploadService;
 import org.pbms.pbmsserver.service.ResponseService;
 import org.pbms.pbmsserver.service.UploadService;
 import org.pbms.pbmsserver.service.WaterMaskService;
+import org.pbms.pbmsserver.service.impl.CompressServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,50 +37,36 @@ import lombok.extern.slf4j.Slf4j;
 public class UploadController {
     @Autowired
     private PreUploadService preUploadService;
-    
     @Autowired
     private WaterMaskService waterMaskService;
-
     @Autowired
     private UploadService uploadService;
-
+    @Autowired
+    private CompressServiceImpl compressService;
     @Autowired
     private ResponseService responseService;
 
     @PostMapping("/image")
     public ResponseEntity<String> upload(@RequestParam(required = false) String path,
-            @RequestBody MultipartFile image) {
+                                         @RequestParam(required = false) Boolean compress,
+                                         @RequestBody MultipartFile image) {
         if (image == null || image.isEmpty()) {
             return ResponseEntity.badRequest().body("请选择上传文件");
         }
         // 前置检查
         preUploadService.preUploadCheck(image);
+        // 压缩图片
+        MultipartFile result = compressService.compress(image, compress);
         // 添加水印
-        try {
-            ResponseEntity<String> result = null;
-            if (WaterMaskConstant.WATER_MASK_ENABLE) {
-                MultipartFile multipart;
-                if (WaterMaskConstant.WATER_MASK_LOGO_ENABLE) {
-                    multipart = waterMaskService.addImgWaterMask(image);
-                } else {
-                    multipart = waterMaskService.addTextWaterMask(image);
-                }
-                result = uploadService.Upload(path, multipart);
-            } else {
-                result = uploadService.Upload(path, image);
-            }
-            String responseContent = this.responseService.responseHandler(image, result.getBody());
-            return new ResponseEntity<>(responseContent, result.getStatusCode());
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        } catch (FontFormatException e1) {
-            return ResponseEntity.internalServerError().build();
-        }
+        result = waterMaskService.addWaterMask(result);
+        ResponseEntity<String> uploadResult = uploadService.upload(path, result);
+        String responseContent = this.responseService.responseHandler(image, uploadResult.getBody());
+        return new ResponseEntity<>(responseContent, uploadResult.getStatusCode());
     }
 
     @GetMapping("**/{image}")
     public ResponseEntity<Void> getImage(@PathVariable String image, HttpServletRequest request,
-            HttpServletResponse response) {
+                                         HttpServletResponse response) {
         // 去掉第一个'/'
         String path = request.getServletPath().substring(1);
 
