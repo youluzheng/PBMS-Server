@@ -7,6 +7,9 @@ package org.pbms.pbmsserver.common.exception;
  * @date 2021/07/04 20:34:08
  */
 public enum CustomCode {
+
+    FILE_SIZE_OUT_OF_LIMIT("00001", "文件大小超过限制"),
+    FILE_TYPE_NOT_SUPPORT("00002", "文件类型不支持"),
     BLANK("10000", "占位");
 
     private String code;

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
+import org.pbms.pbmsserver.service.PreUploadService;
 import org.pbms.pbmsserver.service.ResponseService;
 import org.pbms.pbmsserver.service.UploadService;
 import org.pbms.pbmsserver.service.WaterMaskService;
@@ -36,6 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UploadController {
     @Autowired
+    private PreUploadService preUploadService;
+    
+    @Autowired
     private WaterMaskService waterMaskService;
 
     @Autowired
@@ -50,6 +54,8 @@ public class UploadController {
         if (image == null || image.isEmpty()) {
             return ResponseEntity.badRequest().body("请选择上传文件");
         }
+        // 前置检查
+        preUploadService.preUploadCheck(image);
         // 添加水印
         try {
             ResponseEntity<String> result = null;

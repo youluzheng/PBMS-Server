@@ -1,6 +1,7 @@
 package org.pbms.pbmsserver.service;
 
 import org.pbms.pbmsserver.common.constant.ResponseConstant;
+import org.pbms.pbmsserver.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +19,7 @@ public class ResponseService {
         if (responseType.equals("url")) {
             return url;
         } else {
-            String fullName = image.getOriginalFilename();
-            String imageName = fullName.substring(0, fullName.lastIndexOf("."));
+            String imageName = FileUtil.getFileExt(image);
             StringBuilder markdownStr = new StringBuilder();
             return markdownStr.append("![").append(imageName).append("](").append(url).append(")").toString();
         }

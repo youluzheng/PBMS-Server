@@ -1,5 +1,10 @@
 package org.pbms.pbmsserver.common.constant;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.pbms.pbmsserver.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +33,39 @@ public class ServerConstant {
     public void setBaseurl(String baseurl) {
         log.info("set baseurl:{}", baseurl);
         ServerConstant.SERVER_BASEURL = baseurl;
+    }
+
+    // 实际使用byte大小表示
+    public static long SERVER_MAX_SIZE;
+
+    @Value("${picturebed.maxSize:10MB}")
+    public void setMaxSize(String maxSize) {
+        // 转换为大写
+        maxSize = maxSize.toUpperCase();
+        if (!StringUtil.isValidSizeFormatString(maxSize)) {
+            log.warn("picturebed.maxSize不支持配置项:{}, 默认位置为10MB", maxSize);
+            maxSize = "10MB";
+        }
+        log.info("set maxSize:{}", maxSize);
+        if (maxSize.endsWith("GB")) {
+            ServerConstant.SERVER_MAX_SIZE = Long.parseLong(maxSize.substring(0, maxSize.length() - 2)) * 1024 * 1024
+                    * 1024;
+        } else if (maxSize.endsWith("MB")) {
+            ServerConstant.SERVER_MAX_SIZE = Long.parseLong(maxSize.substring(0, maxSize.length() - 2)) * 1024 * 1024;
+        } else {
+            ServerConstant.SERVER_MAX_SIZE = Long.parseLong(maxSize.substring(0, maxSize.length() - 2)) * 1024;
+        }
+    }
+
+    public static List<String> SERVER_SUPPORT_TYPE;
+
+    @Value("${picturebed.supportType:png, jpg, gif}")
+
+    public void setSupportType(String supportType) {
+        log.info("set supportType:[{}]", supportType);
+        // 转换为列表, 并且去除前后空白字符
+        ServerConstant.SERVER_SUPPORT_TYPE = Arrays.asList(supportType.split(",")).stream().map(str -> str.strip())
+                .collect(Collectors.toList());
     }
 
 }
