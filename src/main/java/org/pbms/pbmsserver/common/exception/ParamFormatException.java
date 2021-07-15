@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
  * @author zyl
  * @date 2021/07/12 23:10:18
  */
-public class ParamFormatException extends BaseException{
-    public ParamFormatException(HttpStatus code, String message) {
-        super(code, message);
+public class ParamFormatException extends BaseException {
+    public ParamFormatException(HttpStatus httpStatus, String message) {
+        super(httpStatus, message);
     }
 }

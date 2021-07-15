@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
-import org.pbms.pbmsserver.common.exception.CustomCode;
+import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +28,15 @@ public class PreUploadService {
     private void checkImageSize(final MultipartFile image) {
         log.debug("imageSize:{}, allowSize:{}", image.getSize(), maxSize);
         if (image.getSize() > this.maxSize) {
-            throw new BusinessException(CustomCode.FILE_SIZE_OUT_OF_LIMIT);
+            throw new BusinessException(BusinessStatus.FILE_SIZE_OUT_OF_LIMIT);
         }
     }
 
     private void checkImageType(final MultipartFile image) {
         String extension = FileUtil.getFileExt(image);
         log.debug("imageFileName:{}, extension:{}", image.getOriginalFilename(), extension);
-        if(!supportType.contains(extension)){
-            throw new BusinessException(CustomCode.FILE_TYPE_NOT_SUPPORT);
+        if (!supportType.contains(extension)) {
+            throw new BusinessException(BusinessStatus.FILE_TYPE_NOT_SUPPORT);
         }
     }
 

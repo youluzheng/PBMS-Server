@@ -48,8 +48,7 @@ public class UploadController {
 
     @PostMapping("/image")
     public ResponseEntity<String> upload(@RequestParam(required = false) String path,
-                                         @RequestParam(required = false) Boolean compress,
-                                         @RequestBody MultipartFile image) {
+            @RequestParam(required = false) Boolean compress, @RequestBody MultipartFile image) {
         if (image == null || image.isEmpty()) {
             return ResponseEntity.badRequest().body("请选择上传文件");
         }
@@ -66,7 +65,7 @@ public class UploadController {
 
     @GetMapping("**/{image}")
     public ResponseEntity<Void> getImage(@PathVariable String image, HttpServletRequest request,
-                                         HttpServletResponse response) {
+            HttpServletResponse response) {
         // 去掉第一个'/'
         String path = request.getServletPath().substring(1);
 
@@ -81,7 +80,7 @@ public class UploadController {
             log.error(image + ":文件不存在");
             return ResponseEntity.notFound().build();
         } catch (IOException e) {
-            log.error("获取文件失败");
+            log.error("获取文件失败, {}", e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }

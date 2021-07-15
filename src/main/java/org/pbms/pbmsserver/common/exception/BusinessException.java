@@ -1,24 +1,17 @@
 package org.pbms.pbmsserver.common.exception;
 
+import org.springframework.http.HttpStatus;
+
 /**
- * 客户端异常，4xx
- * <P>
- * 如果异常的原因出自于客户端，可以使用该异常或子异常
+ * 业务异常，如账号密码错误等 <code>HTTPStatus=403</code>
  * 
  * @author zyl
  * @date 2021/07/04 18:12:08
  */
-public class BusinessException extends RuntimeException {
-    private CustomCode code;
+public class BusinessException extends BaseException {
 
-    public BusinessException(CustomCode code) {
-        this.code = code;
+    public BusinessException(BusinessStatus businessStatus) {
+        super(HttpStatus.FORBIDDEN, businessStatus.toString());
     }
 
-    /**
-     * @return the code
-     */
-    public CustomCode getCode() {
-        return code;
-    }
 }

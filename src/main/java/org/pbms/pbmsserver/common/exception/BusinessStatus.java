@@ -6,16 +6,14 @@ package org.pbms.pbmsserver.common.exception;
  * @author zyl
  * @date 2021/07/04 20:34:08
  */
-public enum CustomCode {
+public enum BusinessStatus {
 
-    FILE_SIZE_OUT_OF_LIMIT("00001", "文件大小超过限制"),
-    FILE_TYPE_NOT_SUPPORT("00002", "文件类型不支持"),
-    BLANK("10000", "占位");
+    FILE_SIZE_OUT_OF_LIMIT("00001", "文件大小超过限制"), FILE_TYPE_NOT_SUPPORT("00002", "文件类型不支持"), BLANK("10000", "占位");
 
     private String code;
     private String msg;
 
-    CustomCode(String code, String msg) {
+    BusinessStatus(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }

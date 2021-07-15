@@ -12,14 +12,14 @@ import org.springframework.http.HttpStatus;
  * @author zyl
  * @date 2021/07/04 18:08:34
  */
-public class ServerErrorException extends BaseException {
+public class ServerException extends BaseException {
 
-    public ServerErrorException(String message) {
+    public ServerException(String message) {
         super(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
-    public ServerErrorException(HttpStatus code, String message) {
-        super(code, message);
+    public ServerException(HttpStatus httpStatus, String message) {
+        super(httpStatus, message);
     }
 
 }

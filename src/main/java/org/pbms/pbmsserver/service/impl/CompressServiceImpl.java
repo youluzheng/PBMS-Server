@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.pbms.pbmsserver.common.constant.CompressConstant;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
-import org.pbms.pbmsserver.common.exception.ServerErrorException;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
 import org.springframework.stereotype.Service;
@@ -45,16 +45,16 @@ public class CompressServiceImpl {
         if (!isCompress) {
             return srcImg;
         }
-        File tempFile = new File(ServerConstant.SERVER_ROOT_PATH + File.separator + "temp"
-                + File.separator + srcImg.getOriginalFilename());
+        File tempFile = new File(ServerConstant.SERVER_ROOT_PATH + File.separator + "temp" + File.separator
+                + srcImg.getOriginalFilename());
         try {
             srcImg.transferTo(tempFile);
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         }
-        String compressPath = generateThumbnail2Directory(CompressConstant.COMPRESS_SCALE, tempFile.getParent()
-                , tempFile.getAbsolutePath()).get(0);
+        String compressPath = generateThumbnail2Directory(CompressConstant.COMPRESS_SCALE, tempFile.getParent(),
+                tempFile.getAbsolutePath()).get(0);
         File compressImg = new File(compressPath);
         // 文件类型转换，方便后续处理
         MultipartFile result = MultipartFileUtil.fileToMultipartFile(compressImg);
@@ -63,7 +63,6 @@ public class CompressServiceImpl {
         tempFile.delete();
         return result;
     }
-
 
     /**
      * 生成缩略图到指定的目录
@@ -92,8 +91,8 @@ public class CompressServiceImpl {
                     // 缩略图保存目录,该目录需存在，否则报错
                     .toFiles(new File(pathname), Rename.SUFFIX_HYPHEN_THUMBNAIL);
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         }
         List<String> list = new ArrayList<>(files.length);
         for (String file : files) {

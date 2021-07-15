@@ -43,7 +43,7 @@ public class UploadServiceImpl implements UploadService {
             log.debug(imageURL.toString());
             return ResponseEntity.created(new URI(ServerConstant.SERVER_BASEURL + fullName)).body(imageURL.toString());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("上传失败, {}", e.getMessage());
         }
         return ResponseEntity.internalServerError().body(fullName + "上传失败！");
     }

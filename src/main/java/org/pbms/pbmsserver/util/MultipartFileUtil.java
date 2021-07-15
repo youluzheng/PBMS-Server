@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.pbms.pbmsserver.common.exception.ServerErrorException;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +18,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
  * File转MultipartFile工具类
  */
 public class MultipartFileUtil {
-    
+
     private static final Logger log = LoggerFactory.getLogger(MultipartFileUtil.class);
 
     public static MultipartFile fileToMultipartFile(File file) {
@@ -38,8 +38,8 @@ public class MultipartFileUtil {
                 os.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         }
         return item;
     }

@@ -9,14 +9,14 @@ import org.springframework.http.HttpStatus;
  * @date 2021/07/04 17:54:38
  */
 public abstract class BaseException extends RuntimeException {
-    private HttpStatus code;
+    private HttpStatus httpStatus;
 
-    public BaseException(HttpStatus code, String message) {
+    public BaseException(HttpStatus httpStatus, String message) {
         super(message);
-        this.code = code;
+        this.httpStatus = httpStatus;
     }
 
-    public HttpStatus getCode() {
-        return code;
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 }

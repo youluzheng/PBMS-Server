@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
  * @author zyl
  * @date 2021/07/12 23:11:09
  */
-public class ParamNotSupportException extends BaseException{
-    public ParamNotSupportException(HttpStatus code, String message) {
-        super(code, message);
+public class ParamNotSupportException extends BaseException {
+    public ParamNotSupportException(HttpStatus httpStatus, String message) {
+        super(httpStatus, message);
     }
 }

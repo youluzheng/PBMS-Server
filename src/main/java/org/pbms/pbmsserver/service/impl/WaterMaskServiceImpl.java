@@ -12,7 +12,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
-import org.pbms.pbmsserver.common.exception.ServerErrorException;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.service.WaterMaskService;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.FontUtil;
@@ -47,16 +47,16 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         File tempFile;
         Font font;
 
-        try{
+        try {
             font = FontUtil.getSIMSUN(Font.BOLD, 30);
             tempFile = new File(srcImg.getOriginalFilename());
             bufferedImage = ImageIO.read(srcImg.getInputStream());
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         } catch (FontFormatException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("字体文件处理异常");
+            log.error("字体文件处理异常, {}", e.getMessage());
+            throw new ServerException("字体文件处理异常");
         }
 
         g = bufferedImage.createGraphics();
@@ -76,18 +76,17 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         try {
             bufferedImage = ImageIO.read(srcImg.getInputStream());
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         }
 
         g = bufferedImage.createGraphics();
         BufferedImage imageLogo;
         try {
-            imageLogo = ImageIO
-                    .read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
+            imageLogo = ImageIO.read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         }
         if (WaterMaskConstant.WATER_MASK_REPEAT) {
             log.debug("开始对图片：{}绘制重复logo水印", srcImg.getName());
@@ -142,8 +141,8 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         try {
             ImageIO.write(bufferedImage, extension, file);
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ServerErrorException("文件处理异常");
+            log.error("文件处理异常, {}", e.getMessage());
+            throw new ServerException("文件处理异常");
         }
         MultipartFile multipartFile = MultipartFileUtil.fileToMultipartFile(file);
         file.delete();
