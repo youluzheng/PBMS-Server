@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service.impl;
+package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -11,37 +11,41 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
+import org.pbms.pbmsserver.common.constant.WaterMarkConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
-import org.pbms.pbmsserver.service.WaterMaskService;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
+/**
+ * 添加水印服务
+ *
+ * @author 王俊
+ */
+@Component
+public class WaterMarkProcessor {
 
-@Service
-@Slf4j
-public class WaterMaskServiceImpl implements WaterMaskService {
+    private static final Logger log = LoggerFactory.getLogger(WaterMarkProcessor.class);
 
-    @Override
-    public MultipartFile addWaterMask(MultipartFile srcImg) {
+    public MultipartFile addWaterMark(MultipartFile srcImg) {
         MultipartFile result = srcImg;
-        if (!WaterMaskConstant.WATER_MASK_ENABLE) {
+        if (!WaterMarkConstant.WATER_MARK_ENABLE) {
             return result;
         }
-        if (WaterMaskConstant.WATER_MASK_LOGO_ENABLE) {
-            result = addImgWaterMask(result);
+        if (WaterMarkConstant.WATER_MARK_LOGO_ENABLE) {
+            result = addImgWaterMark(result);
         }
-        if (WaterMaskConstant.WATER_MASK_ENABLE) {
-            result = addTextWaterMask(result);
+        if (WaterMarkConstant.WATER_MARK_ENABLE) {
+            result = addTextWaterMark(result);
         }
         return result;
     }
 
-    public MultipartFile addTextWaterMask(MultipartFile srcImg) {
+    public MultipartFile addTextWaterMark(MultipartFile srcImg) {
         Graphics2D g;
         BufferedImage bufferedImage;
         File tempFile;
@@ -62,13 +66,13 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         g = bufferedImage.createGraphics();
         g.setColor(Color.BLACK);
         g.setFont(font);
-        log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), WaterMaskConstant.WATER_MASK_TEXT);
-        drawText(g, WaterMaskConstant.WATER_MASK_TEXT, bufferedImage);
+        log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), WaterMarkConstant.WATER_MARK_TEXT);
+        drawText(g, WaterMarkConstant.WATER_MARK_TEXT, bufferedImage);
         log.debug("水印绘制完成");
         return toMultipartFile(bufferedImage, tempFile);
     }
 
-    public MultipartFile addImgWaterMask(MultipartFile srcImg) {
+    public MultipartFile addImgWaterMark(MultipartFile srcImg) {
         Graphics2D g;
         BufferedImage bufferedImage;
         File tempFile;
@@ -83,12 +87,12 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         g = bufferedImage.createGraphics();
         BufferedImage imageLogo;
         try {
-            imageLogo = ImageIO.read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
+            imageLogo = ImageIO.read(new File(WaterMarkConstant.WATER_MARK_LOGO_PATH + File.separator + "logo.jpg"));
         } catch (IOException e) {
             log.error("文件处理异常, {}", e.getMessage());
             throw new ServerException("文件处理异常");
         }
-        if (WaterMaskConstant.WATER_MASK_REPEAT) {
+        if (WaterMarkConstant.WATER_MARK_REPEAT) {
             log.debug("开始对图片：{}绘制重复logo水印", srcImg.getName());
             drawRepeat(g, imageLogo, bufferedImage);
         } else {
@@ -109,8 +113,8 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
         double count = 2;
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMaskConstant.WATER_MASK_ALPHA));
-        g.rotate(Math.toRadians(WaterMaskConstant.WATER_MASK_GRADIENT), bufferedImage.getWidth() / 2,
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMarkConstant.WATER_MARK_ALPHA));
+        g.rotate(Math.toRadians(WaterMarkConstant.WATER_MARK_GRADIENT), bufferedImage.getWidth() / 2,
                 bufferedImage.getHeight() / 2);
         // 循环添加多个水印logo
         while (x < width * count) {
@@ -125,14 +129,14 @@ public class WaterMaskServiceImpl implements WaterMaskService {
     }
 
     private void drawImage(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMaskConstant.WATER_MASK_ALPHA));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMarkConstant.WATER_MARK_ALPHA));
         g.drawImage(imageLogo, bufferedImage.getWidth() - imageLogo.getWidth(),
                 bufferedImage.getHeight() - imageLogo.getHeight(), null);
         g.dispose();
     }
 
     private void drawText(Graphics2D g, String text, BufferedImage bufferedImage) {
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMaskConstant.WATER_MASK_ALPHA));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMarkConstant.WATER_MARK_ALPHA));
         g.drawString(text, 10, 30);
     }
 

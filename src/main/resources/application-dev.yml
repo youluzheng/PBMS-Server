@@ -8,7 +8,7 @@ picturebed:
   maxSize: 10MB
   supportType: jpg, gif, png
 
-waterMask:
+waterMark:
   # 开启水印
   enable: true
   logo:

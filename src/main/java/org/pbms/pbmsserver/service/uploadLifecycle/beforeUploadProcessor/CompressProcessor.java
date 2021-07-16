@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service.impl;
+package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,37 +11,34 @@ import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 
 /**
- * @ClassName CompressServiceImpl
- * @Description 图片压缩业务
- * @Author 王俊
- * @Date 2021/7/10 14:31
+ * 图片压缩业务处理
+ *
+ * @author 王俊
+ * @date 2021/7/10 14:31
  */
-@Service
-@Slf4j
-public class CompressServiceImpl {
+@Component
+public class CompressProcessor {
 
-    // 缩略图后缀
-    private static final String SUFFIX = "-thumbnail";
-
+    private static final Logger log = LoggerFactory.getLogger(CompressProcessor.class);
     private List<String> imageExtensions = Arrays.asList("jpeg", "jpg", "gif", "bmp", "png");
 
     /**
      * @param srcImg 原始图片
      * @return 压缩后图片，类型为MultipartFile
-     * @throws IOException
      */
     public MultipartFile compress(MultipartFile srcImg, Boolean compress) {
 
         // 判断是否压缩，优先级：单次压缩>全局压缩
-        Boolean isCompress = compress == null ? CompressConstant.COMPRESS_ENABLE : compress;
+        boolean isCompress = compress == null ? CompressConstant.COMPRESS_ENABLE : compress;
         if (!isCompress) {
             return srcImg;
         }
@@ -50,8 +47,8 @@ public class CompressServiceImpl {
         try {
             srcImg.transferTo(tempFile);
         } catch (IOException e) {
-            log.error("文件处理异常, {}", e.getMessage());
-            throw new ServerException("文件处理异常");
+            log.error("文件转换处理异常, {}", e.getMessage());
+            throw new ServerException("文件转换处理异常");
         }
         String compressPath = generateThumbnail2Directory(CompressConstant.COMPRESS_SCALE, tempFile.getParent(),
                 tempFile.getAbsolutePath()).get(0);
@@ -69,7 +66,6 @@ public class CompressServiceImpl {
      *
      * @param path  目录
      * @param files 要生成缩略图的文件列表
-     * @throws IOException
      */
     private List<String> generateThumbnail2Directory(String path, String... files) {
         return generateThumbnail2Directory(CompressConstant.COMPRESS_SCALE, path, files);
@@ -81,7 +77,6 @@ public class CompressServiceImpl {
      * @param scale    图片缩放率
      * @param pathname 缩略图保存目录
      * @param files    要生成缩略图的文件列表
-     * @throws IOException
      */
     private List<String> generateThumbnail2Directory(double scale, String pathname, String... files) {
         try {
@@ -89,15 +84,13 @@ public class CompressServiceImpl {
                     // 图片缩放率，不能和size()一起使用
                     .scale(scale)
                     // 缩略图保存目录,该目录需存在，否则报错
-                    .toFiles(new File(pathname), Rename.SUFFIX_HYPHEN_THUMBNAIL);
+                    .toFiles(new File(pathname), Rename.NO_CHANGE);
         } catch (IOException e) {
-            log.error("文件处理异常, {}", e.getMessage());
-            throw new ServerException("文件处理异常");
+            log.error("文件压缩处理异常, {}", e.getMessage());
+            throw new ServerException("文件压缩处理异常");
         }
         List<String> list = new ArrayList<>(files.length);
-        for (String file : files) {
-            list.add(appendSuffix(file, SUFFIX));
-        }
+        list.addAll(Arrays.asList(files));
         return list;
     }
 
@@ -120,29 +113,6 @@ public class CompressServiceImpl {
         compressRecurse(files, pathname);
     }
 
-    /**
-     * 文件追加后缀
-     *
-     * @param fileName 原文件名
-     * @param suffix   文件后缀
-     * @return
-     */
-    private String appendSuffix(String fileName, String suffix) {
-        String newFileName = "";
-
-        int indexOfDot = fileName.lastIndexOf('.');
-
-        if (indexOfDot != -1) {
-            newFileName = fileName.substring(0, indexOfDot);
-            newFileName += suffix;
-            newFileName += fileName.substring(indexOfDot);
-        } else {
-            newFileName = fileName + suffix;
-        }
-
-        return newFileName;
-    }
-
     private void compressRecurse(File[] files, String pathname) {
         for (File file : files) {
             // 目录
@@ -152,7 +122,7 @@ public class CompressServiceImpl {
             } else {
                 // 文件包含压缩文件后缀或非图片格式，则不再压缩
                 String extension = FileUtil.getFileExt(file);
-                if (!file.getName().contains(SUFFIX) && isImage(extension)) {
+                if (isImage(extension)) {
                     generateThumbnail2Directory(pathname, file.getAbsolutePath());
                 }
             }

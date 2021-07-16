@@ -1,22 +1,22 @@
-package org.pbms.pbmsserver.service.impl;
+package org.pbms.pbmsserver.service.uploadLifecycle.uploadProcessor;
 
 import java.io.File;
-import java.net.URI;
 
+import org.apache.logging.log4j.util.Strings;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
-import org.pbms.pbmsserver.service.UploadService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.pbms.pbmsserver.common.exception.ServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
+@Component
+public class SaveProcessor {
+    private static final Logger log = LoggerFactory.getLogger(SaveProcessor.class);
 
-@Service
-@Slf4j
-public class UploadServiceImpl implements UploadService {
+    private String baseURL = ServerConstant.SERVER_BASEURL;
 
-    @Override
-    public ResponseEntity<String> upload(String path, MultipartFile image) {
+    public String upload(String path, MultipartFile image) {
         String fullName = image.getOriginalFilename();
         // 服务器上存储路径
         String storagePath;
@@ -34,17 +34,17 @@ public class UploadServiceImpl implements UploadService {
         File dest = new File(storagePath);
         try {
             image.transferTo(dest);
-            log.info("{}上传成功！", fullName);
-
-            // 生成图片url
-            StringBuilder imageURL = new StringBuilder();
-            imageURL.append(ServerConstant.SERVER_BASEURL).append("/")
-                    .append((path == null || "".equals(path)) ? "" : (path + "/")).append(fullName);
-            log.debug(imageURL.toString());
-            return ResponseEntity.created(new URI(ServerConstant.SERVER_BASEURL + fullName)).body(imageURL.toString());
+            log.info("{}上传成功！path:{}", fullName, path);
         } catch (Exception e) {
             log.error("上传失败, {}", e.getMessage());
+            throw new ServerException(fullName + "上传失败！");
         }
-        return ResponseEntity.internalServerError().body(fullName + "上传失败！");
+        StringBuilder imageURL = new StringBuilder(this.baseURL);
+        imageURL.append("/");
+        if (!Strings.isBlank(path)) {
+            imageURL.append(path).append("/");
+        }
+        imageURL.append(fullName);
+        return imageURL.toString();
     }
 }
