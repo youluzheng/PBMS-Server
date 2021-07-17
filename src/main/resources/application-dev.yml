@@ -40,3 +40,8 @@ response:
 
 logging:
   config: classpath:logback-spring-dev.xml
+
+# 配置HTTPS
+# server.ssl.key-store:                                         # 签名文件
+# server.ssl.key-store-password:                                # 签名密码
+# server.ssl.keyStoreType: JKS                                  # 密钥仓库类型
