@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import org.pbms.pbmsserver.common.constant.WaterMaskConstant;
 import org.pbms.pbmsserver.common.exception.ServerErrorException;
 import org.pbms.pbmsserver.service.WaterMaskService;
+import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
 import org.springframework.stereotype.Service;
@@ -64,8 +65,7 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), WaterMaskConstant.WATER_MASK_TEXT);
         drawText(g, WaterMaskConstant.WATER_MASK_TEXT, bufferedImage);
         log.debug("水印绘制完成");
-        MultipartFile multipart = toMultipartFile(bufferedImage, tempFile);
-        return multipart;
+        return toMultipartFile(bufferedImage, tempFile);
     }
 
     public MultipartFile addImgWaterMask(MultipartFile srcImg) {
@@ -81,7 +81,7 @@ public class WaterMaskServiceImpl implements WaterMaskService {
         }
 
         g = bufferedImage.createGraphics();
-        BufferedImage imageLogo = null;
+        BufferedImage imageLogo;
         try {
             imageLogo = ImageIO
                     .read(new File(WaterMaskConstant.WATER_MASK_LOGO_PATH + File.separator + "logo.jpg"));
@@ -138,8 +138,9 @@ public class WaterMaskServiceImpl implements WaterMaskService {
     }
 
     private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) {
+        String extension = FileUtil.getFileExt(file);
         try {
-            ImageIO.write(bufferedImage, "jpg", file);
+            ImageIO.write(bufferedImage, extension, file);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServerErrorException("文件处理异常");
