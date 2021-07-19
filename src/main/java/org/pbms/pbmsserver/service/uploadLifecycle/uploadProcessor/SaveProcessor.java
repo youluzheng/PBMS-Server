@@ -20,8 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class SaveProcessor {
     private static final Logger log = LoggerFactory.getLogger(SaveProcessor.class);
 
-    private String baseURL = ServerConstant.SERVER_BASEURL;
-
     public String upload(String path, MultipartFile image) {
         String fullName = image.getOriginalFilename();
         // 服务器上存储路径
@@ -45,7 +43,7 @@ public class SaveProcessor {
             log.error("上传失败, {}", e.getMessage());
             throw new ServerException(fullName + "上传失败！");
         }
-        StringBuilder imageURL = new StringBuilder(this.baseURL);
+        StringBuilder imageURL = new StringBuilder(ServerConstant.SERVER_BASEURL);
         imageURL.append("/");
         if (!Strings.isBlank(path)) {
             imageURL.append(path).append("/");

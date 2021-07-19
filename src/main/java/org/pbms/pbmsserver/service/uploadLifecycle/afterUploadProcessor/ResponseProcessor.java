@@ -13,10 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Component
 public class ResponseProcessor {
-    private final String responseType = ResponseConstant.RESPONSE_TYPE;
-
     public String responseHandler(MultipartFile image, String url) {
-        if (responseType.equals("url")) {
+        if (ResponseConstant.RESPONSE_TYPE.equals("url")) {
             return url;
         } else {
             String imageName = FileUtil.getFileNameWithoutExt(image);
