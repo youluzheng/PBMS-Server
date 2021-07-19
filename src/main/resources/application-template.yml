@@ -1,9 +1,9 @@
 server:
-  port: ${PBMS_PORT:8080}
+  port: 8080
 
 picturebed:
-  rootpath: ${PBMS_ROOTPATH:upload}
-  baseurl: ${PBMS_BASEURL:http://localhost:8080}
+  rootpath: upload
+  baseurl: http://localhost:8080
   # 支持最大上传大小, 最大为1GB, 默认10MB
   maxSize: 10MB
   supportType: jpg, gif, png
@@ -15,7 +15,7 @@ waterMark:
     # 默认文字水印
     enable: false
     # 水印logo路径,必须命名为logo.jpg
-    path: ${PBMS_LOGO_PATH:logo}
+    path: logo
     # 默认logo会重复
     repeat: true
     # logo倾斜角度
@@ -26,6 +26,7 @@ waterMark:
   text:
     enable: true
     content: 一夜暴富，一夜暴富
+
 # 压缩相关
 compress:
   # 默认关闭压缩
@@ -38,8 +39,9 @@ response:
   # 目前支持markdown、url, 默认为markdown
   type: markdown
 
-logging:
-  config: classpath:logback-spring-dev.xml
+log:
+  # 支持dev、prod两种模式
+  mode: prod
 
 # 配置HTTPS
 #server.ssl.key-store:                                         # 签名文件

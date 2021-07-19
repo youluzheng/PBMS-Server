@@ -40,7 +40,7 @@
     </appender>
     <!-- 控制台输出日志级别 -->
     <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="log_all" />
     </root>
 </configuration>
