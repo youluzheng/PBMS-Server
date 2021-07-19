@@ -6,11 +6,14 @@ spring:
 server:
   port: 8080
 
+log:
+  level: INFO
+
 logging:
-  config: classpath:logback-spring-${log.mode:prod}.xml
+  config: classpath:logback-spring-prod.xml
 
 picturebed:
-  rootpath: upload
+  rootpath: ${PBMS_ROOTPATH:upload}
   baseurl: http://localhost:8080
   # 支持最大上传大小, 最大为1GB, 默认10MB
   maxSize: 10MB
@@ -32,7 +35,7 @@ waterMark:
   alpha: 0.3
   # 水印文字
   text:
-    enable: true
+    enable: false
     content: 一夜暴富，一夜暴富
 
 # 压缩相关

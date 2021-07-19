@@ -39,9 +39,8 @@ response:
   # 目前支持markdown、url, 默认为markdown
   type: markdown
 
-log:
-  mode: dev
-
+logging:
+  config: classpath:logback-spring-dev.xml
 # 配置HTTPS
 #server.ssl.key-store:                                         # 签名文件
 #server.ssl.key-store-password:                                # 签名密码

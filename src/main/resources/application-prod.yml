@@ -40,7 +40,7 @@ response:
   type: markdown
 
 log:
-  mode: prod
+  level: INFO
 
 # 配置HTTPS
 #server.ssl.key-store:                                         # 签名文件

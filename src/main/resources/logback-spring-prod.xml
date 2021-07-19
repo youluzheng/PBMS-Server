@@ -3,10 +3,12 @@
 <!-- prod环境日志全部都写入文件，不输出到终端 -->
 <configuration>
 
-    <!--参数设置-->
+    <!-- 参数设置 -->
     <property name="logback.base.package" value="org.pbms.pbmsserver" />
     <property name="logback.base.savePath" value="logs" />
-    <property name="logback.base.fileName" value="PBMS-Server" />
+    <property name="logback.base.fileName" value="pbms" />
+    <!-- 从Spring配置文件中读取变量 -->
+    <springProperty name="log_level" source="log.level" />
 
     <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】,,, -->
     <!-- appender是configuration的子节点，是负责写日志的组件。 -->
@@ -32,7 +34,7 @@
         <encoder>
             <!-- pattern节点，用来设置日志的输入格式 -->
             <pattern>
-                [%d{yyyy-MM-dd HH:mm:ss}] %-5level %logger [%msg]%n
+                [%d{yyyy-MM-dd HH:mm:ss}] %-5level %logger:%line [%msg]%n
             </pattern>
             <!-- 记录日志的编码 -->
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
@@ -40,7 +42,11 @@
     </appender>
     <!-- 控制台输出日志级别 -->
     <!-- 级别依次为【从高到低】：FATAL > ERROR > WARN > INFO > DEBUG > TRACE  -->
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="log_all" />
     </root>
+
+    <logger name="${logback.base.package}" additivity="false" level="${log_level}">
+        <appender-ref ref="log_all" />
+    </logger>
 </configuration>
