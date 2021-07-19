@@ -16,6 +16,9 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 /**
  * File转MultipartFile工具类
+ *
+ * @author 王俊
+ * @date 2021/7/10 14:31
  */
 public class MultipartFileUtil {
 

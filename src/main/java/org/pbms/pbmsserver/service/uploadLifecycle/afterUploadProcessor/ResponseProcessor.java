@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 返回类型处理
+ * 返回格式处理
  * 
  * @author zyl
  * @date 2021/07/10 13:24:13

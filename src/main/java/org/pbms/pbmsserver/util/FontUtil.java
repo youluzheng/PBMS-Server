@@ -1,11 +1,17 @@
 package org.pbms.pbmsserver.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * 水印字体工具类
+ *
+ * @author 王俊
+ * @date 2021/7/10 14:39
+ */
 public class FontUtil {
 
     private static final Logger log = LoggerFactory.getLogger(FontUtil.class);

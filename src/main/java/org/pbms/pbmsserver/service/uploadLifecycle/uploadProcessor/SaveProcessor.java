@@ -10,6 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 图片保存
+ *
+ * @author zyl
+ * @date 2021/07/10 13:24:13
+ */
 @Component
 public class SaveProcessor {
     private static final Logger log = LoggerFactory.getLogger(SaveProcessor.class);

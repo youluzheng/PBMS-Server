@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * 图片接口
+ *
  * @author 王俊
  * @author zyl
  * @date 2021-06-21

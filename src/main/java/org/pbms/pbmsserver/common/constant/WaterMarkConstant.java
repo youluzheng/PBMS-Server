@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
  * 水印常量配置类
  *
  * @author 王俊
+ * @date 2021/7/10 14:39
  */
 @Component
 public class WaterMarkConstant {

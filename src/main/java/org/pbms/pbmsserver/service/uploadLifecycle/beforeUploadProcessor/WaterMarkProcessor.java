@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 添加水印服务
  *
  * @author 王俊
+ * @date 2021/7/10 14:31
  */
 @Component
 public class WaterMarkProcessor {

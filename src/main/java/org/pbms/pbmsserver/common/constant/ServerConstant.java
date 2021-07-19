@@ -1,18 +1,20 @@
 package org.pbms.pbmsserver.common.constant;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.pbms.pbmsserver.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
+ * 上传图片路径、大小、格式配置
+ *
  * @author zyl
- * @Date 2021-06-21
+ * @Date 2021-06-21 19:54:11
  */
 
 @Component
