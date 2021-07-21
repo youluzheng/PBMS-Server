@@ -14,7 +14,7 @@ logging:
 
 picturebed:
   rootpath: ${PBMS_ROOTPATH:upload}
-  baseurl: http://localhost:8080
+  baseurl: ${PBMS_BASEURL:http://localhost:8080}
   # 支持最大上传大小, 最大为1GB, 默认10MB
   maxSize: 10MB
   supportType: jpg, gif, png

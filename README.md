@@ -14,7 +14,26 @@
 
 **[如何协作开发](https://gitea.965.life/PBMS/PBMS-Server/wiki/%E5%A6%82%E4%BD%95%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91)**
 
+## install
+
+1. 源码构建
+
+```sh
+./mvnw clean package
+jar -jar pbms-server-x.x.x-RELEASE.jar
+```
+
+2. 使用打包好的jar
+
+```sh
+jar -jar pbms-server-x.x.x-RELEASE.jar
+```
+
+3. [docker](https://gitea.965.life/PBMS/PBMS-Server/wiki/docker)
+
 ## 客户端脚本
 
 - [Script-Python](https://gitea.965.life/PBMS/Script-Python)
-    快捷键快速上传粘贴板图片
+  - [x] 快捷键快速上传粘贴板图片
+  - [x] typora脚本上传图片
+  - [ ] 批量上传替换markdown文件图片
