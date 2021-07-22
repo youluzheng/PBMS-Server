@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>org.pbms</groupId>
 	<artifactId>pbms-server</artifactId>
-	<version>0.1.0-RELEASE</version>
+	<version>0.2.0-RELEASE</version>
 	<name>pbms-server</name>
 	<description>picture-bed-manage-system-server</description>
 	<properties>
