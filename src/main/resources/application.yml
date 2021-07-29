@@ -2,9 +2,11 @@ spring:
   servlet:
     multipart:
       max-file-size: 1GB
-
-server:
-  port: 8080
+  datasource:
+    username: ${pbms_datasource_username:pbms}
+    password: ${pbms_datasource_password}
+    url: jdbc:mysql://${pbms_datasource_host:127.0.0.1}:${pbms_mysql_port:3306}/${pbms_mysql_schema:pbms}?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    driver-class-name: ${pbms_datasource_driver:com.mysql.cj.jdbc.Driver}
 
 log:
   level: INFO

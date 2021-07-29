@@ -39,3 +39,6 @@ build/
 /upload/
 # logo
 /logo/
+
+# mybatis generator
+/src/main/resources/mybatis/connection.yml
