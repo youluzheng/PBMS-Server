@@ -1,15 +1,15 @@
 package org.pbms.pbmsserver.common.exception;
 
-import javax.validation.ConstraintViolationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.validation.ConstraintViolationException;
 
 /**
  * 全局异常处理
@@ -33,9 +33,9 @@ public class GlobalExceptionHandle {
         return this.generateJsonString(e.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(BindException.class)
     @ResponseStatus(code = HttpStatus.FORBIDDEN)
-    public String methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException e) {
+    public String methodArgumentNotValidExceptionHandle(BindException e) {
         return this.generateJsonString(e.getAllErrors().get(0).getDefaultMessage());
     }
 
