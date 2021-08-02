@@ -11,11 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ResourceNotFoundException;
+import org.pbms.pbmsserver.common.request.image.ImageUploadReq;
 import org.pbms.pbmsserver.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,10 +42,9 @@ public class ImageController {
     private ImageService uploadService;
 
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam(required = false) String path,
-            @RequestParam(required = false) Boolean compress, @RequestBody MultipartFile image) {
+    public ResponseEntity<String> uploadImage(@Validated ImageUploadReq imageUploadReq, @RequestBody MultipartFile image) {
 
-        String responseContent = uploadService.uploadImage(path, compress, image);
+        String responseContent = uploadService.uploadImage(imageUploadReq, image);
         return ResponseEntity.ok(responseContent);
     }
 
@@ -57,7 +58,7 @@ public class ImageController {
 
         // 拼接图片路径
         try (FileInputStream in = new FileInputStream(ServerConstant.SERVER_ROOT_PATH + File.separator + path);
-                ServletOutputStream outputStream = response.getOutputStream();) {
+                ServletOutputStream outputStream = response.getOutputStream()) {
             byte[] data = new byte[in.available()];
             in.read(data);
             outputStream.write(data);

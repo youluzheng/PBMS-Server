@@ -31,7 +31,7 @@ public class MultipartFileUtil {
         return multipartFile;
     }
 
-    private static FileItem createFileItem(File file) {
+    public static FileItem createFileItem(File file) {
         FileItemFactory factory = new DiskFileItemFactory(16, null);
         FileItem item = factory.createItem("textField", "text/plain", true, file.getName());
         int bytesRead = 0;

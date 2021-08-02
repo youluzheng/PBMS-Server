@@ -14,6 +14,10 @@ import org.springframework.http.HttpStatus;
  */
 public class ServerException extends BaseException {
 
+    public ServerException() {
+        super(HttpStatus.INTERNAL_SERVER_ERROR, "服务器异常");
+    }
+
     public ServerException(String message) {
         super(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }

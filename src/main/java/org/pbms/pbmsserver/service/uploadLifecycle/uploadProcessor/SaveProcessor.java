@@ -20,35 +20,34 @@ import org.springframework.web.multipart.MultipartFile;
 public class SaveProcessor {
     private static final Logger log = LoggerFactory.getLogger(SaveProcessor.class);
 
-    public String upload(String path, MultipartFile image) {
-        String fullName = image.getOriginalFilename();
+    public String upload(String fileName, MultipartFile image) {
         // 服务器上存储路径
         String storagePath;
 
-        // 两种路径方式1：root+pictureName 2：root+path+pictureName
-        if (path == null || "".equals(path)) {
-            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + fullName;
-        } else {
-            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + path + File.separator + fullName;
-            File parentPath = new File(ServerConstant.SERVER_ROOT_PATH + File.separator + path);
-            if (!parentPath.exists()) {
-                parentPath.mkdirs();
-            }
+        StringBuilder imageURL = new StringBuilder(ServerConstant.SERVER_BASEURL).append("/");
+
+        // fileName中包含路径信息
+        if(fileName == null || fileName.isBlank()){
+            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + image.getOriginalFilename();
+            imageURL.append(image.getOriginalFilename());
+        }else{
+            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + fileName;
+            imageURL.append(fileName);
         }
+
         File dest = new File(storagePath);
+        if (!dest.exists()) {
+            dest.mkdirs();
+        }
+
         try {
             image.transferTo(dest);
-            log.info("{}上传成功！path:{}", fullName, path);
+            log.info("{}上传成功！storagePath:{}", image.getOriginalFilename(), storagePath);
         } catch (Exception e) {
             log.error("上传失败, {}", e.getMessage());
-            throw new ServerException(fullName + "上传失败！");
+            throw new ServerException(image.getOriginalFilename() + "上传失败！");
         }
-        StringBuilder imageURL = new StringBuilder(ServerConstant.SERVER_BASEURL);
-        imageURL.append("/");
-        if (!Strings.isBlank(path)) {
-            imageURL.append(path).append("/");
-        }
-        imageURL.append(fullName);
+
         return imageURL.toString();
     }
 }

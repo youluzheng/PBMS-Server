@@ -10,6 +10,7 @@ public enum BusinessStatus {
 
     FILE_SIZE_OUT_OF_LIMIT("00001", "文件大小超过限制"),
     FILE_TYPE_NOT_SUPPORT("00002", "文件类型不支持"),
+    ENCODING_NOT_SUPPORT("00003", "编码不支持"),
     LANK("10000", "占位");
 
     private String code;
@@ -38,6 +39,10 @@ public enum BusinessStatus {
     public String toString() {
         return "{\"code\":" + this.code + ", \"message\":\"" + this.msg + "\"}";
 
+    }
+
+    public String toString(String extra) {
+        return "{\"code\":" + this.code + ", \"message\":\"" + this.msg + ", " + extra + "\"}";
     }
 
 }

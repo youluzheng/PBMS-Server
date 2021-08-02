@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatus;
  */
 public class BusinessException extends BaseException {
 
+    public BusinessException(BusinessStatus businessStatus, String extra) {
+        super(HttpStatus.FORBIDDEN, businessStatus.toString(extra));
+    }
+
     public BusinessException(BusinessStatus businessStatus) {
         super(HttpStatus.FORBIDDEN, businessStatus.toString());
     }
