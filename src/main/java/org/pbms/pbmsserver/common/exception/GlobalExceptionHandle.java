@@ -13,7 +13,7 @@ import javax.validation.ConstraintViolationException;
 
 /**
  * 全局异常处理
- * 
+ *
  * @author zyl
  * @date 2021/07/04 20:34:23
  */
@@ -28,14 +28,14 @@ public class GlobalExceptionHandle {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(code = HttpStatus.FORBIDDEN)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public String constraintViolationExceptionHandle(ConstraintViolationException e) {
         return this.generateJsonString(e.getMessage());
     }
 
     @ExceptionHandler(BindException.class)
-    @ResponseStatus(code = HttpStatus.FORBIDDEN)
-    public String methodArgumentNotValidExceptionHandle(BindException e) {
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public String BindExceptionHandle(BindException e) {
         return this.generateJsonString(e.getAllErrors().get(0).getDefaultMessage());
     }
 
@@ -49,7 +49,7 @@ public class GlobalExceptionHandle {
 
     /**
      * 其他未知异常， <code>HTTPStatus=500</code>, 返回服务器异常
-     * 
+     *
      * @param e 未知Exception
      */
     @ExceptionHandler(Exception.class)
