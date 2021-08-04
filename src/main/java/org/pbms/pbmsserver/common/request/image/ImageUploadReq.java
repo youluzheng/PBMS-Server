@@ -1,13 +1,11 @@
 package org.pbms.pbmsserver.common.request.image;
 
-import org.pbms.pbmsserver.common.exception.BusinessStatus;
-
 import javax.validation.constraints.Size;
 
 public class ImageUploadReq {
     private Boolean compress;
 
-    @Size(min = 1, message = "文件名称不能为空")
+    @Size(min = 1, message = ImageErrorMessage.IMAGE_NAME_EMPTY)
     private String fileName;
 
     public Boolean getCompress() {
