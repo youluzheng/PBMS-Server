@@ -2,6 +2,7 @@ server:
   port: 8080
 
 picturebed:
+  # 使用绝对路径
   rootpath: upload
   baseurl: http://localhost:8080
   # 支持最大上传大小, 最大为1GB, 默认10MB

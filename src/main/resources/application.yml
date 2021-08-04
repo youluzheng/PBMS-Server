@@ -15,6 +15,7 @@ logging:
   config: classpath:logback-spring-prod.xml
 
 picturebed:
+  # 必须是绝对路径
   rootpath: ${PBMS_ROOTPATH:upload}
   baseurl: ${PBMS_BASEURL:http://localhost:8080}
   # 支持最大上传大小, 最大为1GB, 默认10MB
