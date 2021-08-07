@@ -4,9 +4,14 @@ spring:
       max-file-size: 1GB
   datasource:
     username: ${pbms_datasource_username:pbms}
-    password: ${pbms_datasource_password}
-    url: jdbc:mysql://${pbms_datasource_host:127.0.0.1}:${pbms_mysql_port:3306}/${pbms_mysql_schema:pbms}?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
-    driver-class-name: ${pbms_datasource_driver:com.mysql.cj.jdbc.Driver}
+    password: ${pbms_datasource_password:123456}
+    url: ${pbms_datasource_url:jdbc:h2:./h2/testdb}
+    driver-class-name: ${pbms_datasource_driver:org.h2.Driver}
+
+# 关闭sql日志
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
 
 log:
   level: INFO

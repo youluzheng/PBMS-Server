@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
-    <properties resource="mybatis/connection.yml" />
+    <properties resource="mybatis/connection.yml"/>
     <context id="context" targetRuntime="MyBatis3DynamicSql">
-        <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
         <commentGenerator>
-            <property name="suppressAllComments" value="true" />
-            <property name="addRemarkComments" value="true" />
+            <property name="suppressAllComments" value="true"/>
+            <property name="addRemarkComments" value="true"/>
         </commentGenerator>
-        <jdbcConnection connectionURL="${mysql.url}" driverClass="${mysql.driver}" userId="${mysql.user}" password="${mysql.password}">
-            <property name="nullCatalogMeansCurrent" value="true" />
+        <jdbcConnection connectionURL="${url}" driverClass="${driver}" userId="${user}" password="${password}">
+            <property name="nullCatalogMeansCurrent" value="true"/>
         </jdbcConnection>
-        <javaModelGenerator targetPackage="org.pbms.pbmsserver.model" targetProject="src/main/java" />
-        <javaClientGenerator targetPackage="org.pbms.pbmsserver.mapper" targetProject="src/main/java" />
+        <javaModelGenerator targetPackage="org.pbms.pbmsserver.model" targetProject="src/main/java"/>
+        <javaClientGenerator targetPackage="org.pbms.pbmsserver.mapper" targetProject="src/main/java"/>
         <table schema="schema" tableName="tableName">
             <generatedKey column="id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>
         </table>
