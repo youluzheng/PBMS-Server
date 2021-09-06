@@ -178,8 +178,6 @@
             <properties>
                 <sonar.coverage.exclusions>
                     **/init/**/*,
-                    **/mapper/**/*,
-                    **/model/**/*,
                     **/common/**/*,
                 </sonar.coverage.exclusions>
                 <sonar.projectKey>
