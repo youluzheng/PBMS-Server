@@ -12,10 +12,13 @@
         <jdbcConnection connectionURL="${url}" driverClass="${driver}" userId="${user}" password="${password}">
             <property name="nullCatalogMeansCurrent" value="true"/>
         </jdbcConnection>
-        <javaModelGenerator targetPackage="org.pbms.pbmsserver.model" targetProject="src/main/java"/>
-        <javaClientGenerator targetPackage="org.pbms.pbmsserver.mapper" targetProject="src/main/java"/>
-        <table schema="schema" tableName="tableName">
-            <generatedKey column="id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>
+        <javaModelGenerator targetPackage="org.pbms.pbmsserver.repository.model" targetProject="src/main/java"/>
+        <javaClientGenerator targetPackage="org.pbms.pbmsserver.repository.mapper" targetProject="src/main/java"/>
+        <table schema="public" tableName="user_info">
+            <generatedKey column="user_id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>
+        </table>
+        <table schema="public" tableName="user_settings">
+            <!--<generatedKey column="user_id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>-->
         </table>
     </context>
 </generatorConfiguration>

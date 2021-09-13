@@ -1,14 +1,19 @@
 package org.pbms.pbmsserver.service.uploadLifecycle.uploadProcessor;
 
-import java.io.File;
-
-import org.apache.logging.log4j.util.Strings;
+import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
+import org.pbms.pbmsserver.init.Init;
+import org.pbms.pbmsserver.repository.model.UserSettings;
+import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 /**
  * 图片保存
@@ -20,24 +25,32 @@ import org.springframework.web.multipart.MultipartFile;
 public class SaveProcessor {
     private static final Logger log = LoggerFactory.getLogger(SaveProcessor.class);
 
+    @Autowired
+    private UserService userService;
+
     public String upload(String fileName, MultipartFile image) {
+        TokenBean tokenBean = TokenUtil.getTokenBean();
+        UserSettings userSettings = this.userService.getSettings();
         // 服务器上存储路径
         String storagePath;
 
-        StringBuilder imageURL = new StringBuilder(ServerConstant.SERVER_BASEURL).append("/");
+        StringBuilder imageURL = new StringBuilder(ServerConstant.SERVER_BASEURL).append("/")
+                .append(Init.getRespectiveRelativeURLUploadPath(tokenBean)).append("/");
 
         // fileName中包含路径信息
-        if(fileName == null || fileName.isBlank()){
-            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + image.getOriginalFilename();
+        if (fileName == null || fileName.isBlank()) {
+            storagePath = Init.getRespectiveAbsoluteUploadPath(tokenBean) + File.separator + image.getOriginalFilename();
             imageURL.append(image.getOriginalFilename());
-        }else{
-            storagePath = ServerConstant.SERVER_ROOT_PATH + File.separator + fileName;
+        } else {
+            storagePath = Init.getRespectiveAbsoluteUploadPath(tokenBean) + File.separator + fileName;
             imageURL.append(fileName);
         }
 
         File dest = new File(storagePath);
         if (!dest.exists()) {
-            dest.mkdirs();
+            if (!dest.mkdirs()) {
+                throw new ServerException("上传文件，文件夹创建失败," + storagePath);
+            }
         }
 
         try {

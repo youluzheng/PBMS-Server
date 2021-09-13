@@ -12,7 +12,7 @@ import java.io.InputStream;
  * @author 王俊
  * @date 2021/7/10 14:39
  */
-public class FontUtil {
+public final class FontUtil {
 
     private static final Logger log = LoggerFactory.getLogger(FontUtil.class);
 

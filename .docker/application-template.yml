@@ -4,35 +4,6 @@ picturebed:
   maxSize: 10MB
   supportType: jpg, gif, png
 
-waterMark:
-  # 开启水印
-  enable: false
-  logo:
-    # 默认文字水印
-    enable: false
-    # 默认logo会重复
-    repeat: true
-    # logo倾斜角度
-    gradient: 31
-  # 透明度0-1
-  alpha: 0.3
-  # 水印文字
-  text:
-    enable: false
-    content: 一夜暴富，一夜暴富
-
-# 压缩相关
-compress:
-  # 默认关闭压缩
-  enable: false
-  # 压缩比率(0-1]
-  scale: 0.8
-
-# 返回内容
-response:
-  # 目前支持markdown、url, 默认为markdown
-  type: markdown
-
 log:
   # 日志打印级别
   level: INFO

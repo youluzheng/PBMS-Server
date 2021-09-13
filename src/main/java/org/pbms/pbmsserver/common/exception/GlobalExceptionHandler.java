@@ -18,29 +18,25 @@ import javax.validation.ConstraintViolationException;
  * @date 2021/07/04 20:34:23
  */
 @RestControllerAdvice
-public class GlobalExceptionHandle {
+public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandle.class);
-
-    private String generateJsonString(Object obj) {
-        StringBuilder sb = new StringBuilder("{\"message\":\"");
-        return sb.append(obj.toString()).append("\"}").toString();
-    }
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public String constraintViolationExceptionHandle(ConstraintViolationException e) {
-        return this.generateJsonString(e.getMessage());
+        return e.getMessage();
     }
 
     @ExceptionHandler(BindException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public String BindExceptionHandle(BindException e) {
-        return this.generateJsonString(e.getAllErrors().get(0).getDefaultMessage());
+        return e.getAllErrors().get(0).getDefaultMessage();
     }
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<String> baseExceptionHandle(BaseException e) {
+        log.debug("error:{}", e);
         if (e.getHttpStatus().is5xxServerError()) {
             return ResponseEntity.status(e.getHttpStatus()).body("服务器异常");
         }

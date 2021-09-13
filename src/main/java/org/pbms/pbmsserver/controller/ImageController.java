@@ -1,30 +1,26 @@
 package org.pbms.pbmsserver.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.pbms.pbmsserver.common.auth.PublicInterface;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ResourceNotFoundException;
 import org.pbms.pbmsserver.common.request.image.ImageUploadReq;
 import org.pbms.pbmsserver.service.ImageService;
+import org.pbms.pbmsserver.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * 图片接口
@@ -41,7 +37,7 @@ public class ImageController {
     @Autowired
     private ImageService uploadService;
 
-    @PostMapping("/image")
+    @PostMapping("image")
     public ResponseEntity<String> uploadImage(@Validated ImageUploadReq imageUploadReq, @RequestBody MultipartFile image) {
 
         String responseContent = uploadService.uploadImage(imageUploadReq, image);
@@ -49,6 +45,7 @@ public class ImageController {
     }
 
     @GetMapping("**/{image}")
+    @PublicInterface
     public void getImage(@PathVariable String image, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         log.debug("获取图片:{}", image);
@@ -58,12 +55,13 @@ public class ImageController {
 
         // 拼接图片路径
         try (FileInputStream in = new FileInputStream(ServerConstant.SERVER_ROOT_PATH + File.separator + path);
-                ServletOutputStream outputStream = response.getOutputStream()) {
+             ServletOutputStream outputStream = response.getOutputStream()) {
+            String extension = FileUtil.getFileExt(image);
+            response.setContentType("image/" + extension);
             byte[] data = new byte[in.available()];
             in.read(data);
             outputStream.write(data);
         } catch (FileNotFoundException e) {
-            log.error(image + ":文件不存在");
             throw new ResourceNotFoundException("Resource Not Found!");
         }
     }

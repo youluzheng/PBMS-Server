@@ -1,25 +1,25 @@
 package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import org.pbms.pbmsserver.common.constant.WaterMarkConstant;
+import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.ServerException;
+import org.pbms.pbmsserver.init.Init;
+import org.pbms.pbmsserver.repository.model.UserSettings;
+import org.pbms.pbmsserver.service.UserService;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
+import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * 添加水印服务
@@ -32,21 +32,23 @@ public class WaterMarkProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(WaterMarkProcessor.class);
 
+    @Autowired
+    private UserService userService;
+
     public MultipartFile addWaterMark(MultipartFile srcImg) {
+        UserSettings userSettings = this.userService.getSettings();
         MultipartFile result = srcImg;
-        if (!WaterMarkConstant.WATER_MARK_ENABLE) {
-            return result;
-        }
-        if (WaterMarkConstant.WATER_MARK_LOGO_ENABLE) {
+        if (userSettings.getWatermarkLogoEnable()) {
             result = addImgWaterMark(result);
         }
-        if (WaterMarkConstant.WATER_MARK_ENABLE) {
+        if (userSettings.getWatermarkTextEnable()) {
             result = addTextWaterMark(result);
         }
         return result;
     }
 
     public MultipartFile addTextWaterMark(MultipartFile srcImg) {
+        UserSettings userSettings = this.userService.getSettings();
         Graphics2D g;
         BufferedImage bufferedImage;
         File tempFile;
@@ -67,13 +69,15 @@ public class WaterMarkProcessor {
         g = bufferedImage.createGraphics();
         g.setColor(Color.BLACK);
         g.setFont(font);
-        log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), WaterMarkConstant.WATER_MARK_TEXT);
-        drawText(g, WaterMarkConstant.WATER_MARK_TEXT, bufferedImage);
+        log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), userSettings.getWatermarkTextContent());
+        drawText(g, userSettings.getWatermarkTextContent(), bufferedImage);
         log.debug("水印绘制完成");
         return toMultipartFile(bufferedImage, tempFile);
     }
 
     public MultipartFile addImgWaterMark(MultipartFile srcImg) {
+        TokenBean tokenBean = TokenUtil.getTokenBean();
+        UserSettings userSettings = this.userService.getSettings();
         Graphics2D g;
         BufferedImage bufferedImage;
         File tempFile;
@@ -88,12 +92,12 @@ public class WaterMarkProcessor {
         g = bufferedImage.createGraphics();
         BufferedImage imageLogo;
         try {
-            imageLogo = ImageIO.read(new File(WaterMarkConstant.WATER_MARK_LOGO_PATH + File.separator + "logo.jpg"));
+            imageLogo = ImageIO.read(new File(Init.getRespectiveAbsoluteLogoPath(tokenBean) + File.separator + "logo.jpg"));
         } catch (IOException e) {
             log.error("文件处理异常, {}", e.getMessage());
             throw new ServerException("文件处理异常");
         }
-        if (WaterMarkConstant.WATER_MARK_REPEAT) {
+        if (userSettings.getWatermarkLogoRepeat()) {
             log.debug("开始对图片：{}绘制重复logo水印", srcImg.getName());
             drawRepeat(g, imageLogo, bufferedImage);
         } else {
@@ -105,6 +109,7 @@ public class WaterMarkProcessor {
     }
 
     private void drawRepeat(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
+        UserSettings userSettings = this.userService.getSettings();
         int markWidth = imageLogo.getWidth();
         int markHeight = imageLogo.getHeight();
         int xInterval = 50;
@@ -114,9 +119,9 @@ public class WaterMarkProcessor {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
         double count = 2;
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMarkConstant.WATER_MARK_ALPHA));
-        g.rotate(Math.toRadians(WaterMarkConstant.WATER_MARK_GRADIENT), bufferedImage.getWidth() / 2,
-                bufferedImage.getHeight() / 2);
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha().floatValue()));
+        g.rotate(Math.toRadians(userSettings.getWatermarkLogoGradient()), bufferedImage.getWidth() / 2.0,
+                bufferedImage.getHeight() / 2.0);
         // 循环添加多个水印logo
         while (x < width * count) {
             y = -height / 2;
@@ -130,14 +135,16 @@ public class WaterMarkProcessor {
     }
 
     private void drawImage(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMarkConstant.WATER_MARK_ALPHA));
+        UserSettings userSettings = this.userService.getSettings();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha().floatValue()));
         g.drawImage(imageLogo, bufferedImage.getWidth() - imageLogo.getWidth(),
                 bufferedImage.getHeight() - imageLogo.getHeight(), null);
         g.dispose();
     }
 
     private void drawText(Graphics2D g, String text, BufferedImage bufferedImage) {
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, WaterMarkConstant.WATER_MARK_ALPHA));
+        UserSettings userSettings = this.userService.getSettings();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkTextAlpha().floatValue()));
         g.drawString(text, 10, 30);
     }
 

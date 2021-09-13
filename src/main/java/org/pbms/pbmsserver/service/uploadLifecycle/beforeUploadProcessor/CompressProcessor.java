@@ -1,23 +1,25 @@
 package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor;
 
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.name.Rename;
+import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.exception.ServerException;
+import org.pbms.pbmsserver.init.Init;
+import org.pbms.pbmsserver.repository.model.UserSettings;
+import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.util.MultipartFileUtil;
+import org.pbms.pbmsserver.util.TokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.pbms.pbmsserver.common.constant.CompressConstant;
-import org.pbms.pbmsserver.common.constant.ServerConstant;
-import org.pbms.pbmsserver.common.exception.ServerException;
-import org.pbms.pbmsserver.util.FileUtil;
-import org.pbms.pbmsserver.util.MultipartFileUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.name.Rename;
 
 /**
  * 图片压缩业务处理
@@ -28,21 +30,25 @@ import net.coobird.thumbnailator.name.Rename;
 @Component
 public class CompressProcessor {
 
+    @Autowired
+    private UserService userService;
+
     private static final Logger log = LoggerFactory.getLogger(CompressProcessor.class);
-    private List<String> imageExtensions = Arrays.asList("jpeg", "jpg", "gif", "bmp", "png");
+    private final List<String> imageExtensions = Arrays.asList("jpeg", "jpg", "gif", "bmp", "png");
 
     /**
      * @param srcImg 原始图片
      * @return 压缩后图片，类型为MultipartFile
      */
     public MultipartFile compress(MultipartFile srcImg, Boolean compress) {
-
+        TokenBean tokenBean = TokenUtil.getTokenBean();
+        UserSettings userSettings = this.userService.getSettings();
         // 判断是否压缩，优先级：单次压缩>全局压缩
-        boolean isCompress = compress == null ? CompressConstant.COMPRESS_ENABLE : compress;
+        boolean isCompress = compress == null ? userSettings.getCompressScale() != 0 : compress;
         if (!isCompress) {
             return srcImg;
         }
-        File tempFile = new File(ServerConstant.SERVER_ROOT_PATH + File.separator + "temp" + File.separator
+        File tempFile = new File(Init.getRespectiveAbsoluteTempPath(tokenBean) + File.separator
                 + srcImg.getOriginalFilename());
         try {
             srcImg.transferTo(tempFile);
@@ -50,7 +56,7 @@ public class CompressProcessor {
             log.error("文件转换处理异常, {}", e.getMessage());
             throw new ServerException("文件转换处理异常");
         }
-        String compressPath = generateThumbnail2Directory(CompressConstant.COMPRESS_SCALE, tempFile.getParent(),
+        String compressPath = generateThumbnail2Directory(userSettings.getCompressScale(), tempFile.getParent(),
                 tempFile.getAbsolutePath()).get(0);
         File compressImg = new File(compressPath);
         // 文件类型转换，方便后续处理
@@ -59,16 +65,6 @@ public class CompressProcessor {
         compressImg.delete();
         tempFile.delete();
         return result;
-    }
-
-    /**
-     * 生成缩略图到指定的目录
-     *
-     * @param path  目录
-     * @param files 要生成缩略图的文件列表
-     */
-    private List<String> generateThumbnail2Directory(String path, String... files) {
-        return generateThumbnail2Directory(CompressConstant.COMPRESS_SCALE, path, files);
     }
 
     /**
@@ -95,45 +91,10 @@ public class CompressProcessor {
     }
 
     /**
-     * 将指定目录下所有图片生成缩略图
-     *
-     * @param pathname 文件目录
-     */
-    private void generateDirectoryThumbnail(String pathname) {
-        generateDirectoryThumbnail(pathname, CompressConstant.COMPRESS_SCALE);
-    }
-
-    /**
-     * 将指定目录下所有图片生成缩略图
-     *
-     * @param pathname 文件目录
-     */
-    private void generateDirectoryThumbnail(String pathname, double scale) {
-        File[] files = new File(pathname).listFiles();
-        compressRecurse(files, pathname);
-    }
-
-    private void compressRecurse(File[] files, String pathname) {
-        for (File file : files) {
-            // 目录
-            if (file.isDirectory()) {
-                File[] subFiles = file.listFiles();
-                compressRecurse(subFiles, pathname + File.separator + file.getName());
-            } else {
-                // 文件包含压缩文件后缀或非图片格式，则不再压缩
-                String extension = FileUtil.getFileExt(file);
-                if (isImage(extension)) {
-                    generateThumbnail2Directory(pathname, file.getAbsolutePath());
-                }
-            }
-        }
-    }
-
-    /**
      * 根据文件扩展名判断文件是否图片格式
      *
      * @param extension 文件扩展名
-     * @return
+     * @return true if extension is am image type extension
      */
     private boolean isImage(String extension) {
         return this.imageExtensions.contains(extension.strip());

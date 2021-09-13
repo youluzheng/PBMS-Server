@@ -2,7 +2,7 @@ package org.pbms.pbmsserver.common.exception;
 
 /**
  * 自定义业务异常
- * 
+ *
  * @author zyl
  * @date 2021/07/04 20:34:08
  */
@@ -11,7 +11,10 @@ public enum BusinessStatus {
     FILE_SIZE_OUT_OF_LIMIT("00001", "文件大小超过限制"),
     FILE_TYPE_NOT_SUPPORT("00002", "文件类型不支持"),
     ENCODING_NOT_SUPPORT("00003", "编码不支持"),
-    LANK("10000", "占位");
+
+    USERNAME_OR_PASSWORD_ERROR("01001", "用户名或密码错误"),
+    USER_NOT_FOUND("01002", "用户不存在"),
+    BLANK("10000", "占位");
 
     private String code;
     private String msg;

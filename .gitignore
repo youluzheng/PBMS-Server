@@ -39,6 +39,8 @@ build/
 /upload/
 # logo
 /logo/
+# pbms
+/pbms/
 
 # mybatis generator
 /src/main/resources/mybatis/connection.yml
