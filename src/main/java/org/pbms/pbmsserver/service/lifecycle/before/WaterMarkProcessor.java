@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor;
+package org.pbms.pbmsserver.service.lifecycle.before;
 
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.ServerException;
@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * 添加水印服务
@@ -38,10 +39,10 @@ public class WaterMarkProcessor {
     public MultipartFile addWaterMark(MultipartFile srcImg) {
         UserSettings userSettings = this.userService.getSettings();
         MultipartFile result = srcImg;
-        if (userSettings.getWatermarkLogoEnable()) {
+        if (Boolean.TRUE.equals(userSettings.getWatermarkLogoEnable())) {
             result = addImgWaterMark(result);
         }
-        if (userSettings.getWatermarkTextEnable()) {
+        if (Boolean.TRUE.equals(userSettings.getWatermarkTextEnable())) {
             result = addTextWaterMark(result);
         }
         return result;
@@ -70,7 +71,7 @@ public class WaterMarkProcessor {
         g.setColor(Color.BLACK);
         g.setFont(font);
         log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), userSettings.getWatermarkTextContent());
-        drawText(g, userSettings.getWatermarkTextContent(), bufferedImage);
+        drawText(g, userSettings.getWatermarkTextContent());
         log.debug("水印绘制完成");
         return toMultipartFile(bufferedImage, tempFile);
     }
@@ -97,7 +98,7 @@ public class WaterMarkProcessor {
             log.error("文件处理异常, {}", e.getMessage());
             throw new ServerException("文件处理异常");
         }
-        if (userSettings.getWatermarkLogoRepeat()) {
+        if (Boolean.TRUE.equals(userSettings.getWatermarkLogoRepeat())) {
             log.debug("开始对图片：{}绘制重复logo水印", srcImg.getName());
             drawRepeat(g, imageLogo, bufferedImage);
         } else {
@@ -119,7 +120,7 @@ public class WaterMarkProcessor {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
         double count = 2;
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha().floatValue()));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha() / 100F));
         g.rotate(Math.toRadians(userSettings.getWatermarkLogoGradient()), bufferedImage.getWidth() / 2.0,
                 bufferedImage.getHeight() / 2.0);
         // 循环添加多个水印logo
@@ -136,15 +137,15 @@ public class WaterMarkProcessor {
 
     private void drawImage(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
         UserSettings userSettings = this.userService.getSettings();
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha().floatValue()));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha() / 100F));
         g.drawImage(imageLogo, bufferedImage.getWidth() - imageLogo.getWidth(),
                 bufferedImage.getHeight() - imageLogo.getHeight(), null);
         g.dispose();
     }
 
-    private void drawText(Graphics2D g, String text, BufferedImage bufferedImage) {
+    private void drawText(Graphics2D g, String text) {
         UserSettings userSettings = this.userService.getSettings();
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkTextAlpha().floatValue()));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkTextAlpha() / 100F));
         g.drawString(text, 10, 30);
     }
 
@@ -157,7 +158,11 @@ public class WaterMarkProcessor {
             throw new ServerException("文件处理异常");
         }
         MultipartFile multipartFile = MultipartFileUtil.fileToMultipartFile(file);
-        file.delete();
+        try {
+            Files.delete(file.toPath());
+        } catch (Exception e) {
+            log.warn("文件删除失败, {}", e.getMessage());
+        }
         return multipartFile;
     }
 }

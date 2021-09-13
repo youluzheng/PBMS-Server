@@ -25,7 +25,6 @@ public class ServerConstant {
     // 实际使用byte大小表示
     public static long SERVER_MAX_SIZE;
     public static List<String> SERVER_SUPPORT_TYPE;
-    public static String WATER_MARK_LOGO_PATH;
 
     @Value("${picturebed.rootpath}")
     public void setRootPath(String rootPath) {

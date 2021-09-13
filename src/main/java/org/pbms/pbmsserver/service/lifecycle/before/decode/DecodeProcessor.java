@@ -1,10 +1,11 @@
-package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor.decodeProcessor;
+package org.pbms.pbmsserver.service.lifecycle.before.decode;
 
 public interface DecodeProcessor {
     String decode(String pattern);
 
     void registerDecoder(String pattern, Decoder decoder);
 
+    // FIXME 重构
     default String scan(String targetString) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0, j; i < targetString.length(); i++) {

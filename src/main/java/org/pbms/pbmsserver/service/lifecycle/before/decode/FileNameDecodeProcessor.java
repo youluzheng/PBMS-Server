@@ -1,22 +1,41 @@
-package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor.decodeProcessor;
+package org.pbms.pbmsserver.service.lifecycle.before.decode;
 
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
+import org.pbms.pbmsserver.util.EncryptUtil;
+import org.pbms.pbmsserver.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractDecodeProcessor implements DecodeProcessor {
+public class FileNameDecodeProcessor implements DecodeProcessor {
+    private static final Logger log = LoggerFactory.getLogger(FileNameDecodeProcessor.class);
     private Calendar cal = Calendar.getInstance();
-    private static final Logger log = LoggerFactory.getLogger(AbstractDecodeProcessor.class);
-
     private final Map<String, Decoder> decoderMap = new HashMap<>();
 
-    public AbstractDecodeProcessor() {
+    private String fileName;
+    private MultipartFile image;
+    private static final FileNameDecodeProcessor fileNameDecoderProcessor = new FileNameDecodeProcessor();
+
+    @Override
+    public String decode(String pattern) {
+        if (this.decoderMap.containsKey(pattern)) {
+            return this.decoderMap.get(pattern).decode();
+        }
+        throw new BusinessException(BusinessStatus.ENCODING_NOT_SUPPORT, "不支持" + pattern + "编码");
+    }
+
+    @Override
+    public void registerDecoder(String pattern, Decoder decoder) {
+        this.decoderMap.put(pattern, decoder);
+    }
+
+    private FileNameDecodeProcessor() {
         this.registerDecoder("${yyyy}", () -> {
             this.cal.setTime(new Date());
             return String.valueOf(this.cal.get(Calendar.YEAR));
@@ -65,17 +84,24 @@ public abstract class AbstractDecodeProcessor implements DecodeProcessor {
             this.cal.setTime(new Date());
             return String.valueOf(this.cal.get(Calendar.SECOND));
         });
+        this.registerDecoder("${hash}", () -> EncryptUtil.sha512(this.fileName).substring(0, 32));
+        this.registerDecoder("${fileName}", () -> FileUtil.getFileNameWithoutExt(this.image));
+        this.registerDecoder("${fullName}", () -> this.image.getOriginalFilename());
+        this.registerDecoder("${ext}", () -> FileUtil.getFileExt(this.image));
+    }
+
+    public static FileNameDecodeProcessor of(String fileName, MultipartFile image) {
+        log.debug("fileName:{}", fileName);
+        FileNameDecodeProcessor.fileNameDecoderProcessor.fileName = fileName;
+        FileNameDecodeProcessor.fileNameDecoderProcessor.image = image;
+        return FileNameDecodeProcessor.fileNameDecoderProcessor;
     }
 
     @Override
-    public String decode(String pattern) {
-        if (this.decoderMap.containsKey(pattern)) {
-            return this.decoderMap.get(pattern).decode();
+    public String process() {
+        if (fileName == null || fileName.isBlank()) {
+            return fileName;
         }
-        throw new BusinessException(BusinessStatus.ENCODING_NOT_SUPPORT, "不支持" + pattern + "编码");
-    }
-
-    public void registerDecoder(String pattern, Decoder decoder) {
-        this.decoderMap.put(pattern, decoder);
+        return this.scan(fileName);
     }
 }

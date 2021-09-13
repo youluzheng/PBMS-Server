@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadChecker;
+package org.pbms.pbmsserver.service.lifecycle.before;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;

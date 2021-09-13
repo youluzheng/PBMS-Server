@@ -1,10 +1,5 @@
 package org.pbms.pbmsserver.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -14,6 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * File转MultipartFile工具类
  *
@@ -22,13 +22,16 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
  */
 public class MultipartFileUtil {
 
+    private MultipartFileUtil() {
+
+    }
+
     private static final Logger log = LoggerFactory.getLogger(MultipartFileUtil.class);
 
     public static MultipartFile fileToMultipartFile(File file) {
         FileItem fileItem = createFileItem(file);
 
-        MultipartFile multipartFile = new CommonsMultipartFile(fileItem);
-        return multipartFile;
+        return new CommonsMultipartFile(fileItem);
     }
 
     public static FileItem createFileItem(File file) {

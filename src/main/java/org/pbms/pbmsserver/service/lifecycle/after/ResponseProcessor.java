@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service.uploadLifecycle.afterUploadProcessor;
+package org.pbms.pbmsserver.service.lifecycle.after;
 
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;

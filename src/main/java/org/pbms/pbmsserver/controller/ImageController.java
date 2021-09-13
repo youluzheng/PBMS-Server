@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.ServerException;
 
 /**
  * 图片接口
@@ -59,7 +60,10 @@ public class ImageController {
             String extension = FileUtil.getFileExt(image);
             response.setContentType("image/" + extension);
             byte[] data = new byte[in.available()];
-            in.read(data);
+            int count = in.read(data);
+            if (count == 0) {
+                throw new ServerException("读取空文件" + path);
+            }
             outputStream.write(data);
         } catch (FileNotFoundException e) {
             throw new ResourceNotFoundException("Resource Not Found!");

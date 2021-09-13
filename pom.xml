@@ -220,6 +220,10 @@
                     **/common/**/*,
                     **/repository/**/*
                 </sonar.coverage.exclusions>
+                <sonar.exclusions>
+                    **/repository/mapper/*,
+                    **/repository/model/*
+                </sonar.exclusions>
                 <sonar.projectKey>
                     pbms-server
                 </sonar.projectKey>

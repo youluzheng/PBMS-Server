@@ -1,11 +1,5 @@
 package org.pbms.pbmsserver.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.File;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,7 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-public class FileUtilTest {
+import java.io.File;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class FileUtilTest {
     private static final Logger log = LoggerFactory.getLogger(FileUtilTest.class);
 
     @ParameterizedTest
@@ -41,12 +41,12 @@ public class FileUtilTest {
 
     private static Stream<Arguments> provideGetFileNameWithoutExt_correctInput() {
         return Stream.of(
-            Arguments.of("abc.png", "abc"),
-            Arguments.of("abc", "abc"),
-            Arguments.of("a/b", "b"),
-            Arguments.of("a/b.c", "b"),
-            Arguments.of("a/b/c.d", "c"),
-            Arguments.of("a/b/~c.d.e", "~c")
+                Arguments.of("abc.png", "abc"),
+                Arguments.of("abc", "abc"),
+                Arguments.of("a/b", "b"),
+                Arguments.of("a/b.c", "b"),
+                Arguments.of("a/b/c.d", "c"),
+                Arguments.of("a/b/~c.d.e", "~c")
         );
     }
 
@@ -91,12 +91,12 @@ public class FileUtilTest {
 
     private static Stream<Arguments> provideGetFileExt_correctInput() {
         return Stream.of(
-            Arguments.of("abc.png", "png"),
-            Arguments.of("abc.gif", "gif"),
-            Arguments.of("a/c.c", "c"),
-            Arguments.of("a/~b.c", "c"),
-            Arguments.of("a/b/c.d.c", "d.c"),
-            Arguments.of("a/b/~c.d.e.f", "d.e.f")
+                Arguments.of("abc.png", "png"),
+                Arguments.of("abc.gif", "gif"),
+                Arguments.of("a/c.c", "c"),
+                Arguments.of("a/~b.c", "c"),
+                Arguments.of("a/b/c.d.c", "d.c"),
+                Arguments.of("a/b/~c.d.e.f", "d.e.f")
         );
     }
 

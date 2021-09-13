@@ -30,14 +30,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BindException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public String BindExceptionHandle(BindException e) {
+    public String bindExceptionHandle(BindException e) {
         return e.getAllErrors().get(0).getDefaultMessage();
     }
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<String> baseExceptionHandle(BaseException e) {
-        log.debug("error:{}", e);
         if (e.getHttpStatus().is5xxServerError()) {
+            log.debug("error:{}", e.getMessage(), e);
             return ResponseEntity.status(e.getHttpStatus()).body("服务器异常");
         }
         return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());

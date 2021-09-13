@@ -8,6 +8,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public final class EncryptUtil {
+    private EncryptUtil() {
+    }
+
     public static String sha512(String target) {
         if (target == null || target.isBlank()) {
             throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR, "目标字符串不能为空");
@@ -15,11 +18,11 @@ public final class EncryptUtil {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
             messageDigest.update(target.getBytes());
-            byte byteBuffer[] = messageDigest.digest();
+            byte[] byteBuffer = messageDigest.digest();
 
-            StringBuffer strHexString = new StringBuffer();
-            for (int i = 0; i < byteBuffer.length; i++) {
-                String hex = Integer.toHexString(0xff & byteBuffer[i]);
+            StringBuilder strHexString = new StringBuilder();
+            for (byte b : byteBuffer) {
+                String hex = Integer.toHexString(0xff & b);
                 if (hex.length() == 1) {
                     strHexString.append('0');
                 }

@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor;
+package org.pbms.pbmsserver.service.lifecycle.before;
 
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,18 +35,15 @@ public class CompressProcessor {
     private UserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(CompressProcessor.class);
-    private final List<String> imageExtensions = Arrays.asList("jpeg", "jpg", "gif", "bmp", "png");
 
     /**
      * @param srcImg 原始图片
      * @return 压缩后图片，类型为MultipartFile
      */
-    public MultipartFile compress(MultipartFile srcImg, Boolean compress) {
+    public MultipartFile compress(MultipartFile srcImg) {
         TokenBean tokenBean = TokenUtil.getTokenBean();
         UserSettings userSettings = this.userService.getSettings();
-        // 判断是否压缩，优先级：单次压缩>全局压缩
-        boolean isCompress = compress == null ? userSettings.getCompressScale() != 0 : compress;
-        if (!isCompress) {
+        if (userSettings.getCompressScale() == 0) {
             return srcImg;
         }
         File tempFile = new File(Init.getRespectiveAbsoluteTempPath(tokenBean) + File.separator
@@ -56,14 +54,18 @@ public class CompressProcessor {
             log.error("文件转换处理异常, {}", e.getMessage());
             throw new ServerException("文件转换处理异常");
         }
-        String compressPath = generateThumbnail2Directory(userSettings.getCompressScale(), tempFile.getParent(),
+        String compressPath = generateThumbnail2Directory(userSettings.getCompressScale() / 100D, tempFile.getParent(),
                 tempFile.getAbsolutePath()).get(0);
         File compressImg = new File(compressPath);
         // 文件类型转换，方便后续处理
         MultipartFile result = MultipartFileUtil.fileToMultipartFile(compressImg);
         // 删除临时文件
-        compressImg.delete();
-        tempFile.delete();
+        try {
+            Files.delete(compressImg.toPath());
+            Files.delete(tempFile.toPath());
+        } catch (Exception e) {
+            log.warn("文件删除失败, {}", e.getMessage());
+        }
         return result;
     }
 
@@ -88,15 +90,5 @@ public class CompressProcessor {
         List<String> list = new ArrayList<>(files.length);
         list.addAll(Arrays.asList(files));
         return list;
-    }
-
-    /**
-     * 根据文件扩展名判断文件是否图片格式
-     *
-     * @param extension 文件扩展名
-     * @return true if extension is am image type extension
-     */
-    private boolean isImage(String extension) {
-        return this.imageExtensions.contains(extension.strip());
     }
 }

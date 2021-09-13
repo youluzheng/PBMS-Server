@@ -16,14 +16,18 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
 public final class TokenUtil {
+    private TokenUtil() {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(TokenUtil.class);
 
-    private static final Random random = new Random(System.currentTimeMillis());
+    private static final Random random = new SecureRandom();
     private static final String SECRET = String.format("%09d", random.nextInt(1000000000));
 
     private static final long EXPIRATION = 1L;

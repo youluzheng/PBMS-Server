@@ -1,6 +1,9 @@
 package org.pbms.pbmsserver.common.request.user;
 
+import org.hibernate.validator.constraints.Length;
 import org.pbms.pbmsserver.repository.model.UserSettings;
+
+import javax.validation.constraints.Size;
 
 public class SettingModifyReq {
 
@@ -10,14 +13,18 @@ public class SettingModifyReq {
 
     private Byte watermarkLogoGradient;
 
+    @Size(min = 0, max = 100)
     private Byte watermarkLogoAlpha;
 
     private Boolean watermarkTextEnable;
 
+    @Length(min = 1)
     private String watermarkTextContent;
 
+    @Size(min = 0, max = 100)
     private Byte watermarkTextAlpha;
 
+    @Size(min = 0, max = 100)
     private Byte compressScale;
 
     private String responseReturnType;

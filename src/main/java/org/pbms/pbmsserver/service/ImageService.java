@@ -2,13 +2,13 @@ package org.pbms.pbmsserver.service;
 
 import org.pbms.pbmsserver.common.exception.ParamNullException;
 import org.pbms.pbmsserver.common.request.image.ImageUploadReq;
-import org.pbms.pbmsserver.service.uploadLifecycle.afterUploadProcessor.ResponseProcessor;
-import org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadChecker.ImageSizeChecker;
-import org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadChecker.ImageTypeChecker;
-import org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor.CompressProcessor;
-import org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor.WaterMarkProcessor;
-import org.pbms.pbmsserver.service.uploadLifecycle.beforeUploadProcessor.decodeProcessor.FileNameDecodeProcessor;
-import org.pbms.pbmsserver.service.uploadLifecycle.uploadProcessor.SaveProcessor;
+import org.pbms.pbmsserver.service.lifecycle.after.ResponseProcessor;
+import org.pbms.pbmsserver.service.lifecycle.before.CompressProcessor;
+import org.pbms.pbmsserver.service.lifecycle.before.ImageSizeChecker;
+import org.pbms.pbmsserver.service.lifecycle.before.ImageTypeChecker;
+import org.pbms.pbmsserver.service.lifecycle.before.WaterMarkProcessor;
+import org.pbms.pbmsserver.service.lifecycle.before.decode.FileNameDecodeProcessor;
+import org.pbms.pbmsserver.service.lifecycle.upload.SaveProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -45,11 +45,11 @@ public class ImageService {
         this.imageSizeChecker.checkImageSize(image);
         this.imageTypeChecker.checkImageType(image);
         // 2、文件重命名
-        String fileName = FileNameDecodeProcessor.buildProcessor(imageUploadReq.getFileName(), image).process();
+        String fileName = FileNameDecodeProcessor.of(imageUploadReq.getFileName(), image).process();
         // 3、添加水印
         image = this.waterMarkProcessor.addWaterMark(image);
         // 4、压缩图片，先添加水印后压缩避免水印被压掉
-        image = this.compressProcessor.compress(image, imageUploadReq.getCompress());
+        image = this.compressProcessor.compress(image);
         // 5、生成http url
         String imageURL = this.saveProcessor.upload(fileName, image);
         // 6、根据配置选择url or markdown

@@ -3,7 +3,6 @@ package org.pbms.pbmsserver.common.auth;
 import org.pbms.pbmsserver.common.exception.UnauthorizedException;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
-import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,6 @@ public class TokenInterceptor implements HandlerInterceptor {
             if (request.getRequestURI().equals("/favicon.ico")) {
                 return false;
             }
-            log.debug("url : [" + request.getRequestURI() + "], 类型:   [" + request.getMethod() + "] 接口不存在");
             response.setCharacterEncoding("utf-8");
             response.sendError(404, "url : [" + request.getRequestURI() + "], 类型:   [" + request.getMethod() + "] 接口不存在");
             return false;
@@ -49,10 +47,12 @@ public class TokenInterceptor implements HandlerInterceptor {
         TokenUtil.checkToken(request);
         long userId = TokenUtil.getUserId();
         // 如果用户不存在或不是正常状态
-        UserInfo user = this.userInfoMapper.selectOne(c -> c
+        if (this.userInfoMapper.selectOne(c -> c
                 .where(userInfo.userId, isEqualTo(userId))
                 .and(userInfo.status, isEqualTo(UserStatusEnum.NORMAL.getCode()))
-        ).orElseThrow(() -> new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED));
+        ).isEmpty()) {
+            throw new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED);
+        }
         return true;
     }
 }

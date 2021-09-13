@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StringUtilTest {
+class StringUtilTest {
     @ParameterizedTest
     @NullSource
     void testIsValidSizeFormatString_null(String input) {

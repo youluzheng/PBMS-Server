@@ -19,6 +19,10 @@ import java.util.Objects;
 public final class FileUtil {
     private static final Logger log = LoggerFactory.getLogger(FileUtil.class);
 
+    private FileUtil() {
+
+    }
+
     /**
      * 从文件名称中获取不带后缀的文件名称
      * <p>
@@ -47,7 +51,7 @@ public final class FileUtil {
         }
         boolean isValidFormat = fullName.matches("^.*[\u4e00-\u9fa5_a-zA-Z0-9]$");
         if (!isValidFormat) {
-            log.error("throw ParamFormatException, fullName:{}", fullName);
+            log.error("fullName:{}", fullName);
             throw new ParamFormatException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "fullName format error [" + fullName + "]");
         }
@@ -90,7 +94,7 @@ public final class FileUtil {
     public static String getFileNameWithoutExt(MultipartFile file) {
         Objects.requireNonNull(file);
         if (file.isEmpty()) {
-            log.error("throw ParamNullException, file is empty");
+            log.error("file is empty");
             throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR, "file require not empty");
         }
         return FileUtil.getFileNameWithoutExt(file.getOriginalFilename());
@@ -114,13 +118,13 @@ public final class FileUtil {
     public static String getFileExt(String fullName) {
         Objects.requireNonNull(fullName);
         if (fullName.isBlank()) {
-            log.error("throw ParamFormatException, fullName:{}", fullName);
+            log.error("fullName:{}", fullName);
             throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "fullName require not empty but got [" + fullName + "]");
         }
         boolean isValidFormat = fullName.matches("^.*[\u4e00-\u9fa5_a-zA-Z0-9]\\.[\u4e00-\u9fa5_a-zA-Z0-9]+$");
         if (!isValidFormat) {
-            log.error("throw ParamFormatException, fullName:{}", fullName);
+            log.error("fullName:{}", fullName);
             throw new ParamFormatException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "fullName format error [" + fullName + "]");
         }
@@ -164,7 +168,7 @@ public final class FileUtil {
     public static String getFileExt(MultipartFile file) {
         Objects.requireNonNull(file);
         if (file.isEmpty()) {
-            log.error("throw ParamNullException, file is empty");
+            log.error("file is empty");
             throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR, "file require not empty");
         }
         return FileUtil.getFileExt(file.getOriginalFilename());

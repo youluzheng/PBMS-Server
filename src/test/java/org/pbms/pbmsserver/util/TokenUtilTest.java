@@ -1,6 +1,7 @@
 package org.pbms.pbmsserver.util;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +13,7 @@ import org.pbms.pbmsserver.common.exception.ParamNotSupportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -51,21 +53,18 @@ class TokenUtilTest {
     }
 
     @Test
-    void generateToken_expiration() {
+    void generateToken_expiration() throws InterruptedException {
         String secret = "123456";
         String token = TokenUtil.generateToken(secret, new HashMap<>(), 3, TimeUnit.SECONDS);
         Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        assertThrows(ExpiredJwtException.class, () -> Jwts.parser().setSigningKey(secret).parseClaimsJws(token));
+        Thread.sleep(3500);
+        JwtParser parser = Jwts.parser().setSigningKey(secret);
+        assertThrows(ExpiredJwtException.class, () -> parser.parseClaimsJws(token));
     }
 
     @Test
     void generatorSecret() {
-        Random random = new Random(System.currentTimeMillis());
+        Random random = new SecureRandom();
         IntStream.range(0, 10000).forEach(x -> {
                     String secret = String.format("%09d", random.nextInt(1000000000));
                     assertEquals(9, secret.length());

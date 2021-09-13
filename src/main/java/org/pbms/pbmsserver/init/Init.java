@@ -34,17 +34,13 @@ public class Init implements CommandLineRunner {
         File rootPath = new File(ServerConstant.SERVER_ROOT_PATH);
         if (!rootPath.exists()) {
             log.warn("{}不存在, 创建中...", ServerConstant.SERVER_ROOT_PATH);
-            rootPath.mkdirs();
+            if (!rootPath.mkdirs()) {
+                throw new ServerException("{}创建失败" + ServerConstant.SERVER_ROOT_PATH);
+            }
             log.info("{}创建完成", ServerConstant.SERVER_ROOT_PATH);
             return;
         }
         log.info("{}已经存在", ServerConstant.SERVER_ROOT_PATH);
-    }
-
-    // 获取各自的存储路径
-    private static String getRespectiveAbsoluteBasePath(TokenBean tokenBean) {
-        Objects.requireNonNull(tokenBean);
-        return ServerConstant.SERVER_ROOT_PATH + File.separator + tokenBean.getUserName();
     }
 
     // 获取各自图片保存路径
@@ -73,22 +69,16 @@ public class Init implements CommandLineRunner {
 
     public static void initAllRespectiveDir(TokenBean tokenBean) {
         File tempDir = new File(Init.getRespectiveAbsoluteTempPath(tokenBean));
-        if (!tempDir.exists()) {
-            if (!tempDir.mkdirs()) {
-                throw new ServerException("用户temp文件存储文件夹创建失败");
-            }
+        if (!tempDir.exists() && !tempDir.mkdirs()) {
+            throw new ServerException("用户temp文件存储文件夹创建失败");
         }
         File logoDir = new File(Init.getRespectiveAbsoluteLogoPath(tokenBean));
-        if (!logoDir.exists()) {
-            if (!logoDir.mkdirs()) {
-                throw new ServerException("用户logo文件存储文件夹创建失败");
-            }
+        if (!logoDir.exists() && !logoDir.mkdirs()) {
+            throw new ServerException("用户logo文件存储文件夹创建失败");
         }
         File uploadDir = new File(Init.getRespectiveAbsoluteUploadPath(tokenBean));
-        if (!uploadDir.exists()) {
-            if (!uploadDir.mkdirs()) {
-                throw new ServerException("用户upload文件存储文件夹创建失败");
-            }
+        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+            throw new ServerException("用户upload文件存储文件夹创建失败");
         }
     }
 

@@ -8,7 +8,10 @@ import java.util.Objects;
  * @author zyl
  * @date 2021/07/11 20:33:29
  */
-public class StringUtil {
+public final class StringUtil {
+    private StringUtil() {
+    }
+
     /**
      * 判断字符串是否为表示存储大小格式, 支持<code>KB</code>, <code>MB</code>, <code>GB</code>判断
      * <p>
