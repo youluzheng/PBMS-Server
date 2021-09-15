@@ -84,7 +84,7 @@ public class FileNameDecodeProcessor implements DecodeProcessor {
             this.cal.setTime(new Date());
             return String.valueOf(this.cal.get(Calendar.SECOND));
         });
-        this.registerDecoder("${hash}", () -> EncryptUtil.sha512(this.fileName).substring(0, 32));
+        this.registerDecoder("${hash}", () -> EncryptUtil.sha512(this.image).substring(0, 32));
         this.registerDecoder("${fileName}", () -> FileUtil.getFileNameWithoutExt(this.image));
         this.registerDecoder("${fullName}", () -> this.image.getOriginalFilename());
         this.registerDecoder("${ext}", () -> FileUtil.getFileExt(this.image));

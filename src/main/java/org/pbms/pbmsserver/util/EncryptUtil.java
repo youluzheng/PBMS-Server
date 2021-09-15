@@ -3,7 +3,9 @@ package org.pbms.pbmsserver.util;
 import org.pbms.pbmsserver.common.exception.ParamNullException;
 import org.pbms.pbmsserver.common.exception.ServerException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -31,6 +33,31 @@ public final class EncryptUtil {
             return strHexString.toString();
         } catch (NoSuchAlgorithmException e) {
             throw new ServerException("加密算法不存在");
+        }
+    }
+
+    public static String sha512(MultipartFile target) {
+        if (target == null || target.isEmpty()) {
+            throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR, "目标文件不能为空");
+        }
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+            messageDigest.update(target.getBytes());
+            byte[] byteBuffer = messageDigest.digest();
+
+            StringBuilder strHexString = new StringBuilder();
+            for (byte b : byteBuffer) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    strHexString.append('0');
+                }
+                strHexString.append(hex);
+            }
+            return strHexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new ServerException("加密算法不存在");
+        } catch (IOException e) {
+            throw new ServerException("文件读取失败");
         }
     }
 }
