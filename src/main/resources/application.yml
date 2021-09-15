@@ -35,5 +35,5 @@ picturebed:
   rootpath: ${PBMS_ROOTPATH:pbms}
   baseurl: ${PBMS_BASEURL:http://127.0.0.1:8080}
   # 支持最大上传大小, 最大为1GB, 默认10MB
-  maxSize: 10MB
-  supportType: jpg, gif, png
+  max-size: 10MB
+  support-type: jpg, gif, png

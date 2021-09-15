@@ -8,8 +8,6 @@ CREATE TABLE `user_info` (
   PRIMARY KEY (`user_id`)
 ) ;
 
--- pbms.user_settings definition
-
 CREATE TABLE `user_settings` (
   `user_id` bigint NOT NULL COMMENT '用户id',
   `watermark_logo_enable` bit(1) NOT NULL COMMENT '启用logo水印，默认否',

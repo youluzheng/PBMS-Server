@@ -1,10 +1,7 @@
 package org.pbms.pbmsserver.service.lifecycle.upload;
 
-import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
-import org.pbms.pbmsserver.init.Init;
-import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,19 +20,17 @@ public class SaveProcessor {
     private static final Logger log = LoggerFactory.getLogger(SaveProcessor.class);
 
     public String upload(String fileName, MultipartFile image) {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
         // 服务器上存储路径
         String storagePath;
 
-        StringBuilder imageURL = new StringBuilder(ServerConstant.SERVER_BASEURL).append("/")
-                .append(Init.getRespectiveRelativeURLUploadPath(tokenBean)).append("/");
+        StringBuilder imageURL = new StringBuilder(ServerConstant.getAbsoluteURLUploadPath()).append("/");
 
         // fileName中包含路径信息
         if (fileName == null || fileName.isBlank()) {
-            storagePath = Init.getRespectiveAbsoluteUploadPath(tokenBean) + File.separator + image.getOriginalFilename();
+            storagePath = ServerConstant.getAbsoluteUploadPath() + File.separator + image.getOriginalFilename();
             imageURL.append(image.getOriginalFilename());
         } else {
-            storagePath = Init.getRespectiveAbsoluteUploadPath(tokenBean) + File.separator + fileName;
+            storagePath = ServerConstant.getAbsoluteUploadPath() + File.separator + fileName;
             imageURL.append(fileName);
         }
 

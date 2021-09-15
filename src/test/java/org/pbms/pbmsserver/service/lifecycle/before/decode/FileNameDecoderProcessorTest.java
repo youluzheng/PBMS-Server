@@ -22,13 +22,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 class FileNameDecoderProcessorTest {
     private static final Logger log = LoggerFactory.getLogger(FileNameDecoderProcessorTest.class);
 
-    private final MultipartFile image = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG.toString(), new byte[]{0, 1, 1, 0, 0, 0, 0, 1});
+    private final MultipartFile image = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG.toString(), new byte[]{0, 1});
 
     @Test
     void process_hash() {
         FileNameDecodeProcessor fileNameDecodeProcessor = FileNameDecodeProcessor.of("${hash}", this.image);
-        String actual = fileNameDecodeProcessor.process();
-        assertEquals(32, actual.length());
+        assertEquals("80536c6170dd8626dc081af148d39ec2", fileNameDecodeProcessor.process());
     }
 
     private static Stream<Arguments> generateValue_process_file() {

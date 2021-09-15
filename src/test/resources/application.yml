@@ -11,7 +11,7 @@ spring:
     enabled: true
     clean-disables: true
     table: flyway_schema_history
-    baseline-on-migrate: true
+    baseline-on-migrate: false
     encoding: UTF-8
 
 picturebed:
@@ -22,33 +22,8 @@ picturebed:
   maxSize: 10MB
   supportType: jpg, gif, png
 
-waterMark:
-  # 开启水印
-  enable: false
-  logo:
-    # 默认文字水印
-    enable: false
-    # 水印logo路径,必须命名为logo.jpg
-    path: logo
-    # 默认logo会重复
-    repeat: false
-    # logo倾斜角度
-    gradient: 30
-  # 透明度0-1
-  alpha: 0.3
-  # 水印文字
-  text:
-    enable: false
-    content: 一夜暴富，一夜暴富
+logging:
+  config: classpath:logback-spring-dev.xml
 
-# 压缩相关
-compress:
-  # 默认关闭压缩
-  enable: false
-  # 压缩比率(0-1]
-  scale: 0.8
-
-# 返回内容
-response:
-  # 目前支持markdown、url, 默认为markdown
-  type: markdown
+log:
+  level: DEBUG

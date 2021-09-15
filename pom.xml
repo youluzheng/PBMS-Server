@@ -135,6 +135,7 @@
                     <includes>
                         <include>org/pbms/pbmsserver/controller/**</include>
                         <include>org/pbms/pbmsserver/service/**</include>
+                        <include>org/pbms/pbmsserver/dao/**</include>
                         <include>org/pbms/pbmsserver/util/**</include>
                     </includes>
                     <!-- 指定覆盖规则 -->

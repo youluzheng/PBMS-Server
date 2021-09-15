@@ -4,10 +4,11 @@ import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ResourceNotFoundException;
-import org.pbms.pbmsserver.init.Init;
+import org.pbms.pbmsserver.dao.SystemDao;
+import org.pbms.pbmsserver.dao.UserInfoDao;
+import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
-import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
-import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
+import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.util.EncryptUtil;
@@ -31,40 +32,42 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    private UserInfoMapper userInfoMapper;
+    private UserInfoDao userInfoDao;
 
     @Autowired
-    private UserSettingsMapper userSettingsMapper;
+    private UserSettingsDao userSettingsDao;
+
+    @Autowired
+    private SystemDao systemDao;
 
     @Transactional
-    public void auditUser(long userId, int optional) {
-        UserInfo user = this.userInfoMapper.selectOne(c -> c
-                .where(userInfo.userId, isEqualTo(userId))
-                .and(userInfo.status, isEqualTo(UserStatusEnum.WAIT_FOR_AUDIT.getCode()))
-        ).orElseThrow(() -> new BusinessException(BusinessStatus.USER_NOT_FOUND));
+    public void auditUser(long userId, boolean optional) {
+        if (this.userInfoDao.selectOne(c -> c
+                .where(UserInfoDynamicSqlSupport.userInfo.userId, isEqualTo(userId))
+                .and(UserInfoDynamicSqlSupport.userInfo.status, isEqualTo(UserStatusEnum.WAIT_FOR_AUDIT.getCode()))
+        ).isEmpty()
+        ) {
+            throw new BusinessException(BusinessStatus.USER_NOT_FOUND);
+        }
 
         UserInfo updateUser = new UserInfo();
         updateUser.setUserId(userId);
-        if (optional == 1) {
+        if (optional) {
             updateUser.setStatus(UserStatusEnum.NORMAL.getCode());
+
+            // 初始化默认设置
+            this.initDefaultSettings(userId);
+
+            // 初始化存储路径
+            this.systemDao.initAllRespectiveDir(userId);
         } else {
             updateUser.setStatus(UserStatusEnum.AUDIT_FAIL.getCode());
         }
-        this.userInfoMapper.updateByPrimaryKeySelective(updateUser);
-
-        if (optional == 1) {
-            // 初始化默认设置
-            this.initDefaultSettings();
-            TokenBean tokenBean = new TokenBean();
-            tokenBean.setUserId(userId);
-            tokenBean.setUserName(user.getUserName());
-            // 初始化存储路径
-            Init.initAllRespectiveDir(tokenBean);
-        }
+        this.userInfoDao.updateByPrimaryKeySelective(updateUser);
     }
 
     public String login(String userName, String password) {
-        UserInfo user = this.userInfoMapper.selectOne(c -> c
+        UserInfo user = this.userInfoDao.selectOne(c -> c
                 .where(userInfo.userName, isEqualTo(userName))
                 .and(userInfo.password, isEqualTo(EncryptUtil.sha512(password)))
         ).orElseThrow(
@@ -76,27 +79,18 @@ public class UserService {
         return TokenUtil.generateToken(tokenBean);
     }
 
-    public void initDefaultSettings() {
+    public void initDefaultSettings(long userId) {
         UserSettings userSettings = new UserSettings();
-        userSettings.setUserId(TokenUtil.getUserId());
+        userSettings.setUserId(userId);
         userSettings.setWatermarkLogoEnable(false);
         userSettings.setWatermarkTextEnable(false);
         userSettings.setCompressScale((byte) 0);
         userSettings.setResponseReturnType("markdown");
-        this.userSettingsMapper.insert(userSettings);
-    }
-
-    public void deleteSettings() {
-        this.userSettingsMapper.deleteByPrimaryKey(TokenUtil.getUserId());
-    }
-
-    public void modifySettings(UserSettings userSettings) {
-        userSettings.setUserId(TokenUtil.getUserId());
-        this.userSettingsMapper.updateByPrimaryKeySelective(userSettings);
+        this.userSettingsDao.insert(userSettings);
     }
 
     public UserSettings getSettings() {
-        return this.userSettingsMapper.selectByPrimaryKey(TokenUtil.getUserId())
+        return this.userSettingsDao.selectByPrimaryKey(TokenUtil.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
     }
 }

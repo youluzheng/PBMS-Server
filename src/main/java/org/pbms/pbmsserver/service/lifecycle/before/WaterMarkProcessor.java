@@ -1,14 +1,12 @@
 package org.pbms.pbmsserver.service.lifecycle.before;
 
-import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
-import org.pbms.pbmsserver.init.Init;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;
 import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
-import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +75,6 @@ public class WaterMarkProcessor {
     }
 
     public MultipartFile addImgWaterMark(MultipartFile srcImg) {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
         UserSettings userSettings = this.userService.getSettings();
         Graphics2D g;
         BufferedImage bufferedImage;
@@ -93,7 +90,7 @@ public class WaterMarkProcessor {
         g = bufferedImage.createGraphics();
         BufferedImage imageLogo;
         try {
-            imageLogo = ImageIO.read(new File(Init.getRespectiveAbsoluteLogoPath(tokenBean) + File.separator + "logo.jpg"));
+            imageLogo = ImageIO.read(new File(ServerConstant.getAbsoluteLogoPath() + File.separator + "logo.jpg"));
         } catch (IOException e) {
             log.error("文件处理异常, {}", e.getMessage());
             throw new ServerException("文件处理异常");

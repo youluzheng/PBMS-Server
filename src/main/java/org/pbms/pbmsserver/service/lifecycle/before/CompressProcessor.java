@@ -2,13 +2,11 @@ package org.pbms.pbmsserver.service.lifecycle.before;
 
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
-import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
-import org.pbms.pbmsserver.init.Init;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
-import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +39,11 @@ public class CompressProcessor {
      * @return 压缩后图片，类型为MultipartFile
      */
     public MultipartFile compress(MultipartFile srcImg) {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
         UserSettings userSettings = this.userService.getSettings();
         if (userSettings.getCompressScale() == 0) {
             return srcImg;
         }
-        File tempFile = new File(Init.getRespectiveAbsoluteTempPath(tokenBean) + File.separator
+        File tempFile = new File(ServerConstant.getAbsoluteTempPath() + File.separator
                 + srcImg.getOriginalFilename());
         try {
             srcImg.transferTo(tempFile);
