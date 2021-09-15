@@ -2,6 +2,7 @@ package org.pbms.pbmsserver.controller;
 
 import org.pbms.pbmsserver.common.auth.PublicInterface;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
+import org.pbms.pbmsserver.common.exception.ParamNullException;
 import org.pbms.pbmsserver.common.exception.ResourceNotFoundException;
 import org.pbms.pbmsserver.common.request.image.ImageUploadReq;
 import org.pbms.pbmsserver.service.ImageService;
@@ -9,6 +10,7 @@ import org.pbms.pbmsserver.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.ServerException;
+import java.util.List;
 
 /**
  * 图片接口
@@ -39,10 +42,15 @@ public class ImageController {
     private ImageService uploadService;
 
     @PostMapping("image")
-    public ResponseEntity<String> uploadImage(@Validated ImageUploadReq imageUploadReq, @RequestBody MultipartFile image) {
-
-        String responseContent = uploadService.uploadImage(imageUploadReq, image);
-        return ResponseEntity.ok(responseContent);
+    public ResponseEntity<String> uploadImage(@Validated ImageUploadReq imageUploadReq, @RequestBody List<MultipartFile> image) {
+        if (image == null || image.isEmpty()) {
+            throw new ParamNullException(HttpStatus.BAD_REQUEST, "请选择上传文件");
+        }
+        StringBuilder sb = new StringBuilder();
+        for (var img : image) {
+            sb.append(uploadService.uploadImage(imageUploadReq, img)).append("\n");
+        }
+        return ResponseEntity.ok(sb.toString());
     }
 
     @GetMapping("**/{image}")
