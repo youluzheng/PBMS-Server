@@ -16,7 +16,7 @@ spring:
 
 picturebed:
   # 必须是绝对路径
-  rootpath: ${PBMS_ROOTPATH:upload}
+  rootpath: ${PBMS_ROOTPATH:pbms}
   baseurl: ${PBMS_BASEURL:http://localhost:8080}
   # 支持最大上传大小, 最大为1GB, 默认10MB
   maxSize: 10MB

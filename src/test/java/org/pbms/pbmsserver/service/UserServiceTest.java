@@ -2,6 +2,7 @@ package org.pbms.pbmsserver.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
@@ -12,12 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
 @SpringBootTest
@@ -34,8 +37,13 @@ class UserServiceTest {
     @Autowired
     UserSettingsDao userSettingsDao;
 
+    @MockBean
+    SystemDao systemDao;
+
     @BeforeEach
     void setUp() {
+        // 取消创建文件夹
+        doNothing().when(this.systemDao).initAllRespectiveDir(anyLong());
         this.userInfoDao.delete(c -> c);
         this.userSettingsDao.delete(c -> c);
     }
