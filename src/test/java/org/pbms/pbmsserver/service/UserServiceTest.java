@@ -2,6 +2,7 @@ package org.pbms.pbmsserver.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.Date;
 
@@ -28,7 +28,8 @@ class UserServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceTest.class);
 
-    @SpyBean
+    @Autowired
+    @InjectMocks
     UserService userService;
 
     @Autowired
@@ -59,10 +60,9 @@ class UserServiceTest {
         return user;
     }
 
-    // XXX zyl 有bug
     @Test
     void auditUser_transaction_rollback() {
-        doThrow(new RuntimeException()).when(this.userService).initDefaultSettings(anyLong());
+        doThrow(new RuntimeException()).when(this.systemDao).initAllRespectiveDir(anyLong());
 
         UserInfo user = this.insertUser();
 

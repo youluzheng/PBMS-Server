@@ -1,3 +1,4 @@
+-- 用户信息表，用户登录、审核等使用
 CREATE TABLE `user_info`
 (
     `user_id`     bigint       NOT NULL AUTO_INCREMENT COMMENT '用户自增id',
@@ -9,6 +10,7 @@ CREATE TABLE `user_info`
     PRIMARY KEY (`user_id`)
 );
 
+-- 用户个人图床设置表
 CREATE TABLE `user_settings`
 (
     `user_id`                 bigint       NOT NULL COMMENT '用户id',
@@ -24,6 +26,7 @@ CREATE TABLE `user_settings`
     PRIMARY KEY (`user_id`)
 );
 
+-- 用户临时token表
 CREATE TABLE `temp_token_info`
 (
     `id`           bigint      NOT NULL AUTO_INCREMENT COMMENT '自增id',

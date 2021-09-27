@@ -30,8 +30,8 @@ public class TempTokenController {
         return tempTokenService.myTokenList();
     }
 
-    @DeleteMapping
-    public void deleteTempToken(Long tokenId) {
+    @DeleteMapping("{tokenId}")
+    public void deleteTempToken(@PathVariable long tokenId) {
         tempTokenService.deleteTempToken(tokenId);
     }
 }
