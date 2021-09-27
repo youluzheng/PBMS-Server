@@ -59,6 +59,7 @@ class UserServiceTest {
         return user;
     }
 
+    // XXX zyl 有bug
     @Test
     void auditUser_transaction_rollback() {
         doThrow(new RuntimeException()).when(this.userService).initDefaultSettings(anyLong());

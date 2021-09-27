@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-// TODO 重构
 class FileNameDecoderProcessorTest {
     private static final Logger log = LoggerFactory.getLogger(FileNameDecoderProcessorTest.class);
 
@@ -40,7 +39,7 @@ class FileNameDecoderProcessorTest {
                 Arguments.of("$$", "$$"),
                 Arguments.of("${yyyy", "${yyyy"),
                 Arguments.of("{abc}", "{abc}"),
-                Arguments.of("${ext}", "png")
+                Arguments.of("${ext}", "null")
         );
     }
 

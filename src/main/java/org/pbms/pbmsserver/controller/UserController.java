@@ -34,7 +34,7 @@ public class UserController {
 
     @PutMapping("settings")
     public void modifyUserSettings(@RequestBody @Validated SettingModifyReq req) {
-        UserSettings userSettings = req.transfer();
+        UserSettings userSettings = req.transform();
         userSettings.setUserId(TokenUtil.getUserId());
         this.userSettingsDao.updateByPrimaryKeySelective(userSettings);
     }

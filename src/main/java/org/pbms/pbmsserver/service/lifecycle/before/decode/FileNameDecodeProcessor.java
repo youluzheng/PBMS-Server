@@ -1,13 +1,16 @@
 package org.pbms.pbmsserver.service.lifecycle.before.decode;
 
+import cn.hutool.core.io.FileTypeUtil;
+import cn.hutool.core.io.file.FileNameUtil;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.util.EncryptUtil;
-import org.pbms.pbmsserver.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,9 +88,15 @@ public class FileNameDecodeProcessor implements DecodeProcessor {
             return String.valueOf(this.cal.get(Calendar.SECOND));
         });
         this.registerDecoder("${hash}", () -> EncryptUtil.sha512(this.image).substring(0, 32));
-        this.registerDecoder("${fileName}", () -> FileUtil.getFileNameWithoutExt(this.image));
+        this.registerDecoder("${fileName}", () -> FileNameUtil.mainName(this.image.getOriginalFilename()));
         this.registerDecoder("${fullName}", () -> this.image.getOriginalFilename());
-        this.registerDecoder("${ext}", () -> FileUtil.getFileExt(this.image));
+        this.registerDecoder("${ext}", () -> {
+            try {
+                return FileTypeUtil.getType(this.image.getInputStream());
+            } catch (IOException e) {
+                throw new ServerException();
+            }
+        });
     }
 
     public static FileNameDecodeProcessor of(String fileName, MultipartFile image) {

@@ -73,10 +73,7 @@ public class UserService {
         ).orElseThrow(
                 () -> new BusinessException(BusinessStatus.USERNAME_OR_PASSWORD_ERROR)
         );
-        TokenBean tokenBean = new TokenBean();
-        tokenBean.setUserId(user.getUserId());
-        tokenBean.setUserName(userName);
-        return TokenUtil.generateToken(tokenBean);
+        return TokenUtil.generateToken(new TokenBean(user.getUserId(), userName));
     }
 
     public void initDefaultSettings(long userId) {
@@ -91,6 +88,11 @@ public class UserService {
 
     public UserSettings getSettings() {
         return this.userSettingsDao.selectByPrimaryKey(TokenUtil.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
+    }
+
+    public UserInfo getUserInfo(long userId){
+        return this.userInfoDao.selectByPrimaryKey(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
     }
 }

@@ -22,9 +22,9 @@ spring:
         web-allow-others: false
 
 # 关闭sql日志
-mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+#mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
 
 log:
   level: DEBUG

@@ -44,7 +44,8 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (method.isAnnotationPresent(PublicInterface.class)) {
             return true;
         }
-        TokenUtil.checkToken(request);
+        TokenBean tokenBean = TokenUtil.checkToken(request);
+        TokenUtil.setTokenBean(tokenBean);
         long userId = TokenUtil.getUserId();
         // 如果用户不存在或不是正常状态
         if (this.userInfoMapper.selectOne(c -> c

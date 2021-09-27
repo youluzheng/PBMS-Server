@@ -29,7 +29,7 @@ public class SettingModifyReq {
 
     private String responseReturnType;
 
-    public UserSettings transfer() {
+    public UserSettings transform() {
         UserSettings userSettings = new UserSettings();
         userSettings.setWatermarkLogoEnable(this.watermarkLogoEnable);
         if (this.watermarkLogoEnable != null && this.watermarkLogoEnable) {

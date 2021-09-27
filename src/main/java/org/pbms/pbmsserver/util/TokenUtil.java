@@ -1,6 +1,7 @@
 package org.pbms.pbmsserver.util;
 
 
+import cn.hutool.json.JSONUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -45,7 +46,7 @@ public final class TokenUtil {
     public static String generateToken(TokenBean tokenBean) {
         Objects.requireNonNull(tokenBean);
         Map<String, Object> data = new HashMap<>();
-        data.put(TokenUtil.KEY, JSONUtil.object2Str(tokenBean));
+        data.put(TokenUtil.KEY, JSONUtil.toJsonStr(tokenBean));
         return TokenUtil.generateToken(TokenUtil.SECRET, data, TokenUtil.EXPIRATION, TokenUtil.TIME_UNIT);
     }
 
@@ -71,7 +72,7 @@ public final class TokenUtil {
      *
      * @param request 请求头
      */
-    public static void checkToken(HttpServletRequest request) {
+    public static TokenBean checkToken(HttpServletRequest request) {
         Objects.requireNonNull(request);
         String token = request.getHeader(TokenUtil.TOKEN_HEAD);
         Claims data;
@@ -90,8 +91,12 @@ public final class TokenUtil {
             log.error("token解析异常，token:{}", token);
             throw new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED);
         }
-        TokenBean tokenBean = JSONUtil.str2Object(data.get(TokenUtil.KEY, String.class), TokenBean.class);
-        // 保存tokenBean信息
+        return JSONUtil.toBean(data.get(TokenUtil.KEY, String.class), TokenBean.class);
+    }
+
+    public static void setTokenBean(TokenBean tokenBean){
+        Objects.requireNonNull(tokenBean);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         request.setAttribute(TokenUtil.KEY, tokenBean);
     }
 

@@ -61,16 +61,16 @@ public interface UserSettingsMapper {
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
     @Results(id="UserSettingsResult", value = {
-        @Result(column="USER_ID", property="userId", jdbcType=JdbcType.BIGINT, id=true),
-        @Result(column="WATERMARK_LOGO_ENABLE", property="watermarkLogoEnable", jdbcType=JdbcType.BOOLEAN),
-        @Result(column="WATERMARK_LOGO_REPEAT", property="watermarkLogoRepeat", jdbcType=JdbcType.BOOLEAN),
-        @Result(column="WATERMARK_LOGO_GRADIENT", property="watermarkLogoGradient", jdbcType=JdbcType.TINYINT),
-        @Result(column="WATERMARK_LOGO_ALPHA", property="watermarkLogoAlpha", jdbcType=JdbcType.TINYINT),
-        @Result(column="WATERMARK_TEXT_ENABLE", property="watermarkTextEnable", jdbcType=JdbcType.BOOLEAN),
-        @Result(column="WATERMARK_TEXT_CONTENT", property="watermarkTextContent", jdbcType=JdbcType.VARCHAR),
-        @Result(column="WATERMARK_TEXT_ALPHA", property="watermarkTextAlpha", jdbcType=JdbcType.TINYINT),
-        @Result(column="COMPRESS_SCALE", property="compressScale", jdbcType=JdbcType.TINYINT),
-        @Result(column="RESPONSE_RETURN_TYPE", property="responseReturnType", jdbcType=JdbcType.VARCHAR)
+        @Result(column="user_id", property="userId", jdbcType=JdbcType.BIGINT, id=true),
+        @Result(column="watermark_logo_enable", property="watermarkLogoEnable", jdbcType=JdbcType.BIT),
+        @Result(column="watermark_logo_repeat", property="watermarkLogoRepeat", jdbcType=JdbcType.BIT),
+        @Result(column="watermark_logo_gradient", property="watermarkLogoGradient", jdbcType=JdbcType.TINYINT),
+        @Result(column="watermark_logo_alpha", property="watermarkLogoAlpha", jdbcType=JdbcType.TINYINT),
+        @Result(column="watermark_text_enable", property="watermarkTextEnable", jdbcType=JdbcType.BIT),
+        @Result(column="watermark_text_content", property="watermarkTextContent", jdbcType=JdbcType.VARCHAR),
+        @Result(column="watermark_text_alpha", property="watermarkTextAlpha", jdbcType=JdbcType.TINYINT),
+        @Result(column="compress_scale", property="compressScale", jdbcType=JdbcType.TINYINT),
+        @Result(column="response_return_type", property="responseReturnType", jdbcType=JdbcType.VARCHAR)
     })
     List<UserSettings> selectMany(SelectStatementProvider selectStatement);
 

@@ -3,6 +3,7 @@ package org.pbms.pbmsserver.dao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
+import org.pbms.pbmsserver.repository.model.TempTokenInfo;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.util.EncryptUtil;
 import org.slf4j.Logger;
@@ -39,4 +40,5 @@ class UserInfoDaoTest {
         log.debug("user:{}", user);
         assertNotNull(user.getUserId());
     }
+
 }

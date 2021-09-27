@@ -29,10 +29,7 @@ class TokenUtilTest {
     private static final Logger log = LoggerFactory.getLogger(TokenUtilTest.class);
 
     private TokenBean generateTokenBean() {
-        TokenBean tokenBean = new TokenBean();
-        tokenBean.setUserId(1L);
-        tokenBean.setUserName("张三");
-        return tokenBean;
+        return new TokenBean(1L, "张三");
     }
 
     private static Stream<Arguments> generateInvalidData_generateToken() {

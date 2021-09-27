@@ -1,10 +1,10 @@
 package org.pbms.pbmsserver.service.lifecycle.before;
 
+import cn.hutool.core.io.FileTypeUtil;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;
-import org.pbms.pbmsserver.util.FileUtil;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
 import org.slf4j.Logger;
@@ -147,7 +147,7 @@ public class WaterMarkProcessor {
     }
 
     private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) {
-        String extension = FileUtil.getFileExt(file);
+        String extension = FileTypeUtil.getType(file);
         try {
             ImageIO.write(bufferedImage, extension, file);
         } catch (IOException e) {

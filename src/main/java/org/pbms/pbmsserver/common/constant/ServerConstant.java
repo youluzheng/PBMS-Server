@@ -45,6 +45,6 @@ public final class ServerConstant {
     // 获取当前用户图片保存路径
     public static String getAbsoluteURLUploadPath() {
         TokenBean tokenBean = TokenUtil.getTokenBean();
-        return ServerConstant.SERVER_BASEURL + "/" + tokenBean.getUserName() + "/upload";
+        return ServerConstant.SERVER_BASEURL + "/image/" + tokenBean.getUserName() + "/upload";
     }
 }

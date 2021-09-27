@@ -14,8 +14,8 @@
         </jdbcConnection>
         <javaModelGenerator targetPackage="org.pbms.pbmsserver.repository.model" targetProject="src/main/java"/>
         <javaClientGenerator targetPackage="org.pbms.pbmsserver.repository.mapper" targetProject="src/main/java"/>
-        <table schema="public" tableName="user_info">
-            <generatedKey column="user_id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>
+        <table schema="public" tableName="temp_token_info">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>
         </table>
         <table schema="public" tableName="user_settings">
             <!--<generatedKey column="user_id" sqlStatement="JDBC" identity="true" type="post"></generatedKey>-->

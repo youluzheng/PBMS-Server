@@ -41,28 +41,28 @@ public final class UserSettingsDynamicSqlSupport {
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     public static final class UserSettings extends SqlTable {
-        public final SqlColumn<Long> userId = column("USER_ID", JDBCType.BIGINT);
+        public final SqlColumn<Long> userId = column("user_id", JDBCType.BIGINT);
 
-        public final SqlColumn<Boolean> watermarkLogoEnable = column("WATERMARK_LOGO_ENABLE", JDBCType.BOOLEAN);
+        public final SqlColumn<Boolean> watermarkLogoEnable = column("watermark_logo_enable", JDBCType.BIT);
 
-        public final SqlColumn<Boolean> watermarkLogoRepeat = column("WATERMARK_LOGO_REPEAT", JDBCType.BOOLEAN);
+        public final SqlColumn<Boolean> watermarkLogoRepeat = column("watermark_logo_repeat", JDBCType.BIT);
 
-        public final SqlColumn<Byte> watermarkLogoGradient = column("WATERMARK_LOGO_GRADIENT", JDBCType.TINYINT);
+        public final SqlColumn<Byte> watermarkLogoGradient = column("watermark_logo_gradient", JDBCType.TINYINT);
 
-        public final SqlColumn<Byte> watermarkLogoAlpha = column("WATERMARK_LOGO_ALPHA", JDBCType.TINYINT);
+        public final SqlColumn<Byte> watermarkLogoAlpha = column("watermark_logo_alpha", JDBCType.TINYINT);
 
-        public final SqlColumn<Boolean> watermarkTextEnable = column("WATERMARK_TEXT_ENABLE", JDBCType.BOOLEAN);
+        public final SqlColumn<Boolean> watermarkTextEnable = column("watermark_text_enable", JDBCType.BIT);
 
-        public final SqlColumn<String> watermarkTextContent = column("WATERMARK_TEXT_CONTENT", JDBCType.VARCHAR);
+        public final SqlColumn<String> watermarkTextContent = column("watermark_text_content", JDBCType.VARCHAR);
 
-        public final SqlColumn<Byte> watermarkTextAlpha = column("WATERMARK_TEXT_ALPHA", JDBCType.TINYINT);
+        public final SqlColumn<Byte> watermarkTextAlpha = column("watermark_text_alpha", JDBCType.TINYINT);
 
-        public final SqlColumn<Byte> compressScale = column("COMPRESS_SCALE", JDBCType.TINYINT);
+        public final SqlColumn<Byte> compressScale = column("compress_scale", JDBCType.TINYINT);
 
-        public final SqlColumn<String> responseReturnType = column("RESPONSE_RETURN_TYPE", JDBCType.VARCHAR);
+        public final SqlColumn<String> responseReturnType = column("response_return_type", JDBCType.VARCHAR);
 
         public UserSettings() {
-            super("PUBLIC.USER_SETTINGS");
+            super("user_settings");
         }
     }
 }

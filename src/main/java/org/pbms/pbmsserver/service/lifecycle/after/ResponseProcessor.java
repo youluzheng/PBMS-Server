@@ -1,8 +1,8 @@
 package org.pbms.pbmsserver.service.lifecycle.after;
 
+import cn.hutool.core.io.file.FileNameUtil;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;
-import org.pbms.pbmsserver.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
  * 返回格式处理
  *
  * @author zyl
- * @date 2021/07/10 13:24:13
  */
 @Component
 public class ResponseProcessor {
@@ -29,7 +28,7 @@ public class ResponseProcessor {
         if ("url".equals(userSettings.getResponseReturnType())) {
             return url;
         } else {
-            String imageName = FileUtil.getFileNameWithoutExt(image);
+            String imageName = FileNameUtil.extName(image.getOriginalFilename());
             return "![" + imageName + "](" + url + ")";
         }
     }

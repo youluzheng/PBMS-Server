@@ -14,6 +14,12 @@ public enum BusinessStatus {
 
     USERNAME_OR_PASSWORD_ERROR("01001", "用户名或密码错误"),
     USER_NOT_FOUND("01002", "用户不存在"),
+
+    /*----------临时token模块 02*** ----------*/
+    TEMP_TOKEN_ERROR("02001", "临时token有误，请重新输入"),
+    TEMP_TOKEN_EXPIRE("02002", "临时token已过期"),
+    TEMP_TOKEN_UPLOAD_TIMES_EXCEED("02003", "临时token上传次数超限"),
+
     BLANK("10000", "占位");
 
     private String code;
