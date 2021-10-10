@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p th:text="'尊敬的'+ ${name} +'，您好：'"></p>
+<p th:text="'&emsp;&emsp;' + '您的pbms图床有新用户申请使用' + '&#128512;' + '，请点击下面的链接进行审核，审核通过后该用户就能使用您的pbms图床啦。' + '&#128512;' + '。'"></p>
+<p>
+    <!--TODO 前端页面链接-->
+    &emsp;&emsp;<a href="#" th:href="@{${baseUrl} + '/user/check/?userId=' + ${userId} + '&code=' + ${code}}">点击我，去审核用户。</a>
+</p>
+<p>
+    &emsp;&emsp;<a href="https://gitea.965.life/PBMS">点击了解pbms</a>
+</p>
+</body>
+</html>

@@ -1,4 +1,22 @@
 spring:
+  thymeleaf:
+    cache: false
+  mail:
+    protocol: smtp
+    host: ${pbms_email_host}
+    port: ${pbms_email_port}
+    username: ${pbms_email_username}
+    password: ${pbms_email_password}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+          starttls:
+            enabe: true
+            required: true
   servlet:
     multipart:
       max-file-size: 1GB

@@ -1,9 +1,8 @@
 package org.pbms.pbmsserver.common.request.user;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-
-import javax.validation.constraints.Size;
 
 public class SettingModifyReq {
 
@@ -13,7 +12,7 @@ public class SettingModifyReq {
 
     private Byte watermarkLogoGradient;
 
-    @Size(min = 0, max = 100)
+    @Range(min = 0, max = 100)
     private Byte watermarkLogoAlpha;
 
     private Boolean watermarkTextEnable;
@@ -21,13 +20,85 @@ public class SettingModifyReq {
     @Length(min = 1)
     private String watermarkTextContent;
 
-    @Size(min = 0, max = 100)
+    @Range(min = 0, max = 100)
     private Byte watermarkTextAlpha;
 
-    @Size(min = 0, max = 100)
+    @Range(min = 0, max = 100)
     private Byte compressScale;
 
     private String responseReturnType;
+
+    public Boolean getWatermarkLogoEnable() {
+        return watermarkLogoEnable;
+    }
+
+    public Boolean getWatermarkLogoRepeat() {
+        return watermarkLogoRepeat;
+    }
+
+    public Byte getWatermarkLogoGradient() {
+        return watermarkLogoGradient;
+    }
+
+    public Byte getWatermarkLogoAlpha() {
+        return watermarkLogoAlpha;
+    }
+
+    public Boolean getWatermarkTextEnable() {
+        return watermarkTextEnable;
+    }
+
+    public String getWatermarkTextContent() {
+        return watermarkTextContent;
+    }
+
+    public Byte getWatermarkTextAlpha() {
+        return watermarkTextAlpha;
+    }
+
+    public Byte getCompressScale() {
+        return compressScale;
+    }
+
+    public String getResponseReturnType() {
+        return responseReturnType;
+    }
+
+    public void setWatermarkLogoEnable(Boolean watermarkLogoEnable) {
+        this.watermarkLogoEnable = watermarkLogoEnable;
+    }
+
+    public void setWatermarkTextEnable(Boolean watermarkTextEnable) {
+        this.watermarkTextEnable = watermarkTextEnable;
+    }
+
+    public void setCompressScale(Byte compressScale) {
+        this.compressScale = compressScale;
+    }
+
+    public void setResponseReturnType(String responseReturnType) {
+        this.responseReturnType = responseReturnType;
+    }
+
+    public void setWatermarkLogoRepeat(Boolean watermarkLogoRepeat) {
+        this.watermarkLogoRepeat = watermarkLogoRepeat;
+    }
+
+    public void setWatermarkLogoGradient(Byte watermarkLogoGradient) {
+        this.watermarkLogoGradient = watermarkLogoGradient;
+    }
+
+    public void setWatermarkLogoAlpha(Byte watermarkLogoAlpha) {
+        this.watermarkLogoAlpha = watermarkLogoAlpha;
+    }
+
+    public void setWatermarkTextContent(String watermarkTextContent) {
+        this.watermarkTextContent = watermarkTextContent;
+    }
+
+    public void setWatermarkTextAlpha(Byte watermarkTextAlpha) {
+        this.watermarkTextAlpha = watermarkTextAlpha;
+    }
 
     public UserSettings transform() {
         UserSettings userSettings = new UserSettings();

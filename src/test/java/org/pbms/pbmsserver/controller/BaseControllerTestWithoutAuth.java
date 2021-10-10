@@ -109,7 +109,15 @@ public abstract class BaseControllerTestWithoutAuth {
         if (null != headers) {
             headers.forEach(builder::header);
         }
-        return this.mockMvc.perform(builder.content(JSONUtil.toJsonStr(data)).contentType(mediaType));
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
+    }
+
+    protected ResultActions post(String url) throws Exception {
+        return post(url, null, null, null, null);
     }
 
     protected ResultActions post(String url, String paramKey1, String paramValue1, Object data) throws Exception {
@@ -138,7 +146,15 @@ public abstract class BaseControllerTestWithoutAuth {
         if (null != headers) {
             headers.forEach(builder::header);
         }
-        return this.mockMvc.perform(builder.content(JSONUtil.toJsonStr(data)).contentType(mediaType));
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
+    }
+
+    protected ResultActions put(String url) throws Exception {
+        return put(url, null, null, null, null);
     }
 
     protected ResultActions put(String url, String paramKey1, String paramValue1, Object data) throws Exception {
@@ -167,7 +183,15 @@ public abstract class BaseControllerTestWithoutAuth {
         if (null != headers) {
             headers.forEach(builder::header);
         }
-        return this.mockMvc.perform(builder.content(JSONUtil.toJsonStr(data)).contentType(mediaType));
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
+    }
+
+    protected ResultActions patch(String url) throws Exception {
+        return patch(url, null, null, null, null);
     }
 
     protected ResultActions patch(String url, String paramKey1, String paramValue1, Object data) throws Exception {

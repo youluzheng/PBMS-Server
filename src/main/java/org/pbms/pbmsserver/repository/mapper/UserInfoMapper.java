@@ -38,7 +38,7 @@ import org.pbms.pbmsserver.repository.model.UserInfo;
 @Mapper
 public interface UserInfoMapper {
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
-    BasicColumn[] selectList = BasicColumn.columnList(userId, userName, password, email, status, createTime);
+    BasicColumn[] selectList = BasicColumn.columnList(userId, userName, password, email, status, createTime, role);
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
@@ -73,12 +73,13 @@ public interface UserInfoMapper {
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
     @Results(id="UserInfoResult", value = {
-        @Result(column="USER_ID", property="userId", jdbcType=JdbcType.BIGINT, id=true),
-        @Result(column="USER_NAME", property="userName", jdbcType=JdbcType.VARCHAR),
-        @Result(column="PASSWORD", property="password", jdbcType=JdbcType.VARCHAR),
-        @Result(column="EMAIL", property="email", jdbcType=JdbcType.VARCHAR),
-        @Result(column="STATUS", property="status", jdbcType=JdbcType.TINYINT),
-        @Result(column="CREATE_TIME", property="createTime", jdbcType=JdbcType.TIMESTAMP)
+        @Result(column="user_id", property="userId", jdbcType=JdbcType.BIGINT, id=true),
+        @Result(column="user_name", property="userName", jdbcType=JdbcType.VARCHAR),
+        @Result(column="password", property="password", jdbcType=JdbcType.VARCHAR),
+        @Result(column="email", property="email", jdbcType=JdbcType.VARCHAR),
+        @Result(column="status", property="status", jdbcType=JdbcType.TINYINT),
+        @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
+        @Result(column="role", property="role", jdbcType=JdbcType.TINYINT)
     })
     List<UserInfo> selectMany(SelectStatementProvider selectStatement);
 
@@ -111,6 +112,7 @@ public interface UserInfoMapper {
             .map(email).toProperty("email")
             .map(status).toProperty("status")
             .map(createTime).toProperty("createTime")
+            .map(role).toProperty("role")
         );
     }
 
@@ -122,6 +124,7 @@ public interface UserInfoMapper {
             .map(email).toProperty("email")
             .map(status).toProperty("status")
             .map(createTime).toProperty("createTime")
+            .map(role).toProperty("role")
         );
     }
 
@@ -133,6 +136,7 @@ public interface UserInfoMapper {
             .map(email).toPropertyWhenPresent("email", record::getEmail)
             .map(status).toPropertyWhenPresent("status", record::getStatus)
             .map(createTime).toPropertyWhenPresent("createTime", record::getCreateTime)
+            .map(role).toPropertyWhenPresent("role", record::getRole)
         );
     }
 
@@ -169,7 +173,8 @@ public interface UserInfoMapper {
                 .set(password).equalTo(record::getPassword)
                 .set(email).equalTo(record::getEmail)
                 .set(status).equalTo(record::getStatus)
-                .set(createTime).equalTo(record::getCreateTime);
+                .set(createTime).equalTo(record::getCreateTime)
+                .set(role).equalTo(record::getRole);
     }
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
@@ -178,7 +183,8 @@ public interface UserInfoMapper {
                 .set(password).equalToWhenPresent(record::getPassword)
                 .set(email).equalToWhenPresent(record::getEmail)
                 .set(status).equalToWhenPresent(record::getStatus)
-                .set(createTime).equalToWhenPresent(record::getCreateTime);
+                .set(createTime).equalToWhenPresent(record::getCreateTime)
+                .set(role).equalToWhenPresent(record::getRole);
     }
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
@@ -189,6 +195,7 @@ public interface UserInfoMapper {
             .set(email).equalTo(record::getEmail)
             .set(status).equalTo(record::getStatus)
             .set(createTime).equalTo(record::getCreateTime)
+            .set(role).equalTo(record::getRole)
             .where(userId, isEqualTo(record::getUserId))
         );
     }
@@ -201,6 +208,7 @@ public interface UserInfoMapper {
             .set(email).equalToWhenPresent(record::getEmail)
             .set(status).equalToWhenPresent(record::getStatus)
             .set(createTime).equalToWhenPresent(record::getCreateTime)
+            .set(role).equalToWhenPresent(record::getRole)
             .where(userId, isEqualTo(record::getUserId))
         );
     }

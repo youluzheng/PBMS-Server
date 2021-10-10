@@ -1,6 +1,7 @@
 package org.pbms.pbmsserver.common.auth;
 
 import org.pbms.pbmsserver.common.exception.UnauthorizedException;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
 import org.pbms.pbmsserver.util.TokenUtil;
@@ -52,6 +53,9 @@ public class TokenInterceptor implements HandlerInterceptor {
                 .where(userInfo.userId, isEqualTo(userId))
                 .and(userInfo.status, isEqualTo(UserStatusEnum.NORMAL.getCode()))
         ).isEmpty()) {
+            throw new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED);
+        }
+        if (method.isAnnotationPresent(AdminInterface.class) && UserRoleEnum.ADMIN.getCode() != TokenUtil.getTokenBean().getUserRole()) {
             throw new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED);
         }
         return true;

@@ -23,6 +23,9 @@ public class UserInfo {
     private Date createTime;
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
+    private Byte role;
+
+    @Generated("org.mybatis.generator.api.MyBatisGenerator")
     public Long getUserId() {
         return userId;
     }
@@ -82,6 +85,16 @@ public class UserInfo {
         this.createTime = createTime;
     }
 
+    @Generated("org.mybatis.generator.api.MyBatisGenerator")
+    public Byte getRole() {
+        return role;
+    }
+
+    @Generated("org.mybatis.generator.api.MyBatisGenerator")
+    public void setRole(Byte role) {
+        this.role = role;
+    }
+
     @Override
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     public String toString() {
@@ -95,6 +108,7 @@ public class UserInfo {
         sb.append(", email=").append(email);
         sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
+        sb.append(", role=").append(role);
         sb.append("]");
         return sb.toString();
     }

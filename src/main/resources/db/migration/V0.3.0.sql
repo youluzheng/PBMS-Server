@@ -5,8 +5,9 @@ CREATE TABLE `user_info`
     `user_name`   varchar(100) NOT NULL COMMENT '用户名称，登录用的',
     `password`    varchar(512) NOT NULL COMMENT '密码',
     `email`       varchar(100) NOT NULL COMMENT '邮箱，忘记密码使用',
-    `status`      tinyint      NOT NULL DEFAULT '1' COMMENT '用户状态，1正常 0不可用',
+    `status`      tinyint      NOT NULL DEFAULT '1' COMMENT '用户状态，1正常 2禁用 3等待审核 4审核不通过 5未邮箱验证',
     `create_time` datetime     NOT NULL COMMENT '注册时间',
+    `role` tinyint NOT NULL DEFAULT '1' COMMENT '用户角色，1管理员2普通',
     PRIMARY KEY (`user_id`)
 );
 

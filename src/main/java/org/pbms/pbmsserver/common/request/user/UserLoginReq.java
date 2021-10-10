@@ -9,6 +9,14 @@ public class UserLoginReq {
     @NotEmpty
     private String password;
 
+    public UserLoginReq(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public UserLoginReq() {
+    }
+
     public String getUserName() {
         return userName;
     }

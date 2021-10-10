@@ -1,29 +1,59 @@
 spring:
+  thymeleaf:
+    cache: false
+  mail:
+    protocol: smtp
+    host: smtp.exmail.qq.com
+    port: 465
+    username: xxxxx
+    password: xxxxxxx
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+          starttls:
+            enabe: true
+            required: true
   servlet:
     multipart:
       max-file-size: 1GB
   datasource:
-    username: pbms
-    password: 123456
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
+    username: ${pbms_datasource_username:pbms}
+    password: ${pbms_datasource_password:123456}
+    url: ${pbms_datasource_url:jdbc:h2:mem:testdb}
+    driver-class-name: ${pbms_datasource_driver:org.h2.Driver}
   flyway:
     enabled: true
     clean-disables: true
     table: flyway_schema_history
     baseline-on-migrate: false
     encoding: UTF-8
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+      settings:
+        # 不允许远程访问
+        web-allow-others: false
 
-picturebed:
-  # 必须是绝对路径
-  rootpath: ${PBMS_ROOTPATH:pbms}
-  baseurl: ${PBMS_BASEURL:http://localhost:8080}
-  # 支持最大上传大小, 最大为1GB, 默认10MB
-  maxSize: 10MB
-  supportType: jpg, gif, png
+# 关闭sql日志
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+log:
+  level: DEBUG
 
 logging:
   config: classpath:logback-spring-dev.xml
 
-log:
-  level: DEBUG
+picturebed:
+  # 必须是绝对路径
+  rootpath: ${PBMS_ROOTPATH:pbms}
+  baseurl: ${PBMS_BASEURL:http://127.0.0.1:8080}
+  # 支持最大上传大小, 最大为1GB, 默认10MB
+  max-size: 10MB
+  support-type: jpg, gif, png

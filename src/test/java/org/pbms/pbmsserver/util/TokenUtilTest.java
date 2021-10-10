@@ -1,5 +1,6 @@
 package org.pbms.pbmsserver.util;
 
+import cn.hutool.core.date.DateUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.ParamFormatException;
 import org.pbms.pbmsserver.common.exception.ParamNotSupportException;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ class TokenUtilTest {
     private static final Logger log = LoggerFactory.getLogger(TokenUtilTest.class);
 
     private TokenBean generateTokenBean() {
-        return new TokenBean(1L, "张三");
+        return new TokenBean(1L, "张三", UserRoleEnum.ADMIN.getCode());
     }
 
     private static Stream<Arguments> generateInvalidData_generateToken() {
@@ -67,5 +69,9 @@ class TokenUtilTest {
                     assertEquals(9, secret.length());
                 }
         );
+    }
+    @Test
+    void testSecret1() {
+        System.out.println(DateUtil.date());
     }
 }

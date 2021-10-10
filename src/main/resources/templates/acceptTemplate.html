@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<p th:text="'尊敬的'+ ${name} +'，您好：'"></p>
+<p th:text="'&emsp;&emsp;' + '您的pbms图床使用申请通过了' + '&#128512;' + '，您可以进入图床登录页面使用账号密码登录，或者点击以下链接进入pbms图床' + '&#128512;' + '。'"></p>
+<p>
+  &emsp;&emsp;<a href="#" th:href="@{${baseUrl} + '/user/login'}">点击我，进入pbms图床</a>
+</p>
+<p>
+  &emsp;&emsp;<a href="https://gitea.965.life/PBMS">点击了解pbms</a>
+</p>
+</body>
+</html>

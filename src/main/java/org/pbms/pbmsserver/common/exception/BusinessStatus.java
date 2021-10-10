@@ -12,8 +12,15 @@ public enum BusinessStatus {
     FILE_TYPE_NOT_SUPPORT("00002", "文件类型不支持"),
     ENCODING_NOT_SUPPORT("00003", "编码不支持"),
 
+    /*----------用户模块 01*** ----------*/
     USERNAME_OR_PASSWORD_ERROR("01001", "用户名或密码错误"),
     USER_NOT_FOUND("01002", "用户不存在"),
+    USERNAME_ALREADY_EXISTS("01003", "用户名称重复"),
+    EMAIL_REGISTERED("01004", "邮箱已注册"),
+    INVALID_LINK("01005", "链接已失效"),
+    WAITING_FOR_AUDIT("01006", "请等待审核"),
+    EMAIL_SENT("01007", "邮件已发送，请查收邮件"),
+
 
     /*----------临时token模块 02*** ----------*/
     TEMP_TOKEN_ERROR("02001", "临时token有误，请重新输入"),

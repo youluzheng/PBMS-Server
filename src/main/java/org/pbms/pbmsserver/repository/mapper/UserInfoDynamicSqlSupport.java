@@ -29,21 +29,26 @@ public final class UserInfoDynamicSqlSupport {
     public static final SqlColumn<Date> createTime = userInfo.createTime;
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
+    public static final SqlColumn<Byte> role = userInfo.role;
+
+    @Generated("org.mybatis.generator.api.MyBatisGenerator")
     public static final class UserInfo extends SqlTable {
-        public final SqlColumn<Long> userId = column("USER_ID", JDBCType.BIGINT);
+        public final SqlColumn<Long> userId = column("user_id", JDBCType.BIGINT);
 
-        public final SqlColumn<String> userName = column("USER_NAME", JDBCType.VARCHAR);
+        public final SqlColumn<String> userName = column("user_name", JDBCType.VARCHAR);
 
-        public final SqlColumn<String> password = column("PASSWORD", JDBCType.VARCHAR);
+        public final SqlColumn<String> password = column("password", JDBCType.VARCHAR);
 
-        public final SqlColumn<String> email = column("EMAIL", JDBCType.VARCHAR);
+        public final SqlColumn<String> email = column("email", JDBCType.VARCHAR);
 
-        public final SqlColumn<Byte> status = column("STATUS", JDBCType.TINYINT);
+        public final SqlColumn<Byte> status = column("status", JDBCType.TINYINT);
 
-        public final SqlColumn<Date> createTime = column("CREATE_TIME", JDBCType.TIMESTAMP);
+        public final SqlColumn<Date> createTime = column("create_time", JDBCType.TIMESTAMP);
+
+        public final SqlColumn<Byte> role = column("role", JDBCType.TINYINT);
 
         public UserInfo() {
-            super("PUBLIC.USER_INFO");
+            super("user_info");
         }
     }
 }

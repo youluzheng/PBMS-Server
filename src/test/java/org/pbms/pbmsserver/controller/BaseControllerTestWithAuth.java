@@ -3,6 +3,8 @@ package org.pbms.pbmsserver.controller;
 import cn.hutool.json.JSONUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.constant.ServerConstant;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
@@ -48,13 +50,14 @@ public abstract class BaseControllerTestWithAuth {
             this.userInfoMapper.deleteByPrimaryKey(this.userInfo.getUserId());
         }
         this.userInfo = new UserInfo();
-        this.userInfo.setPassword("xxxxxxx");
+        this.userInfo.setPassword(ServerConstant.HASH_METHOD.apply("123456").get());
         this.userInfo.setUserName("admin");
         this.userInfo.setEmail("zyl@965.life");
         this.userInfo.setCreateTime(new Date());
         this.userInfo.setStatus(UserStatusEnum.NORMAL.getCode());
+        this.userInfo.setRole(UserRoleEnum.ADMIN.getCode());
         this.userInfoMapper.insert(userInfo);
-        this.testToken = TokenUtil.generateToken(new TokenBean(this.userInfo.getUserId(), "admin"));
+        this.testToken = TokenUtil.generateToken(new TokenBean(this.userInfo.getUserId(), "admin", this.userInfo.getRole()));
     }
 
     protected abstract void setup();
@@ -136,7 +139,15 @@ public abstract class BaseControllerTestWithAuth {
         if (null != headers) {
             headers.forEach(builder::header);
         }
-        return this.mockMvc.perform(builder.content(JSONUtil.toJsonStr(data)).contentType(mediaType));
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
+    }
+
+    protected ResultActions post(String url) throws Exception {
+        return post(url, null, null, null, MediaType.APPLICATION_JSON);
     }
 
     protected ResultActions post(String url, String paramKey1, String paramValue1, Object data) throws Exception {
@@ -166,7 +177,15 @@ public abstract class BaseControllerTestWithAuth {
         if (null != headers) {
             headers.forEach(builder::header);
         }
-        return this.mockMvc.perform(builder.content(JSONUtil.toJsonStr(data)).contentType(mediaType));
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
+    }
+
+    protected ResultActions put(String url) throws Exception {
+        return put(url, null, null, null, MediaType.APPLICATION_JSON);
     }
 
     protected ResultActions put(String url, String paramKey1, String paramValue1, Object data) throws Exception {
@@ -196,7 +215,15 @@ public abstract class BaseControllerTestWithAuth {
         if (null != headers) {
             headers.forEach(builder::header);
         }
-        return this.mockMvc.perform(builder.content(JSONUtil.toJsonStr(data)).contentType(mediaType));
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
+    }
+
+    protected ResultActions patch(String url) throws Exception {
+        return patch(url, null, null, null, MediaType.APPLICATION_JSON);
     }
 
     protected ResultActions patch(String url, String paramKey1, String paramValue1, Object data) throws Exception {
@@ -213,8 +240,8 @@ public abstract class BaseControllerTestWithAuth {
         return patch(url, null, null, data, mediaType);
     }
 
-    protected ResultActions patch(String url, Object data) throws Exception {
-        return patch(url, null, null, data, MediaType.APPLICATION_JSON);
+    protected ResultActions patch(String url, Map<String, String> params) throws Exception {
+        return patch(url, params, null, null, MediaType.APPLICATION_JSON);
     }
 
 }

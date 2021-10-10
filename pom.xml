@@ -32,6 +32,21 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--邮件服务相关-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!--邮件服务相关:邮件html模板-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+            <version>3.1.12</version>
+        </dependency>
         <!-- 参数校验 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -98,13 +113,25 @@
             <artifactId>jaxb-core</artifactId>
             <version>2.3.0</version>
         </dependency>
-        <!--hutool-->
+        <!--hutools工具类,api文档见https://www.hutool.cn/docs/#/-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.7.12</version>
+            <version>5.7.3</version>
         </dependency>
-
+        <!--mockito-->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>3.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.4.10</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -223,6 +250,9 @@
         <profile>
             <id>sonar</id>
             <properties>
+                <sonar.java.binaries>
+                    **/target/classes/*
+                </sonar.java.binaries>
                 <sonar.coverage.exclusions>
                     **/init/**/*,
                     **/common/**/*,

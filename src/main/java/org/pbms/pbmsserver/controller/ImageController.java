@@ -73,7 +73,7 @@ public class ImageController {
         tempTokenService.updateTimes(token, image.size());
         UserInfo userInfo = this.userService.getUserInfo(tempTokenInfo.getUserId());
         // 保存tokenBean信息, 使得和正常登录一致处理
-        TokenUtil.setTokenBean(new TokenBean(userInfo.getUserId(), userInfo.getUserName()));
+        TokenUtil.setTokenBean(new TokenBean(userInfo.getUserId(), userInfo.getUserName(), userInfo.getRole()));
         StringBuilder sb = new StringBuilder();
         for (var img : image) {
             sb.append(uploadService.uploadImage(imageUploadReq, img)).append("\n");
