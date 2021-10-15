@@ -47,7 +47,7 @@ public class SystemService {
             throw new ClientException("初始用户已建立，接口调用错误！");
         }
         UserInfo admin = req.transform();
-        admin.setPassword(ServerConstant.HASH_METHOD.apply(admin.getPassword()).get());
+        admin.setPassword(ServerConstant.HASH_METHOD.apply(admin.getPassword()));
         admin.setStatus(UserStatusEnum.NORMAL.getCode());
         admin.setCreateTime(new Date());
         admin.setRole(UserRoleEnum.ADMIN.getCode());

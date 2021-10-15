@@ -56,7 +56,7 @@ public abstract class BaseControllerTestWithAuth {
             this.userInfoMapper.deleteByPrimaryKey(this.userInfo.getUserId());
         }
         this.userInfo = new UserInfo();
-        this.userInfo.setPassword(ServerConstant.HASH_METHOD.apply("123456").get());
+        this.userInfo.setPassword(ServerConstant.HASH_METHOD.apply("123456"));
         this.userInfo.setUserName("admin");
         this.userInfo.setEmail("zyl@965.life");
         this.userInfo.setCreateTime(new Date());

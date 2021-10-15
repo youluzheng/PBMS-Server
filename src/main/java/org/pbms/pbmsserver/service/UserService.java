@@ -102,7 +102,7 @@ public class UserService {
         }
 
         UserInfo newUser = req.transform();
-        newUser.setPassword(ServerConstant.HASH_METHOD.apply(newUser.getPassword()).get());
+        newUser.setPassword(ServerConstant.HASH_METHOD.apply(newUser.getPassword()));
         newUser.setCreateTime(DateUtil.date());
         newUser.setRole(UserRoleEnum.NORMAL.getCode());
         newUser.setStatus(UserStatusEnum.UNCHECKED.getCode());
@@ -165,7 +165,7 @@ public class UserService {
         long userId = TokenUtil.getUserId();
         UserInfo user = userInfoDao.selectOne(c ->
                 c.where(userInfo.userId, isEqualTo(userId))).orElseThrow(() -> new ClientException("用户错误"));
-        user.setPassword(ServerConstant.HASH_METHOD.apply(password).get());
+        user.setPassword(ServerConstant.HASH_METHOD.apply(password));
         userInfoDao.updateByPrimaryKeySelective(user);
     }
 

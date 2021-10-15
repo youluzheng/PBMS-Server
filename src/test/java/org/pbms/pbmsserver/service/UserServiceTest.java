@@ -185,7 +185,7 @@ public class UserServiceTest {
         try (MockedStatic<TokenUtil> tokenUtilMockedStatic = mockStatic(TokenUtil.class)) {
             tokenUtilMockedStatic.when(TokenUtil::getUserId).thenReturn(userInfo.getUserId());
             this.userService.changePassword("123123");
-            assertEquals(ServerConstant.HASH_METHOD.apply("123123").get(), userInfoDao.selectByPrimaryKey(userInfo.getUserId()).get().getPassword());
+            assertEquals(ServerConstant.HASH_METHOD.apply("123123"), userInfoDao.selectByPrimaryKey(userInfo.getUserId()).get().getPassword());
         }
     }
 }

@@ -10,7 +10,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * 上传图片路径、大小、格式配置
@@ -93,5 +92,5 @@ public final class ServerConstant {
         return ServerConstant.SERVER_ROOT_PATH + File.separator + userInfo.getUserName() + File.separator + "temp";
     }
 
-    public static final Function<String, Supplier<String>> HASH_METHOD = (String password) -> () -> DigestUtil.sha256Hex(password);
+    public static final Function<String, String> HASH_METHOD = DigestUtil::sha256Hex;
 }
