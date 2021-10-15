@@ -30,10 +30,3 @@ jar -jar pbms-server-x.x.x-RELEASE.jar
 ```
 
 3. [docker](https://gitea.965.life/PBMS/PBMS-Server/wiki/docker)
-
-## 客户端脚本
-
-- [Script-Python](https://gitea.965.life/PBMS/Script-Python)
-  - [x] 快捷键快速上传粘贴板图片
-  - [x] typora脚本上传图片
-  - [ ] 批量上传替换markdown文件图片
