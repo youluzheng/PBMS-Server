@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
  * 图片大小检查
  *
  * @author zyl
- * @date 2021/07/10 13:24:13
  */
 @Component
 public class ImageSizeChecker {
