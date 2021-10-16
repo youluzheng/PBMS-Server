@@ -4,7 +4,6 @@ import cn.hutool.crypto.digest.DigestUtil;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.util.TokenUtil;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
@@ -16,8 +15,6 @@ import java.util.function.Function;
  *
  * @author zyl
  */
-
-@Component
 public final class ServerConstant {
     private ServerConstant() {
     }
