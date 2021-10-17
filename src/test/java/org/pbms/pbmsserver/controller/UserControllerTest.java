@@ -36,7 +36,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
@@ -299,6 +300,6 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         put("/user/password", req)
                 .andExpect(status().isOk());
         UserInfo userInfo = userInfoDao.selectByPrimaryKey(this.userInfo.getUserId()).orElse(this.userInfo);
-        assertEquals(userInfo.getPassword(), ServerConstant.HASH_METHOD.apply(req.getPassword()).get());
+        assertEquals(userInfo.getPassword(), ServerConstant.HASH_METHOD.apply(req.getPassword()));
     }
 }
