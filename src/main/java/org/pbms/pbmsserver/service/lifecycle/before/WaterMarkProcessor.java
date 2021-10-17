@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 
 /**
@@ -71,7 +72,7 @@ public class WaterMarkProcessor {
         log.debug("开始对图片：{}绘制文字水印 “{}”", srcImg.getName(), userSettings.getWatermarkTextContent());
         drawText(g, userSettings.getWatermarkTextContent());
         log.debug("水印绘制完成");
-        return toMultipartFile(bufferedImage, tempFile);
+        return toMultipartFile(bufferedImage, tempFile, srcImg);
     }
 
     public MultipartFile addImgWaterMark(MultipartFile srcImg) {
@@ -103,10 +104,10 @@ public class WaterMarkProcessor {
             drawImage(g, imageLogo, bufferedImage);
         }
         log.debug("水印绘制完成");
-        return toMultipartFile(bufferedImage, tempFile);
+        return toMultipartFile(bufferedImage, tempFile, srcImg);
     }
 
-    private void drawRepeat(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
+    public void drawRepeat(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
         UserSettings userSettings = this.userService.getSettings();
         int markWidth = imageLogo.getWidth();
         int markHeight = imageLogo.getHeight();
@@ -132,7 +133,7 @@ public class WaterMarkProcessor {
         g.dispose();
     }
 
-    private void drawImage(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
+    public void drawImage(Graphics2D g, BufferedImage imageLogo, BufferedImage bufferedImage) {
         UserSettings userSettings = this.userService.getSettings();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkLogoAlpha() / 100F));
         g.drawImage(imageLogo, bufferedImage.getWidth() - imageLogo.getWidth(),
@@ -140,26 +141,26 @@ public class WaterMarkProcessor {
         g.dispose();
     }
 
-    private void drawText(Graphics2D g, String text) {
+    public void drawText(Graphics2D g, String text) {
         UserSettings userSettings = this.userService.getSettings();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, userSettings.getWatermarkTextAlpha() / 100F));
         g.drawString(text, 10, 30);
     }
 
-    private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file) {
-        String extension = FileTypeUtil.getType(file);
+    private MultipartFile toMultipartFile(BufferedImage bufferedImage, File file, MultipartFile multipartFile) {
         try {
+            String extension = FileTypeUtil.getType(multipartFile.getInputStream());
             ImageIO.write(bufferedImage, extension, file);
         } catch (IOException e) {
             log.error("文件处理异常, {}", e.getMessage());
             throw new ServerException("文件处理异常");
         }
-        MultipartFile multipartFile = MultipartFileUtil.fileToMultipartFile(file);
+        MultipartFile result = MultipartFileUtil.fileToMultipartFile(file);
         try {
             Files.delete(file.toPath());
         } catch (Exception e) {
             log.warn("文件删除失败, {}", e.getMessage());
         }
-        return multipartFile;
+        return result;
     }
 }

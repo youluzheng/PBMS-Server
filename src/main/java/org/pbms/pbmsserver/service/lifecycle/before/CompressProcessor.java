@@ -51,14 +51,12 @@ public class CompressProcessor {
             log.error("文件转换处理异常, {}", e.getMessage());
             throw new ServerException("文件转换处理异常");
         }
-        String compressPath = generateThumbnail2Directory(userSettings.getCompressScale() / 100D, tempFile.getParent(),
-                tempFile.getAbsolutePath()).get(0);
-        File compressImg = new File(compressPath);
+        generateThumbnail2Directory(userSettings.getCompressScale() / 100D, tempFile.getParent(),
+                tempFile.getAbsolutePath());
         // 文件类型转换，方便后续处理
-        MultipartFile result = MultipartFileUtil.fileToMultipartFile(compressImg);
+        MultipartFile result = MultipartFileUtil.fileToMultipartFile(tempFile);
         // 删除临时文件
         try {
-            Files.delete(compressImg.toPath());
             Files.delete(tempFile.toPath());
         } catch (Exception e) {
             log.warn("文件删除失败, {}", e.getMessage());
@@ -73,7 +71,7 @@ public class CompressProcessor {
      * @param pathname 缩略图保存目录
      * @param files    要生成缩略图的文件列表
      */
-    private List<String> generateThumbnail2Directory(double scale, String pathname, String... files) {
+    private void generateThumbnail2Directory(double scale, String pathname, String... files) {
         try {
             Thumbnails.of(files)
                     // 图片缩放率，不能和size()一起使用
@@ -84,8 +82,5 @@ public class CompressProcessor {
             log.error("文件压缩处理异常, {}", e.getMessage());
             throw new ServerException("文件压缩处理异常");
         }
-        List<String> list = new ArrayList<>(files.length);
-        list.addAll(Arrays.asList(files));
-        return list;
     }
 }

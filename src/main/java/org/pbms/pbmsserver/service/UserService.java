@@ -75,7 +75,7 @@ public class UserService {
     @Transactional(rollbackFor = RuntimeException.class)
     public void register(UserRegisterReq req) {
         List<UserInfo> userInfos = this.userInfoDao.select(c -> c
-                .where(userName, isEqualTo(userName))
+                .where(userName, isEqualTo(req.getUserName()))
                 .or(email, isEqualTo(req.getEmail())));
         if (userInfos.size() > 1) {
             throw new BusinessException(BusinessStatus.USERNAME_ALREADY_EXISTS);

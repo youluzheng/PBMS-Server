@@ -51,6 +51,8 @@ public class SystemControllerTest extends BaseControllerTestWithAuth {
 
     @Override
     protected void setup() {
+        userInfoDao.delete(c -> c);
+        userSettingsDao.delete(c -> c);
         this.req = new UserRegisterReq();
         req.setUserName("王大锤");
         req.setPassword("123456");
@@ -110,8 +112,5 @@ public class SystemControllerTest extends BaseControllerTestWithAuth {
         assertDoesNotThrow(() -> userInfoDao.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("王大锤"))).get());
         UserInfo userInfo = userInfoDao.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("王大锤"))).get();
         assertFalse(userSettingsDao.selectOne(c -> c.where(UserSettingsDynamicSqlSupport.userId, isEqualTo(userInfo.getUserId()))).isEmpty());
-        assertTrue(FileUtil.exist(ServerConstant.getAbsoluteTempPath(userInfo)));
-        assertTrue(FileUtil.exist(ServerConstant.getAbsoluteUploadPath(userInfo)));
-        assertTrue(FileUtil.exist(ServerConstant.getAbsoluteLogoPath(userInfo)));
     }
 }

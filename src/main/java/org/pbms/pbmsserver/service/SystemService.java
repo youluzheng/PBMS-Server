@@ -8,6 +8,7 @@ import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
+import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 
 /**
  * @author 王俊
@@ -57,6 +60,7 @@ public class SystemService {
     }
 
     public boolean isInit() {
-        return userInfoDao.count(c -> c) > 0;
+        return userInfoDao.count(c -> c
+                .where(UserInfoDynamicSqlSupport.role, isEqualTo(UserRoleEnum.ADMIN.getCode()))) > 0;
     }
 }

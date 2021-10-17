@@ -27,15 +27,15 @@ public class SaveProcessor {
 
         // fileName中包含路径信息
         if (fileName == null || fileName.isBlank()) {
-            storagePath = ServerConstant.getAbsoluteUploadPath() + File.separator + image.getOriginalFilename();
+            storagePath = ServerConstant.getAbsoluteUploadPath() + "/" + image.getOriginalFilename();
             imageURL.append(image.getOriginalFilename());
         } else {
-            storagePath = ServerConstant.getAbsoluteUploadPath() + File.separator + fileName;
+            storagePath = ServerConstant.getAbsoluteUploadPath() + "/" + fileName;
             imageURL.append(fileName);
         }
 
         File dest = new File(storagePath);
-        if (!dest.exists() && !dest.mkdirs()) {
+        if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
             throw new ServerException("上传文件，文件夹创建失败," + storagePath);
         }
 

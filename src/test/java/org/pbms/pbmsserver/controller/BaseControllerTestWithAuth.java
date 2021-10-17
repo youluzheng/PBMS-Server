@@ -8,16 +8,21 @@ import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
+import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +41,10 @@ public abstract class BaseControllerTestWithAuth {
     @Autowired
     public MockMvc mockMvc;
     private final String tokenHeader = "token";
-    private String testToken;
+    protected String testToken;
 
     protected UserInfo userInfo;
+    protected UserSettings userSettings;
 
     @Autowired
     private UserInfoMapper userInfoMapper;
@@ -57,6 +63,8 @@ public abstract class BaseControllerTestWithAuth {
         this.userInfo.setStatus(UserStatusEnum.NORMAL.getCode());
         this.userInfo.setRole(UserRoleEnum.ADMIN.getCode());
         this.userInfoMapper.insert(userInfo);
+        this.userSettings = new UserSettings();
+        userSettings.setUserId(userInfo.getUserId());
         this.testToken = TokenUtil.generateToken(new TokenBean(this.userInfo.getUserId(), "admin", this.userInfo.getRole()));
     }
 
@@ -128,6 +136,25 @@ public abstract class BaseControllerTestWithAuth {
 
     protected ResultActions delete(String url) throws Exception {
         return delete(url, new HashMap<>(), new HashMap<>());
+    }
+
+    protected ResultActions upload(String url, Map<String, String> params, Map<String, Object> headers, Object data, MediaType mediaType, MockMultipartFile... files) throws Exception {
+        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(url);
+        builder.header(this.tokenHeader, this.testToken);
+        for (MockMultipartFile file : files) {
+            builder.file(file);
+        }
+        if (null != params) {
+            params.forEach(builder::param);
+        }
+        if (null != headers) {
+            headers.forEach(builder::header);
+        }
+        if (null != data) {
+            builder.content(JSONUtil.toJsonStr(data));
+            builder.contentType(mediaType);
+        }
+        return this.mockMvc.perform(builder);
     }
 
     protected ResultActions post(String url, Map<String, String> params, Map<String, Object> headers, Object data, MediaType mediaType) throws Exception {
