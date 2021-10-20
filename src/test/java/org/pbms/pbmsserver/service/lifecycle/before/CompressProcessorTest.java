@@ -1,6 +1,7 @@
 package org.pbms.pbmsserver.service.lifecycle.before;
 
 import cn.hutool.core.io.IoUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,12 +44,16 @@ class CompressProcessorTest {
                 .thenReturn(this.getClass().getResource("/fonts").getPath());
     }
 
+    @AfterEach
+    void tearDown() {
+        serverConstantMockedStatic.close();
+    }
+
     @Test
     public void compress_scale_normal() throws IOException {
         this.userSettings.setCompressScale((byte) 80);
         MultipartFile compress = compressProcessor.compress(mockMultipartFile);
         InputStream compressInputStream = compress.getInputStream();
-        serverConstantMockedStatic.close();
         assertTrue(IoUtil.contentEquals(compressInputStream, this.getClass().getResourceAsStream("/image/come_on_compress_for_test.jpg")));
     }
 
@@ -57,7 +62,6 @@ class CompressProcessorTest {
         this.userSettings.setCompressScale((byte) 0);
         MultipartFile compress = compressProcessor.compress(mockMultipartFile);
         InputStream compressInputStream = compress.getInputStream();
-        serverConstantMockedStatic.close();
         assertTrue(IoUtil.contentEquals(compressInputStream, mockMultipartFile.getInputStream()));
     }
 }

@@ -1,6 +1,7 @@
 package org.pbms.pbmsserver.service.lifecycle.before;
 
 import cn.hutool.core.io.IoUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,11 +48,16 @@ class WaterMarkProcessorTest {
                 .thenReturn(this.getClass().getResource("/image").getPath());
     }
 
+    @AfterEach
+    void tearDown() {
+        serverConstantMockedStatic.close();
+    }
+
+
     @Test
     public void addWaterMark_not_enable_test() throws IOException {
         this.userSettings.setWatermarkLogoEnable(false);
         MultipartFile waterMark = waterMarkProcessor.addWaterMark(mockMultipartFile);
-        serverConstantMockedStatic.close();
         assertTrue(IoUtil.contentEquals(mockMultipartFile.getInputStream(), waterMark.getInputStream()));
     }
 
@@ -62,7 +68,6 @@ class WaterMarkProcessorTest {
         this.userSettings.setWatermarkLogoEnable(true);
         this.userSettings.setWatermarkLogoRepeat(false);
         MultipartFile waterMark = waterMarkProcessor.addWaterMark(mockMultipartFile);
-        serverConstantMockedStatic.close();
         verify(waterMarkProcessor).addImgWaterMark(any());
         verify(waterMarkProcessor).drawImage(any(), any(), any());
         verify(waterMarkProcessor, never()).addTextWaterMark(any());
@@ -76,7 +81,6 @@ class WaterMarkProcessorTest {
         this.userSettings.setWatermarkLogoEnable(true);
         this.userSettings.setWatermarkLogoRepeat(true);
         MultipartFile waterMark = waterMarkProcessor.addWaterMark(mockMultipartFile);
-        serverConstantMockedStatic.close();
         verify(waterMarkProcessor).addImgWaterMark(any());
         verify(waterMarkProcessor, never()).drawImage(any(), any(), any());
         verify(waterMarkProcessor, never()).addTextWaterMark(any());
@@ -91,7 +95,6 @@ class WaterMarkProcessorTest {
         this.userSettings.setWatermarkLogoRepeat(true);
         this.userSettings.setWatermarkTextContent("true");
         MultipartFile waterMark = waterMarkProcessor.addWaterMark(mockMultipartFile);
-        serverConstantMockedStatic.close();
         verify(waterMarkProcessor).addImgWaterMark(any());
         verify(waterMarkProcessor, never()).drawImage(any(), any(), any());
         verify(waterMarkProcessor).addTextWaterMark(any());

@@ -2,7 +2,14 @@ package org.pbms.pbmsserver.controller;
 
 import cn.hutool.json.JSONUtil;
 import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.constant.ServerConstant;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
+import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
+import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
+import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.util.TokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,16 +37,53 @@ import java.util.Map;
 @AutoConfigureMockMvc
 public abstract class BaseControllerTest {
 
+    private static final Logger log = LoggerFactory.getLogger(BaseControllerTest.class);
+
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    protected UserInfoMapper userInfoMapper;
+
     /**
-     * 通过重写此方法判断是否需要认证，null表示不需要，默认为null
+     * 通过重写此方法判断是否需要认证，null表示不需要
      *
      * @return tokenBean
      */
-    protected TokenBean getTokenBean() {
-        return null;
+    protected abstract TokenBean getTokenBean();
+
+    /**
+     * 插入管理员
+     *
+     * @return 管理员
+     */
+    public UserInfo insertDefaultAdmin() {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setPassword(ServerConstant.HASH_METHOD.apply("123456"));
+        userInfo.setUserName("admin");
+        userInfo.setEmail("zyl@965.life");
+        userInfo.setCreateTime(new Date());
+        userInfo.setStatus(UserStatusEnum.NORMAL.getCode());
+        userInfo.setRole(UserRoleEnum.ADMIN.getCode());
+        this.userInfoMapper.insert(userInfo);
+        return userInfo;
+    }
+
+    /**
+     * 插入普通用户
+     *
+     * @return 普通用户
+     */
+    public UserInfo insertDefaultUser() {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setPassword(ServerConstant.HASH_METHOD.apply("123456"));
+        userInfo.setUserName("user");
+        userInfo.setEmail("zyl@965.life");
+        userInfo.setCreateTime(new Date());
+        userInfo.setStatus(UserStatusEnum.NORMAL.getCode());
+        userInfo.setRole(UserRoleEnum.NORMAL.getCode());
+        userInfoMapper.insert(userInfo);
+        return userInfo;
     }
 
     private void setToken(MockHttpServletRequestBuilder builder) {
@@ -50,6 +95,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions get(String url, Map<String, String> params, Map<String, Object> headers) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -62,6 +108,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions get(String url, Map<String, String> params) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -88,6 +135,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions delete(String url, Map<String, String> params, Map<String, Object> headers) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -100,6 +148,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions delete(String url, Map<String, String> params) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -126,6 +175,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions post(String url, Map<String, String> params, Map<String, Object> headers, Object data, MediaType mediaType) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -142,6 +192,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions post(String url, Map<String, String> params, Object data, MediaType mediaType) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -171,6 +222,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions put(String url, Map<String, String> params, Map<String, Object> headers, Object data, MediaType mediaType) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -187,6 +239,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions filePost(String url, Map<String, String> params, Map<String, Object> headers, List<MockMultipartFile> files) throws Exception {
         MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (files != null) {
             files.forEach(builder::file);
@@ -202,6 +255,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions filePost(String url, Map<String, String> params, Map<String, Object> headers, MockMultipartFile file) throws Exception {
         MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(url).file(file);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -230,6 +284,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions put(String url, Map<String, String> params, Object data, MediaType mediaType) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -259,6 +314,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions patch(String url, Map<String, String> params, Map<String, Object> headers, Object data, MediaType mediaType) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);
@@ -275,6 +331,7 @@ public abstract class BaseControllerTest {
 
     protected ResultActions patch(String url, Map<String, String> params, Object data, MediaType mediaType) throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch(url);
+        builder.servletPath(url);
         this.setToken(builder);
         if (null != params) {
             params.forEach(builder::param);

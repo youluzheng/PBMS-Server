@@ -1,14 +1,16 @@
 package org.pbms.pbmsserver.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.dao.SystemDao;
-import org.pbms.pbmsserver.dao.UserInfoDao;
-import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
+import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
+import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserManageService;
@@ -27,23 +29,32 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-public class ManageControllerTest extends BaseControllerTestWithAuth {
+class ManageControllerTest extends BaseControllerTest {
     @Autowired
     private UserManageService userManageService;
     @MockBean
     private MailService mailService;
     @Autowired
-    private UserSettingsDao userSettingsDao;
+    private UserSettingsMapper userSettingsMapper;
     @MockBean
     private SystemDao systemDao;
     @Autowired
-    private UserInfoDao userInfoDao;
+    private UserInfoMapper userInfoMapper;
+
+    private UserInfo admin;
+
     private UserInfo user;
 
     @Override
-    protected void setup() {
-        userInfoDao.delete(c -> c);
+    protected TokenBean getTokenBean() {
+        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), this.admin.getRole());
+    }
+
+    @BeforeEach
+    void setup() {
+        userInfoMapper.delete(c -> c);
+        this.admin = this.insertDefaultAdmin();
+
         user = new UserInfo();
         user.setUserName("ffff");
         user.setPassword("12323");
@@ -51,7 +62,7 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
         user.setCreateTime(new Date());
         user.setRole(UserRoleEnum.NORMAL.getCode());
         user.setStatus(UserStatusEnum.NORMAL.getCode());
-        userInfoDao.insert(user);
+        userInfoMapper.insert(user);
     }
 
     private static Stream<Arguments> forbiddenUser_invalid() {
@@ -67,14 +78,14 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
     public void forbiddenUser_normal_test() throws Exception {
         patch("/user/" + user.getUserId() + "/action-forbidden")
                 .andExpect(status().isOk());
-        assertEquals(UserStatusEnum.FORBID.getCode(), userInfoDao.selectByPrimaryKey(user.getUserId()).get().getStatus());
+        assertEquals(UserStatusEnum.FORBID.getCode(), userInfoMapper.selectByPrimaryKey(user.getUserId()).get().getStatus());
     }
 
     @ParameterizedTest()
     @MethodSource("forbiddenUser_invalid")
     public void forbiddenUser_status_illegal_test(byte status) throws Exception {
         user.setStatus(status);
-        userInfoDao.updateByPrimaryKey(user);
+        userInfoMapper.updateByPrimaryKey(user);
         patch("/user/" + user.getUserId() + "/action-forbidden")
                 .andExpect(status().isBadRequest());
     }
@@ -82,10 +93,10 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
     @Test
     public void unset_normal_test() throws Exception {
         user.setStatus(UserStatusEnum.FORBID.getCode());
-        userInfoDao.updateByPrimaryKey(user);
+        userInfoMapper.updateByPrimaryKey(user);
         patch("/user/" + user.getUserId() + "/action-unset")
                 .andExpect(status().isOk());
-        assertEquals(UserStatusEnum.NORMAL.getCode(), userInfoDao.selectByPrimaryKey(user.getUserId()).get().getStatus());
+        assertEquals(UserStatusEnum.NORMAL.getCode(), userInfoMapper.selectByPrimaryKey(user.getUserId()).get().getStatus());
     }
 
     private static Stream<Arguments> unsetUser_invalid() {
@@ -98,7 +109,7 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
     @MethodSource("unsetUser_invalid")
     public void unsetUser_status_illegal_test(byte status) throws Exception {
         user.setStatus(status);
-        userInfoDao.updateByPrimaryKey(user);
+        userInfoMapper.updateByPrimaryKey(user);
         patch("/user/" + user.getUserId() + "/action-unset")
                 .andExpect(status().isBadRequest());
     }
@@ -106,25 +117,25 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
     @Test
     public void auditUser_normal_pass_test() throws Exception {
         user.setStatus(UserStatusEnum.WAIT_FOR_AUDIT.getCode());
-        userInfoDao.updateByPrimaryKey(user);
+        userInfoMapper.updateByPrimaryKey(user);
         HashMap<String, String> params = new HashMap<>();
         params.put("pass", "true");
         patch("/user/" + user.getUserId() + "/action-audit", params)
                 .andExpect(status().isOk());
-        assertEquals(UserStatusEnum.NORMAL.getCode(), userInfoDao.selectByPrimaryKey(user.getUserId()).get().getStatus());
+        assertEquals(UserStatusEnum.NORMAL.getCode(), userInfoMapper.selectByPrimaryKey(user.getUserId()).get().getStatus());
     }
 
     @Test
     public void auditUser_normal_reject_test() throws Exception {
         user.setStatus(UserStatusEnum.WAIT_FOR_AUDIT.getCode());
-        userInfoDao.updateByPrimaryKey(user);
+        userInfoMapper.updateByPrimaryKey(user);
         Map<String, String> params = new HashMap<>();
         params.put("pass", "false");
 
         patch("/user/" + user.getUserId() + "/action-audit", params)
                 .andExpect(status().isOk());
-        assertThrows(NoSuchElementException.class, () -> userSettingsDao.selectByPrimaryKey(user.getUserId()).get(), "No value present");
-        assertEquals(UserStatusEnum.AUDIT_FAIL.getCode(), userInfoDao.selectByPrimaryKey(user.getUserId()).get().getStatus());
+        assertThrows(NoSuchElementException.class, () -> userSettingsMapper.selectByPrimaryKey(user.getUserId()).get(), "No value present");
+        assertEquals(UserStatusEnum.AUDIT_FAIL.getCode(), userInfoMapper.selectByPrimaryKey(user.getUserId()).get().getStatus());
     }
 
     @Test
@@ -141,8 +152,8 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
 
         delete("/user/" + user.getUserId())
                 .andExpect(status().isOk());
-        assertThrows(NoSuchElementException.class, () -> userSettingsDao.selectByPrimaryKey(user.getUserId()).get(), "No value present");
-        assertThrows(NoSuchElementException.class, () -> userInfoDao.selectByPrimaryKey(user.getUserId()).get(), "No value present");
+        assertThrows(NoSuchElementException.class, () -> userSettingsMapper.selectByPrimaryKey(user.getUserId()).get(), "No value present");
+        assertThrows(NoSuchElementException.class, () -> userInfoMapper.selectByPrimaryKey(user.getUserId()).get(), "No value present");
     }
 
     @Test
@@ -155,10 +166,11 @@ public class ManageControllerTest extends BaseControllerTestWithAuth {
         userSettings.setWatermarkLogoEnable(true);
         userSettings.setWatermarkTextEnable(true);
         userSettings.setResponseReturnType("md");
-        userSettingsDao.insert(userSettings);
+        userSettingsMapper.insert(userSettings);
         delete("/user/12343544")
                 .andExpect(status().isBadRequest());
-        assertDoesNotThrow(() -> userSettingsDao.selectByPrimaryKey(user.getUserId()).get());
-        assertDoesNotThrow(() -> userInfoDao.selectByPrimaryKey(user.getUserId()).get());
+        assertDoesNotThrow(() -> userSettingsMapper.selectByPrimaryKey(user.getUserId()).get());
+        assertDoesNotThrow(() -> userInfoMapper.selectByPrimaryKey(user.getUserId()).get());
     }
+
 }

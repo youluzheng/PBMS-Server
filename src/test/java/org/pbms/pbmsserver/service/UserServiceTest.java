@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
+import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ClientException;
 import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
 import org.pbms.pbmsserver.dao.SystemDao;
@@ -18,13 +19,11 @@ import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.service.common.MailService;
 import org.pbms.pbmsserver.util.TokenUtil;
-import org.powermock.api.support.membermodification.MemberModifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.thymeleaf.context.Context;
 
 import java.util.Date;
@@ -37,8 +36,6 @@ import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 
 @SpringBootTest
 public class UserServiceTest {
-
-    private static final Logger log = LoggerFactory.getLogger(UserServiceTest.class);
 
     @SpyBean
     UserService userService;
@@ -65,8 +62,7 @@ public class UserServiceTest {
         this.userInfoDao.delete(c -> c);
         this.userSettingsDao.delete(c -> c);
         // mock成员变量
-        MemberModifier.field(UserService.class, "codeMap")
-                .set(userService, map);
+        ReflectionTestUtils.setField(userService, "codeMap", map);
         // 初始化req
         req = new UserRegisterReq();
         req.setUserName("Thanos");
@@ -97,14 +93,24 @@ public class UserServiceTest {
     public void register_repeat_userName_test() {
         insertUser();
         req.setUserName("张三");
-        assertThrows(BusinessException.class, () -> userService.register(req), "用户名称重复");
+        try {
+            userService.register(req);
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.USERNAME_ALREADY_EXISTS.toString());
+        }
     }
 
     @Test
     public void register_repeat_email_test() {
         insertUser();
         req.setEmail("zyl@965.life");
-        assertThrows(BusinessException.class, () -> userService.register(req), "邮箱已注册");
+        try {
+            userService.register(req);
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.EMAIL_REGISTERED.toString());
+        }
     }
 
     @Test
@@ -120,13 +126,23 @@ public class UserServiceTest {
     public void checkRegisterLink_status_illegal_test() {
         UserInfo user = insertUser();
         doReturn(user).when(userService).checkCode(anyLong(), anyString());
-        assertThrows(ClientException.class, () -> userService.checkRegisterLink(user.getUserId(), ""), "操作失败");
+        try {
+            when(map.get(anyLong())).thenReturn("1111");
+            userService.checkRegisterLink(user.getUserId(), "");
+        } catch (ClientException e) {
+            assertEquals(e.getMessage(), "操作失败");
+        }
     }
 
     @Test
     public void checkRegisterLink_null_test() {
         UserInfo user = insertUser();
-        assertThrows(BusinessException.class, () -> userService.checkRegisterLink(user.getUserId(), ""), "链接已失效");
+        try {
+            userService.checkRegisterLink(user.getUserId(), "");
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.INVALID_LINK.toString());
+        }
     }
 
     @Test
@@ -144,11 +160,27 @@ public class UserServiceTest {
         user.setStatus(UserStatusEnum.NORMAL.getCode());
         userInfoDao.delete(c -> c);
         userInfoDao.insert(user);
-        assertThrows(BusinessException.class, () -> userService.getChangePasswordEmailCaptcha("1254@34.com", user.getUserName()), "用户不存在");
-        assertThrows(BusinessException.class, () -> userService.getChangePasswordEmailCaptcha(user.getEmail(), "user.getUserName()"), "用户不存在");
+        try {
+            userService.getChangePasswordEmailCaptcha("1254@34.com", user.getUserName());
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.USER_NOT_FOUND.toString());
+        }
+
+        try {
+            userService.getChangePasswordEmailCaptcha(user.getEmail(), "user.getUserName()");
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.USER_NOT_FOUND.toString());
+        }
         userInfoDao.delete(c -> c);
         insertUser();
-        assertThrows(BusinessException.class, () -> userService.getChangePasswordEmailCaptcha(user.getEmail(), user.getUserName()), "用户不存在");
+        try {
+            userService.getChangePasswordEmailCaptcha(user.getEmail(), user.getUserName());
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.USER_NOT_FOUND.toString());
+        }
     }
 
     @Test
@@ -159,15 +191,18 @@ public class UserServiceTest {
     }
 
     @Test
-    public void checkChangePasswordMail_wrong_param_test() {
+    public void checkChangePasswordMail_empty_param_test() {
         UserInfo user = insertUser();
         user.setStatus(UserStatusEnum.NORMAL.getCode());
         userInfoDao.delete(c -> c);
         userInfoDao.insert(user);
         userService.getChangePasswordEmailCaptcha(user.getEmail(), user.getUserName());
-
-        assertThrows(BusinessException.class, () -> userService.checkChangePasswordMail(2L, "123"));
-        assertThrows(ClientException.class, () -> userService.checkChangePasswordMail(user.getUserId(), "123"));
+        try {
+            userService.checkChangePasswordMail(user.getUserId(), "12345678123456781234567812345678");
+            fail("未捕获指定异常");
+        } catch (BusinessException e) {
+            assertEquals(e.getMessage(), BusinessStatus.INVALID_LINK.toString());
+        }
     }
 
     @Test
@@ -176,7 +211,12 @@ public class UserServiceTest {
         UserInfo userInfo = userInfoDao.selectOne(c -> c
                 .where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo(req.getUserName()))
         ).orElseThrow(() -> new ClientException(""));
-        assertThrows(ClientException.class, () -> userService.checkRegisterLink(userInfo.getUserId(), ""), "无效链接");
+        try {
+            when(map.get(anyLong())).thenReturn("1111");
+            userService.checkRegisterLink(userInfo.getUserId(), "");
+        } catch (ClientException e) {
+            assertEquals(e.getMessage(), "无效链接");
+        }
     }
 
     @Test

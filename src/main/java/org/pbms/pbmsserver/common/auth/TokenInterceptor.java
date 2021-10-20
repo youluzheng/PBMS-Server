@@ -27,7 +27,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     /**
      * 如果存在PublicInterface直接return true
-     * 否者验证token是否正确
+     * 否则验证token是否正确
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

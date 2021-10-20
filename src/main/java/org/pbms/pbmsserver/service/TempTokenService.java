@@ -5,8 +5,6 @@ import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.dao.TempTokenInfoDao;
 import org.pbms.pbmsserver.repository.model.TempTokenInfo;
 import org.pbms.pbmsserver.util.TokenUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,6 @@ import static org.pbms.pbmsserver.repository.mapper.TempTokenInfoDynamicSqlSuppo
  */
 @Service
 public class TempTokenService {
-    private static final Logger log = LoggerFactory.getLogger(TempTokenService.class);
 
     @Autowired
     TempTokenInfoDao tempTokenInfoDao;

@@ -1,29 +1,27 @@
 package org.pbms.pbmsserver.controller;
 
 import cn.hutool.cache.impl.TimedCache;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.request.user.ChangePasswordReq;
 import org.pbms.pbmsserver.common.request.user.SettingModifyReq;
 import org.pbms.pbmsserver.common.request.user.UserLoginReq;
 import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
-import org.pbms.pbmsserver.dao.UserInfoDao;
-import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
+import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;
 import org.pbms.pbmsserver.service.common.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,29 +42,34 @@ import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class UserControllerTest extends BaseControllerTestWithAuth {
+public class UserControllerTest extends BaseControllerTest {
     @Autowired
-    private UserInfoDao userInfoDao;
-    @Autowired
-    private UserSettingsDao userSettingsDao;
+    private UserSettingsMapper userSettingsMapper;
     @Autowired
     private UserService userService;
     @MockBean
     private MailService mailService;
     @Mock
     private TimedCache<Long, String> map;
-    private final JsonMapper jsonMapper = new JsonMapper();
     private UserLoginReq req = new UserLoginReq();
     private HashMap<String, String> checkRegisterParams;
     private HashMap<String, String> getCaptchaParams;
+
+    private UserInfo admin;
+
     private UserInfo another;
 
     @Override
-    protected void setup() {
-        userInfoDao.delete(c -> c);
-        userSettingsDao.delete(c -> c);
+    protected TokenBean getTokenBean() {
+        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), this.admin.getRole());
+    }
+
+    @BeforeEach
+    void setup() {
+        userInfoMapper.delete(c -> c);
+        userSettingsMapper.delete(c -> c);
+        this.admin = this.insertDefaultAdmin();
+
         another = new UserInfo();
         another.setUserName("xxx");
         another.setStatus(UserStatusEnum.UNCHECKED.getCode());
@@ -74,7 +77,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         another.setCreateTime(new Date());
         another.setEmail("123@123.com");
         another.setPassword("xxxxxx");
-        userInfoDao.insert(another);
+        userInfoMapper.insert(another);
         checkRegisterParams = new HashMap<>() {{
             put("userId", another.getUserId().toString());
             put("code", "12345678123456781234567812345678");
@@ -89,7 +92,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
 
     @Test
     public void login_normal_test() throws Exception {
-        this.req.setUserName(userInfo.getUserName());
+        this.req.setUserName(admin.getUserName());
         this.req.setPassword("123456");
         post("/user/action-login", req)
                 .andExpect(status().isOk());
@@ -121,8 +124,8 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         req.setEmail("123@123.com");
         post("/user", req)
                 .andExpect(status().isOk());
-        assertDoesNotThrow(() -> userInfoDao.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("张三a"))).get());
-        assertEquals(UserStatusEnum.UNCHECKED.getCode(), userInfoDao.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("张三a"))).get().getStatus());
+        assertDoesNotThrow(() -> userInfoMapper.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("张三a"))).get());
+        assertEquals(UserStatusEnum.UNCHECKED.getCode(), userInfoMapper.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("张三a"))).get().getStatus());
     }
 
 
@@ -134,7 +137,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         req.setEmail("123@123.com");
         post("/user", req)
                 .andExpect(status().is4xxClientError());
-        assertThrows(NoSuchElementException.class, () -> userInfoDao.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("张三"))).get());
+        assertThrows(NoSuchElementException.class, () -> userInfoMapper.selectOne(c -> c.where(UserInfoDynamicSqlSupport.userInfo.userName, isEqualTo("张三"))).get());
     }
 
     @Test
@@ -169,7 +172,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         userInfo.setStatus(oldState);
         userInfo.setCreateTime(new Date());
         userInfo.setRole(UserRoleEnum.NORMAL.getCode());
-        userInfoDao.insert(userInfo);
+        userInfoMapper.insert(userInfo);
         new UserRegisterReq(newName, "123456", newEmail);
         post("/user", req)
                 .andExpect(status().is4xxClientError());
@@ -178,12 +181,12 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
     @Test
     public void modifyUserSettings_normal_test() throws Exception {
         UserSettings userSettings = new UserSettings();
-        userSettings.setUserId(userInfo.getUserId());
+        userSettings.setUserId(admin.getUserId());
         userSettings.setCompressScale((byte) 80);
         userSettings.setWatermarkTextEnable(false);
         userSettings.setWatermarkLogoEnable(false);
         userSettings.setResponseReturnType("md");
-        userSettingsDao.insert(userSettings);
+        userSettingsMapper.insert(userSettings);
         SettingModifyReq settingModifyReq = new SettingModifyReq();
         settingModifyReq.setCompressScale((byte) 80);
         settingModifyReq.setResponseReturnType("md");
@@ -191,22 +194,22 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         settingModifyReq.setWatermarkTextEnable(false);
         put("/user/settings", settingModifyReq, MediaType.APPLICATION_JSON)
                 .andExpect(status().isOk());
-        assertEquals((byte) 80, userSettingsDao.selectByPrimaryKey(this.userInfo.getUserId()).get().getCompressScale());
-        assertEquals("md", userSettingsDao.selectByPrimaryKey(this.userInfo.getUserId()).get().getResponseReturnType());
-        assertEquals(false, userSettingsDao.selectByPrimaryKey(this.userInfo.getUserId()).get().getWatermarkLogoEnable());
-        assertEquals(false, userSettingsDao.selectByPrimaryKey(this.userInfo.getUserId()).get().getWatermarkTextEnable());
+        assertEquals((byte) 80, userSettingsMapper.selectByPrimaryKey(this.admin.getUserId()).get().getCompressScale());
+        assertEquals("md", userSettingsMapper.selectByPrimaryKey(this.admin.getUserId()).get().getResponseReturnType());
+        assertEquals(false, userSettingsMapper.selectByPrimaryKey(this.admin.getUserId()).get().getWatermarkLogoEnable());
+        assertEquals(false, userSettingsMapper.selectByPrimaryKey(this.admin.getUserId()).get().getWatermarkTextEnable());
     }
 
 
     @Test
     public void getUserSettings_test() throws Exception {
         UserSettings userSettings = new UserSettings();
-        userSettings.setUserId(userInfo.getUserId());
+        userSettings.setUserId(admin.getUserId());
         userSettings.setCompressScale((byte) 80);
         userSettings.setWatermarkTextEnable(false);
         userSettings.setWatermarkLogoEnable(false);
         userSettings.setResponseReturnType("md");
-        userSettingsDao.insert(userSettings);
+        userSettingsMapper.insert(userSettings);
         get("/user/settings")
                 .andExpect(status().isOk());
     }
@@ -233,7 +236,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         when(map.get(another.getUserId())).thenReturn("12345678123456781234567812345678");
         get("/user/registerLink/action-check", checkRegisterParams)
                 .andExpect(status().isOk());
-        assertEquals(UserStatusEnum.WAIT_FOR_AUDIT.getCode(), userInfoDao.selectByPrimaryKey(another.getUserId()).orElse(userInfo).getStatus());
+        assertEquals(UserStatusEnum.WAIT_FOR_AUDIT.getCode(), userInfoMapper.selectByPrimaryKey(another.getUserId()).orElse(admin).getStatus());
     }
 
     @Test
@@ -264,7 +267,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
     @Test
     public void getEmailCaptcha_repeat_test() throws Exception {
         ReflectionTestUtils.setField(userService, "codeMap", map);
-        when(map.get(userInfo.getUserId())).thenReturn("12345678123456781234567812345679");
+        when(map.get(admin.getUserId())).thenReturn("12345678123456781234567812345679");
         get("/user/emailCaptcha", getCaptchaParams)
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("邮件已发送，稍后再试"));
@@ -299,7 +302,7 @@ public class UserControllerTest extends BaseControllerTestWithAuth {
         ChangePasswordReq req = new ChangePasswordReq("12123123");
         put("/user/password", req)
                 .andExpect(status().isOk());
-        UserInfo userInfo = userInfoDao.selectByPrimaryKey(this.userInfo.getUserId()).orElse(this.userInfo);
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(this.admin.getUserId()).orElse(this.admin);
         assertEquals(userInfo.getPassword(), ServerConstant.HASH_METHOD.apply(req.getPassword()));
     }
 }

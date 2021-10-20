@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * 临时token接口
  *
- * @author zhuqingshen
+ * @author zqs
  */
 @RestController
 @RequestMapping("tempToken")

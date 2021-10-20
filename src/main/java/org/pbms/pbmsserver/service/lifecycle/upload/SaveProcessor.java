@@ -38,7 +38,13 @@ public class SaveProcessor {
         if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
             throw new ServerException("上传文件，文件夹创建失败," + storagePath);
         }
+        // 保存图片
+        this.save(storagePath, dest, image);
+        return imageURL.toString();
+    }
 
+    // TODO 将来可以适配OSS、七牛云等上传
+    public void save(String storagePath, File dest, MultipartFile image) {
         try {
             image.transferTo(dest);
             log.info("{}上传成功！storagePath:{}", image.getOriginalFilename(), storagePath);
@@ -46,7 +52,5 @@ public class SaveProcessor {
             log.error("上传失败, {}", e.getMessage());
             throw new ServerException(image.getOriginalFilename() + "上传失败！");
         }
-
-        return imageURL.toString();
     }
 }

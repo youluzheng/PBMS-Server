@@ -2,7 +2,6 @@ package org.pbms.pbmsserver.controller;
 
 
 import org.pbms.pbmsserver.common.auth.PublicInterface;
-import org.pbms.pbmsserver.common.exception.ClientException;
 import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.service.SystemService;
