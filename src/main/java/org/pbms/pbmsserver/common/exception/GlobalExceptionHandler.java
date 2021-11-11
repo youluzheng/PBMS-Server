@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public String bindExceptionHandle(BindException e) {
-        return e.getAllErrors().get(0).getDefaultMessage();
+        return e.getMessage();
     }
 
     @ExceptionHandler(BaseException.class)

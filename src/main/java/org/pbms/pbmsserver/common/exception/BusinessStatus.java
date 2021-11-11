@@ -55,12 +55,12 @@ public enum BusinessStatus {
 
     @Override
     public String toString() {
-        return "{\"code\":" + this.code + ", \"message\":\"" + this.msg + "\"}";
+        return "{\"code\":\"" + this.code + "\", \"message\":\"" + this.msg + "\"}";
 
     }
 
     public String toString(String extra) {
-        return "{\"code\":" + this.code + ", \"message\":\"" + this.msg + ", " + extra + "\"}";
+        return "{\"code\":\"" + this.code + "\", \"message\":\"" + this.msg + ", " + extra + "\"}";
     }
 
 }
