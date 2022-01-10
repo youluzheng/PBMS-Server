@@ -56,12 +56,25 @@ public class UserController {
         userService.checkRegisterLink(userId, code);
     }
 
+    /**
+     * 忘记密码发送邮件
+     *
+     * @param email    邮箱
+     * @param userName 用户名
+     */
     @GetMapping("emailCaptcha")
     @PublicInterface
     public void getEmailCaptcha(@RequestParam @Email String email, @RequestParam @NotEmpty String userName) {
         userService.getChangePasswordEmailCaptcha(email, userName);
     }
 
+    /**
+     * 用户点击邮件内忘记密码链接，跳转至修改密码页面
+     *
+     * @param userId 用户id
+     * @param code   验证code
+     * @return 用户token
+     */
     @GetMapping("password-page")
     @PublicInterface
     public String checkChangeCode(@RequestParam @NotNull Long userId, @RequestParam @NotBlank @Length(min = 32, max = 32) String code) {

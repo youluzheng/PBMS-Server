@@ -2,6 +2,9 @@ package org.pbms.pbmsserver.controller;
 
 
 import org.pbms.pbmsserver.common.auth.AdminInterface;
+import org.pbms.pbmsserver.common.request.user.UserListReq;
+import org.pbms.pbmsserver.common.vo.PageData;
+import org.pbms.pbmsserver.common.vo.user.UserListVO;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.service.UserManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +46,11 @@ public class UserManageController {
     @AdminInterface
     public void deleteUser(@PathVariable long userId) {
         this.userManageService.deleteUser(userId);
+    }
+
+    @GetMapping("/list")
+    @AdminInterface
+    public PageData<UserListVO> userList(UserListReq req) {
+        return this.userManageService.userList(req);
     }
 }

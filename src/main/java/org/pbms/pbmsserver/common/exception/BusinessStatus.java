@@ -13,7 +13,7 @@ public enum BusinessStatus {
     ENCODING_NOT_SUPPORT("00003", "编码不支持"),
 
     /*----------用户模块 01*** ----------*/
-    USERNAME_OR_PASSWORD_ERROR("01001", "用户名或密码错误"),
+    USERNAME_OR_PASSWORD_ERROR("01001", "用户名不存在或审核未通过或密码错误"),
     USER_NOT_FOUND("01002", "用户不存在"),
     USERNAME_ALREADY_EXISTS("01003", "用户名称重复"),
     EMAIL_REGISTERED("01004", "邮箱已注册"),

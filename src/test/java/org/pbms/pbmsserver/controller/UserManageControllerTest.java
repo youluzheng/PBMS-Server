@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
+import org.mockito.internal.matchers.Equals;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
@@ -22,14 +24,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class ManageControllerTest extends BaseControllerTest {
+class UserManageControllerTest extends BaseControllerTest {
     @Autowired
     private UserManageService userManageService;
     @MockBean
@@ -173,4 +177,32 @@ class ManageControllerTest extends BaseControllerTest {
         assertDoesNotThrow(() -> userInfoMapper.selectByPrimaryKey(user.getUserId()).get());
     }
 
+    private void insertUsers(int num) {
+        for (int i = 0; i < num; i++) {
+            user = new UserInfo();
+            user.setUserName("ffff" + i);
+            user.setPassword("12323");
+            user.setEmail("123@123.com");
+            user.setCreateTime(new Date());
+            user.setRole(UserRoleEnum.NORMAL.getCode());
+            user.setStatus(UserStatusEnum.NORMAL.getCode());
+            userInfoMapper.insert(user);
+        }
+    }
+
+    @Test
+    public void userList_no_parameters_test() throws Exception {
+        insertUsers(11);
+        get("/user/list").andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCount").value(13))
+                .andExpect(jsonPath("$.currentPage").value(1));
+    }
+
+    @Test
+    public void userList_page_parameters_test() throws Exception {
+        insertUsers(11);
+        get("/user/list", "pageSize", "1", "pageNo", "3").andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCount").value(13))
+                .andExpect(jsonPath("$.list[0].userName").value("ffff0"));
+    }
 }

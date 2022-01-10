@@ -4,6 +4,9 @@ import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ClientException;
+import org.pbms.pbmsserver.common.request.user.UserListReq;
+import org.pbms.pbmsserver.common.vo.PageData;
+import org.pbms.pbmsserver.common.vo.user.UserListVO;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
@@ -14,13 +17,13 @@ import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.common.MailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
-import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
-import static org.mybatis.dynamic.sql.SqlBuilder.isIn;
+import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
 /**
  * @author zyl
@@ -92,6 +95,16 @@ public class UserManageService {
         }
         // 更新用户状态
         this.userInfoDao.updateByPrimaryKeySelective(updateUser);
+    }
+
+    public PageData<UserListVO> userList(UserListReq req) {
+        return PageData.getPageData(req.getPageNo(), req.getPageSize(),
+                () -> userInfoDao.select(c -> c.where(UserInfoDynamicSqlSupport.status, isEqualToWhenPresent(req.getStatus()))),
+                c -> {
+                    UserListVO userListVO = new UserListVO();
+                    BeanUtils.copyProperties(c, userListVO);
+                    return userListVO;
+                });
     }
 
     public void initDefaultSettings(long userId) {
