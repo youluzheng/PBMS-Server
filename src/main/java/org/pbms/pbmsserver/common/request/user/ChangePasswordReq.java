@@ -1,26 +1,18 @@
 package org.pbms.pbmsserver.common.request.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotBlank;
 
 /**
  * @author wangjun
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChangePasswordReq {
     @NotBlank
     private String password;
-
-    public ChangePasswordReq(String password) {
-        this.password = password;
-    }
-
-    public ChangePasswordReq() {
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

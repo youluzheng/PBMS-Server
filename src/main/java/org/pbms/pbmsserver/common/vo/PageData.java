@@ -3,6 +3,7 @@ package org.pbms.pbmsserver.common.vo;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@Data
 public class PageData<T> implements Serializable {
     private List<T> list;
     private Long totalCount;
@@ -45,18 +47,6 @@ public class PageData<T> implements Serializable {
         this.totalCount = (long) list.size();
     }
 
-    public List<T> getList() {
-        return this.list;
-    }
-
-    public Long getTotalCount() {
-        return this.totalCount;
-    }
-
-    public Integer getCurrentPage() {
-        return currentPage;
-    }
-
     public <S> PageData<S> convertType(List<S> list) {
         return new PageData<>(list, this.getTotalCount(), this.getCurrentPage());
     }
@@ -82,7 +72,7 @@ public class PageData<T> implements Serializable {
     }
 
 
-    public static <T, R> PageData<R> getPageData(Integer pageNo, Integer pageSize, Supplier<List<T>> supplier, Transfer<T,R> transfer) {
+    public static <T, R> PageData<R> getPageData(Integer pageNo, Integer pageSize, Supplier<List<T>> supplier, Transfer<T, R> transfer) {
         if (pageNo != null && pageSize != null) {
             PageHelper.startPage(pageNo, pageSize);
         }

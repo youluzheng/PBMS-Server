@@ -1,5 +1,7 @@
 package org.pbms.pbmsserver.common.request.tempToken;
 
+import lombok.Data;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.Date;
  *
  * @author zqs
  */
+@Data
 public class TempTokenAddReq {
 
     @NotNull
@@ -19,28 +22,4 @@ public class TempTokenAddReq {
     private Integer uploadTimes;
 
     private String note;
-
-    public Date getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(Date expireTime) {
-        this.expireTime = expireTime;
-    }
-
-    public Integer getUploadTimes() {
-        return uploadTimes;
-    }
-
-    public void setUploadTimes(Integer uploadTimes) {
-        this.uploadTimes = uploadTimes;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
 }
