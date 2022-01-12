@@ -1,6 +1,6 @@
 package org.pbms.pbmsserver.service;
 
-import org.pbms.pbmsserver.common.exception.ParamNullException;
+import org.pbms.pbmsserver.common.exception.ClientException;
 import org.pbms.pbmsserver.common.request.image.ImageUploadDTO;
 import org.pbms.pbmsserver.service.lifecycle.after.ResponseProcessor;
 import org.pbms.pbmsserver.service.lifecycle.before.CompressProcessor;
@@ -10,7 +10,6 @@ import org.pbms.pbmsserver.service.lifecycle.before.WaterMarkProcessor;
 import org.pbms.pbmsserver.service.lifecycle.before.decode.FileNameDecodeProcessor;
 import org.pbms.pbmsserver.service.lifecycle.upload.SaveProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +38,7 @@ public class ImageService {
 
     public String uploadImage(ImageUploadDTO imageUploadReq, MultipartFile image) {
         if (image == null || image.isEmpty()) {
-            throw new ParamNullException(HttpStatus.BAD_REQUEST, "请选择上传文件");
+            throw new ClientException("请选择上传文件");
         }
         // 1、前置检查
         this.imageSizeChecker.checkImageSize(image);

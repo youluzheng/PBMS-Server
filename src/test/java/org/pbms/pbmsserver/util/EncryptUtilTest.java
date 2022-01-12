@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.pbms.pbmsserver.common.exception.ParamNullException;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -27,7 +27,7 @@ class EncryptUtilTest {
     @ParameterizedTest
     @MethodSource("generateInvalidValue_sha512_string")
     void testSha512_string_invalid(String input) {
-        assertThrows(ParamNullException.class, () -> EncryptUtil.sha512(input));
+        assertThrows(ServerException.class, () -> EncryptUtil.sha512(input));
     }
 
     @ParameterizedTest
@@ -39,9 +39,9 @@ class EncryptUtilTest {
     @Test
     void testSha512_multipartFile_invalid() {
         MultipartFile file1 = null;
-        assertThrows(ParamNullException.class, () -> EncryptUtil.sha512(file1));
+        assertThrows(ServerException.class, () -> EncryptUtil.sha512(file1));
         MultipartFile file2 = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG.toString(), new byte[0]);
-        assertThrows(ParamNullException.class, () -> EncryptUtil.sha512(file2));
+        assertThrows(ServerException.class, () -> EncryptUtil.sha512(file2));
     }
 
     @Test

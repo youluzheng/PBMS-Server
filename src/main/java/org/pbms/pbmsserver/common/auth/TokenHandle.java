@@ -6,12 +6,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.pbms.pbmsserver.common.exception.ParamFormatException;
-import org.pbms.pbmsserver.common.exception.ParamNotSupportException;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.common.exception.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -52,13 +50,13 @@ public final class TokenHandle {
 
     public static String generateToken(String secret, Map<String, Object> data, long expiration, TimeUnit timeUnit) {
         if (secret == null || secret.isBlank()) {
-            throw new ParamFormatException(HttpStatus.INTERNAL_SERVER_ERROR, "secret不能为空");
+            throw new ServerException("secret不能为空");
         }
         Objects.requireNonNull(data);
         Objects.requireNonNull(timeUnit);
         if (expiration <= 0) {
             log.debug("expiration:{}", expiration);
-            throw new ParamNotSupportException(HttpStatus.INTERNAL_SERVER_ERROR, "expiration必须大于0");
+            throw new ServerException("expiration必须大于0");
         }
         return Jwts.builder()
                 .setClaims(data)

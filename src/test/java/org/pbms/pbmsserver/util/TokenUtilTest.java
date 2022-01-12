@@ -10,8 +10,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.auth.TokenHandle;
-import org.pbms.pbmsserver.common.exception.ParamFormatException;
-import org.pbms.pbmsserver.common.exception.ParamNotSupportException;
+import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +36,11 @@ class TokenUtilTest {
 
     private static Stream<Arguments> generateInvalidData_generateToken() {
         return Stream.of(
-                Arguments.of(null, new HashMap<>(), 10L, TimeUnit.DAYS, ParamFormatException.class),
-                Arguments.of("", new HashMap<>(), 10L, TimeUnit.DAYS, ParamFormatException.class),
+                Arguments.of(null, new HashMap<>(), 10L, TimeUnit.DAYS, ServerException.class),
+                Arguments.of("", new HashMap<>(), 10L, TimeUnit.DAYS, ServerException.class),
                 Arguments.of("123456", null, 10L, TimeUnit.DAYS, NullPointerException.class),
-                Arguments.of("123456", new HashMap<>(), 0L, TimeUnit.DAYS, ParamNotSupportException.class),
-                Arguments.of("123456", new HashMap<>(), -10L, TimeUnit.DAYS, ParamNotSupportException.class),
+                Arguments.of("123456", new HashMap<>(), 0L, TimeUnit.DAYS, ServerException.class),
+                Arguments.of("123456", new HashMap<>(), -10L, TimeUnit.DAYS, ServerException.class),
                 Arguments.of("123456", new HashMap<>(), 10L, null, NullPointerException.class)
         );
     }

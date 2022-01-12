@@ -6,7 +6,7 @@ import org.pbms.pbmsserver.common.auth.RoleEnum;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.auth.TokenHandle;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
-import org.pbms.pbmsserver.common.exception.ParamNullException;
+import org.pbms.pbmsserver.common.exception.ClientException;
 import org.pbms.pbmsserver.common.exception.ResourceNotFoundException;
 import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.common.request.image.ImageUploadDTO;
@@ -19,7 +19,6 @@ import org.pbms.pbmsserver.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +56,7 @@ public class ImageController {
     @PostMapping
     public String uploadImage(@Validated ImageUploadDTO imageUploadReq, @RequestBody List<MultipartFile> image) {
         if (image == null || image.isEmpty()) {
-            throw new ParamNullException(HttpStatus.BAD_REQUEST, "请选择上传文件");
+            throw new ClientException("请选择上传文件");
         }
         StringBuilder sb = new StringBuilder();
         for (var img : image) {
@@ -70,7 +69,7 @@ public class ImageController {
     @Role
     public String uploadImageByTempToken(@PathVariable String token, @Validated ImageUploadDTO imageUploadReq, @RequestBody List<MultipartFile> image) {
         if (image == null || image.isEmpty()) {
-            throw new ParamNullException(HttpStatus.BAD_REQUEST, "请选择上传文件");
+            throw new ClientException("请选择上传文件");
         }
         TempTokenInfo tempTokenInfo = tempTokenService.checkTempToken(token);
         tempTokenService.updateTimes(token, image.size());

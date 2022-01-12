@@ -4,7 +4,6 @@ import cn.hutool.core.io.FileTypeUtil;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
-import org.pbms.pbmsserver.common.exception.ParamFormatException;
 import org.pbms.pbmsserver.common.exception.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +25,7 @@ public class ImageTypeChecker {
         String extension;
         try {
             extension = FileTypeUtil.getType(image.getInputStream());
-        } catch (ParamFormatException e) {
-            throw new BusinessException(BusinessStatus.FILE_TYPE_NOT_SUPPORT);
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new ServerException();
         }
         log.debug("imageFileName:{}, extension:{}", image.getOriginalFilename(), extension);

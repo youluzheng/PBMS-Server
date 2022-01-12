@@ -1,8 +1,6 @@
 package org.pbms.pbmsserver.util;
 
-import org.pbms.pbmsserver.common.exception.ParamNullException;
 import org.pbms.pbmsserver.common.exception.ServerException;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,14 +13,14 @@ public final class EncryptUtil {
 
     public static String sha512(String target) {
         if (target == null || target.isBlank()) {
-            throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR, "目标字符串不能为空");
+            throw new ServerException("目标字符串不能为空");
         }
         return EncryptUtil.sha512(target.getBytes());
     }
 
     public static String sha512(MultipartFile target) {
         if (target == null || target.isEmpty()) {
-            throw new ParamNullException(HttpStatus.INTERNAL_SERVER_ERROR, "目标文件不能为空");
+            throw new ServerException("目标文件不能为空");
         }
         try {
             byte[] bytes = target.getBytes();
