@@ -1,11 +1,11 @@
-package org.pbms.pbmsserver.controller;
+package org.pbms.pbmsserver.controller.image;
 
 import cn.hutool.core.date.DateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
-import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
+import org.pbms.pbmsserver.controller.BaseControllerTest;
 import org.pbms.pbmsserver.repository.mapper.TempTokenInfoMapper;
 import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.TempTokenInfo;
@@ -35,9 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author zqs
  */
-class ImageControllerTest extends BaseControllerTest {
+class ImagePublicTest extends BaseControllerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(ImageControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(ImagePublicTest.class);
 
     private final MockMultipartFile image = new MockMultipartFile("image",
             "test",
@@ -57,8 +57,7 @@ class ImageControllerTest extends BaseControllerTest {
 
     @Override
     protected TokenBean getTokenBean() {
-        return new TokenBean(this.user.getUserId(), this.user.getUserName(),
-                UserRoleEnum.transform(this.user.getRole()));
+        return null;
     }
 
     @BeforeEach
@@ -83,28 +82,6 @@ class ImageControllerTest extends BaseControllerTest {
         userSettingsMapper.insert(userSettings);
 
         doNothing().when(saveProcessor).save(any(), any(), any());
-    }
-
-    // 正常情况
-    @Test
-    void uploadImageByCommonToken() throws Exception {
-        ArrayList<MockMultipartFile> multipartFiles = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            multipartFiles.add(image);
-        }
-        this.filePost("/image", multipartFiles).andExpect(status().isOk());
-    }
-
-    @Test
-    void uploadImageByCommonToken_imageEmpty() throws Exception {
-        MockMultipartFile emptyImage = new MockMultipartFile("image",
-                "test",
-                MediaType.IMAGE_JPEG.toString(),
-                new byte[]{}
-        );
-        this.filePost("/image", emptyImage)
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("请选择上传文件"));
     }
 
     TempTokenInfo insertTempToken(String stringDate, int times) {

@@ -14,7 +14,7 @@ import org.pbms.pbmsserver.repository.mapper.UserSettingsDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.service.SystemService;
-import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;

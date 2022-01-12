@@ -4,7 +4,7 @@ import cn.hutool.core.io.FileTypeUtil;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ServerException;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.pbms.pbmsserver.util.FontUtil;
 import org.pbms.pbmsserver.util.MultipartFileUtil;
 import org.slf4j.Logger;
@@ -18,7 +18,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 
 /**

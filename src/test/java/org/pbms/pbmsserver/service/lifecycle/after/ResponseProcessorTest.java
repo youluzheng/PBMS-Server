@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;

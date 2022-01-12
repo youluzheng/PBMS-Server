@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
  *
  * @author zyl
  */
-public final class TokenHandle {
-    private static final Logger log = LoggerFactory.getLogger(TokenHandle.class);
+public final class TokenHandler {
+    private static final Logger log = LoggerFactory.getLogger(TokenHandler.class);
 
     private static final Random random = new SecureRandom();
     private static final String SECRET = String.format("%09d", random.nextInt(1000000000));
@@ -44,8 +44,8 @@ public final class TokenHandle {
     public static String generateToken(TokenBean tokenBean) {
         Objects.requireNonNull(tokenBean);
         Map<String, Object> data = new HashMap<>();
-        data.put(TokenHandle.KEY, JSONUtil.toJsonStr(tokenBean));
-        return TokenHandle.generateToken(TokenHandle.SECRET, data, TokenHandle.EXPIRATION, TokenHandle.TIME_UNIT);
+        data.put(TokenHandler.KEY, JSONUtil.toJsonStr(tokenBean));
+        return TokenHandler.generateToken(TokenHandler.SECRET, data, TokenHandler.EXPIRATION, TokenHandler.TIME_UNIT);
     }
 
     public static String generateToken(String secret, Map<String, Object> data, long expiration, TimeUnit timeUnit) {
@@ -70,7 +70,7 @@ public final class TokenHandle {
      */
     public static TokenBean checkToken() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String token = request.getHeader(TokenHandle.TOKEN_HEAD);
+        String token = request.getHeader(TokenHandler.TOKEN_HEAD);
         Claims data;
         try {
             data = Jwts.parser()
@@ -87,13 +87,13 @@ public final class TokenHandle {
             log.error("token解析异常，token:{}", token);
             throw new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED);
         }
-        return JSONUtil.toBean(data.get(TokenHandle.KEY, String.class), TokenBean.class);
+        return JSONUtil.toBean(data.get(TokenHandler.KEY, String.class), TokenBean.class);
     }
 
     public static void setTokenBean(TokenBean tokenBean) {
         Objects.requireNonNull(tokenBean);
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        request.setAttribute(TokenHandle.KEY, tokenBean);
+        request.setAttribute(TokenHandler.KEY, tokenBean);
     }
 
     /**
@@ -103,7 +103,7 @@ public final class TokenHandle {
      */
     public static TokenBean getTokenBean() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        return (TokenBean) request.getAttribute(TokenHandle.KEY);
+        return (TokenBean) request.getAttribute(TokenHandler.KEY);
     }
 
     /**
@@ -112,6 +112,6 @@ public final class TokenHandle {
      * @return 用户id
      */
     public static long getUserId() {
-        return TokenHandle.getTokenBean().getUserId();
+        return TokenHandler.getTokenBean().getUserId();
     }
 }

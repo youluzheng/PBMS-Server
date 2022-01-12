@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.controller;
+package org.pbms.pbmsserver.controller.user;
 
 import cn.hutool.cache.impl.TimedCache;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +13,15 @@ import org.pbms.pbmsserver.common.request.user.PasswordModifyDTO;
 import org.pbms.pbmsserver.common.request.user.SettingModifyDTO;
 import org.pbms.pbmsserver.common.request.user.UserLoginDTO;
 import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
+import org.pbms.pbmsserver.controller.BaseControllerTest;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-import org.pbms.pbmsserver.service.UserService;
 import org.pbms.pbmsserver.service.common.MailService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -275,7 +276,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void checkChangeCode_invalid_test() throws Exception {
-        get("/user/password-page", checkRegisterParams)
+        get("/user/passwordLink/action-check", checkRegisterParams)
                 .andExpect(status().is(HttpStatus.FORBIDDEN.value()))
                 .andExpect(content().string("{\"code\":01005, \"message\":\"链接已失效\"}"));
     }
@@ -284,7 +285,7 @@ public class UserControllerTest extends BaseControllerTest {
     public void checkChangeCode_invalid_wrong_code_test() throws Exception {
         ReflectionTestUtils.setField(userService, "codeMap", map);
         when(map.get(another.getUserId())).thenReturn("12345678123456781234567812345679");
-        get("/user/password-page", checkRegisterParams)
+        get("/user/passwordLink/action-check", checkRegisterParams)
                 .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(content().string("无效链接"));
     }
@@ -293,7 +294,7 @@ public class UserControllerTest extends BaseControllerTest {
     public void checkChangeCode_success_test() throws Exception {
         ReflectionTestUtils.setField(userService, "codeMap", map);
         when(map.get(another.getUserId())).thenReturn("12345678123456781234567812345678");
-        get("/user/password-page", checkRegisterParams)
+        get("/user/passwordLink/action-check", checkRegisterParams)
                 .andExpect(status().isOk());
     }
 

@@ -1,6 +1,6 @@
 package org.pbms.pbmsserver.service;
 
-import org.pbms.pbmsserver.common.auth.TokenHandle;
+import org.pbms.pbmsserver.common.auth.TokenHandler;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.dao.TempTokenInfoDao;
@@ -39,7 +39,7 @@ public class TempTokenService {
         TempTokenInfo tokenInfo = new TempTokenInfo();
         tokenInfo.setSecretKey(randomString);
         tokenInfo.setUploadTimes(uploadTimes);
-        tokenInfo.setUserId(TokenHandle.getUserId());
+        tokenInfo.setUserId(TokenHandler.getUserId());
         tokenInfo.setExpireTime(expireTime);
         tokenInfo.setNote(note);
         tempTokenInfoDao.insert(tokenInfo);
@@ -52,7 +52,7 @@ public class TempTokenService {
      * @return 临时token列表
      */
     public List<TempTokenInfo> myTokenList() {
-        long myId = TokenHandle.getUserId();
+        long myId = TokenHandler.getUserId();
         return tempTokenInfoDao.select(c -> c
                 .where(userId, isEqualTo(myId))
                 .orderBy(expireTime, uploadTimes.descending())
@@ -66,7 +66,7 @@ public class TempTokenService {
      */
     public void deleteTempToken(long tokenId) {
         tempTokenInfoDao.delete(c -> c
-                .where(userId, isEqualTo(TokenHandle.getUserId()))
+                .where(userId, isEqualTo(TokenHandler.getUserId()))
                 .and(id, isEqualTo(tokenId))
         );
     }

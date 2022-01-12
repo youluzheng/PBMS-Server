@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.controller;
+package org.pbms.pbmsserver.controller.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.controller.BaseControllerTest;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
@@ -13,8 +14,8 @@ import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
 import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-import org.pbms.pbmsserver.service.UserManageService;
 import org.pbms.pbmsserver.service.common.MailService;
+import org.pbms.pbmsserver.service.user.UserAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -30,9 +31,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserManageControllerTest extends BaseControllerTest {
+class UserAdminControllerTest extends BaseControllerTest {
     @Autowired
-    private UserManageService userManageService;
+    private UserAdminService userManageService;
     @MockBean
     private MailService mailService;
     @Autowired
@@ -190,7 +191,7 @@ class UserManageControllerTest extends BaseControllerTest {
     @Test
     public void userList_no_parameters_test() throws Exception {
         insertUsers(11);
-        get("/user/list").andExpect(status().isOk())
+        get("/user/page").andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCount").value(13))
                 .andExpect(jsonPath("$.currentPage").value(1));
     }
@@ -198,7 +199,7 @@ class UserManageControllerTest extends BaseControllerTest {
     @Test
     public void userList_page_parameters_test() throws Exception {
         insertUsers(11);
-        get("/user/list", "pageSize", "1", "pageNo", "3").andExpect(status().isOk())
+        get("/user/page", "pageSize", "1", "pageNo", "3").andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCount").value(13))
                 .andExpect(jsonPath("$.list[0].userName").value("ffff0"));
     }

@@ -2,7 +2,7 @@ package org.pbms.pbmsserver.controller;
 
 import cn.hutool.json.JSONUtil;
 import org.pbms.pbmsserver.common.auth.TokenBean;
-import org.pbms.pbmsserver.common.auth.TokenHandle;
+import org.pbms.pbmsserver.common.auth.TokenHandler;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
@@ -89,7 +89,7 @@ public abstract class BaseControllerTest {
     private void setToken(MockHttpServletRequestBuilder builder) {
         TokenBean tokenBean = this.getTokenBean();
         if (tokenBean != null) {
-            builder.header("token", TokenHandle.generateToken(tokenBean));
+            builder.header("token", TokenHandler.generateToken(tokenBean));
         }
     }
 

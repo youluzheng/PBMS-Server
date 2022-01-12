@@ -5,7 +5,7 @@ import cn.hutool.crypto.digest.DigestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import org.pbms.pbmsserver.common.auth.TokenHandle;
+import org.pbms.pbmsserver.common.auth.TokenHandler;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
@@ -19,6 +19,7 @@ import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.service.common.MailService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -222,8 +223,8 @@ public class UserServiceTest {
     @Test
     public void chPassword_test() {
         UserInfo userInfo = this.insertUser();
-        try (MockedStatic<TokenHandle> tokenUtilMockedStatic = mockStatic(TokenHandle.class)) {
-            tokenUtilMockedStatic.when(TokenHandle::getUserId).thenReturn(userInfo.getUserId());
+        try (MockedStatic<TokenHandler> tokenUtilMockedStatic = mockStatic(TokenHandler.class)) {
+            tokenUtilMockedStatic.when(TokenHandler::getUserId).thenReturn(userInfo.getUserId());
             this.userService.changePassword("123123");
             assertEquals(ServerConstant.HASH_METHOD.apply("123123"), userInfoDao.selectByPrimaryKey(userInfo.getUserId()).get().getPassword());
         }

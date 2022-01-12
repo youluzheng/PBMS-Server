@@ -1,16 +1,16 @@
-package org.pbms.pbmsserver.controller;
+package org.pbms.pbmsserver.controller.user;
 
 import org.hibernate.validator.constraints.Length;
 import org.pbms.pbmsserver.common.auth.Role;
 import org.pbms.pbmsserver.common.auth.RoleEnum;
-import org.pbms.pbmsserver.common.auth.TokenHandle;
+import org.pbms.pbmsserver.common.auth.TokenHandler;
 import org.pbms.pbmsserver.common.request.user.PasswordModifyDTO;
 import org.pbms.pbmsserver.common.request.user.SettingModifyDTO;
 import org.pbms.pbmsserver.common.request.user.UserLoginDTO;
 import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class UserController {
      * @param code   验证code
      * @return 用户token
      */
-    @GetMapping("password-page")
+    @GetMapping("passwordLink/action-check")
     @Role
     public String checkChangeCode(@RequestParam @NotNull Long userId, @RequestParam @NotBlank @Length(min = 32, max = 32) String code) {
         return userService.checkChangePasswordMail(userId, code);
@@ -91,7 +91,7 @@ public class UserController {
     @PutMapping("settings")
     public void modifyUserSettings(@RequestBody @Validated SettingModifyDTO req) {
         UserSettings userSettings = req.transform();
-        userSettings.setUserId(TokenHandle.getUserId());
+        userSettings.setUserId(TokenHandler.getUserId());
         this.userSettingsDao.updateByPrimaryKeySelective(userSettings);
     }
 

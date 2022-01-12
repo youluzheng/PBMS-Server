@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.controller;
+package org.pbms.pbmsserver.controller.user;
 
 
 import org.pbms.pbmsserver.common.auth.Role;
@@ -7,7 +7,7 @@ import org.pbms.pbmsserver.common.request.user.UserListDTO;
 import org.pbms.pbmsserver.common.response.PageData;
 import org.pbms.pbmsserver.common.response.user.UserListVO;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
-import org.pbms.pbmsserver.service.UserManageService;
+import org.pbms.pbmsserver.service.user.UserAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("user")
 @Validated
 @Role(role = RoleEnum.ADMIN)
-public class UserManageController {
+public class UserAdminController {
 
     @Autowired
-    private UserManageService userManageService;
+    private UserAdminService userManageService;
 
     @PatchMapping("{userId}/action-forbidden")
     public void forbiddenUser(@PathVariable long userId) {
@@ -46,7 +46,7 @@ public class UserManageController {
         this.userManageService.deleteUser(userId);
     }
 
-    @GetMapping("/list")
+    @GetMapping("page")
     public PageData<UserListVO> userList(UserListDTO req) {
         return this.userManageService.userList(req);
     }

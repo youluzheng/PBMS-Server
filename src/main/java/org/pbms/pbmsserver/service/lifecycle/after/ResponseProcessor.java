@@ -2,7 +2,7 @@ package org.pbms.pbmsserver.service.lifecycle.after;
 
 import cn.hutool.core.io.file.FileNameUtil;
 import org.pbms.pbmsserver.repository.model.UserSettings;
-import org.pbms.pbmsserver.service.UserService;
+import org.pbms.pbmsserver.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

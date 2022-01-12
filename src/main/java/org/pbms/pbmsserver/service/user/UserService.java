@@ -1,11 +1,11 @@
-package org.pbms.pbmsserver.service;
+package org.pbms.pbmsserver.service.user;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import org.pbms.pbmsserver.common.auth.TokenBean;
-import org.pbms.pbmsserver.common.auth.TokenHandle;
+import org.pbms.pbmsserver.common.auth.TokenHandler;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
@@ -64,11 +64,11 @@ public class UserService {
         ).orElseThrow(
                 () -> new BusinessException(BusinessStatus.USERNAME_OR_PASSWORD_ERROR)
         );
-        return TokenHandle.generateToken(new TokenBean(user.getUserId(), userName, UserRoleEnum.transform(user.getRole())));
+        return TokenHandler.generateToken(new TokenBean(user.getUserId(), userName, UserRoleEnum.transform(user.getRole())));
     }
 
     public UserSettings getSettings() {
-        return this.userSettingsDao.selectByPrimaryKey(TokenHandle.getUserId())
+        return this.userSettingsDao.selectByPrimaryKey(TokenHandler.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
     }
 
@@ -157,12 +157,12 @@ public class UserService {
     public String checkChangePasswordMail(long userId, String code) {
         UserInfo user = checkCode(userId, code);
         TokenBean tokenBean = new TokenBean(user.getUserId(), user.getUserName(), UserRoleEnum.transform(user.getRole()));
-        return TokenHandle.generateToken(tokenBean);
+        return TokenHandler.generateToken(tokenBean);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
     public void changePassword(String password) {
-        long userId = TokenHandle.getUserId();
+        long userId = TokenHandler.getUserId();
         UserInfo user = userInfoDao.selectOne(c ->
                 c.where(userInfo.userId, isEqualTo(userId))).orElseThrow(() -> new ClientException("用户错误"));
         user.setPassword(ServerConstant.HASH_METHOD.apply(password));

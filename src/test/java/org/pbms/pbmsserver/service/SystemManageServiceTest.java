@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
+import org.pbms.pbmsserver.service.user.UserAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,7 +30,7 @@ public class SystemManageServiceTest {
     @Autowired
     UserInfoMapper userInfoMapper;
     @MockBean
-    UserManageService userManageService;
+    UserAdminService userManageService;
 
     private UserRegisterDTO req = new UserRegisterDTO("王大锤", "123456", "fff@22.cn");
 

@@ -10,6 +10,7 @@ import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
+import org.pbms.pbmsserver.service.user.UserAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class SystemService {
     @Autowired
     private UserInfoDao userInfoDao;
     @Autowired
-    private UserManageService userManageService;
+    private UserAdminService userManageService;
     @Autowired
     private SystemDao systemDao;
 

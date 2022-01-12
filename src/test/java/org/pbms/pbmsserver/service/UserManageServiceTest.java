@@ -11,6 +11,7 @@ import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.common.MailService;
+import org.pbms.pbmsserver.service.user.UserAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ class UserManageServiceTest {
     private static final Logger log = LoggerFactory.getLogger(UserManageServiceTest.class);
 
     @SpyBean
-    UserManageService userManageService;
+    UserAdminService userManageService;
 
     @Autowired
     UserInfoDao userInfoDao;

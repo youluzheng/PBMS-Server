@@ -68,7 +68,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         // 需要验证token
-        TokenBean tokenBean = TokenHandle.checkToken();
+        TokenBean tokenBean = TokenHandler.checkToken();
         boolean isAllMatching = false;
         boolean isRoleMatching = false;
         for (RoleEnum role : roles) {
@@ -98,7 +98,7 @@ public class TokenInterceptor implements HandlerInterceptor {
                     throw new BusinessException(BusinessStatus.PERMISSION_DENIED);
                 }
             }
-            TokenHandle.setTokenBean(tokenBean);
+            TokenHandler.setTokenBean(tokenBean);
             return true;
         }
         // 已登录, 但是角色不匹配

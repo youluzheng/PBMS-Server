@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.service;
+package org.pbms.pbmsserver.service.user;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
@@ -29,8 +29,8 @@ import static org.mybatis.dynamic.sql.SqlBuilder.*;
  * @author zyl
  */
 @Service
-public class UserManageService {
-    private static final Logger log = LoggerFactory.getLogger(UserManageService.class);
+public class UserAdminService {
+    private static final Logger log = LoggerFactory.getLogger(UserAdminService.class);
 
     @Autowired
     private UserInfoDao userInfoDao;
