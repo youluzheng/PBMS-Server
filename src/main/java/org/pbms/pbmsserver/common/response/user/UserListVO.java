@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.common.vo.user;
+package org.pbms.pbmsserver.common.response.user;
 
 import lombok.Data;
 

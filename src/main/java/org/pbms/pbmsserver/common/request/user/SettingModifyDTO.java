@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Range;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 
 @Data
-public class SettingModifyReq {
+public class SettingModifyDTO {
 
     private Boolean watermarkLogoEnable;
 

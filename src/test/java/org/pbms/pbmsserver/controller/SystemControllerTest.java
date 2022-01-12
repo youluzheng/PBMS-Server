@@ -6,7 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.pbms.pbmsserver.common.auth.TokenBean;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
 import org.pbms.pbmsserver.repository.mapper.UserSettingsDynamicSqlSupport;
@@ -33,13 +34,13 @@ class SystemControllerTest extends BaseControllerTest {
     private UserSettingsMapper userSettingsMapper;
     @Autowired
     private SystemService systemManageService;
-    private UserRegisterReq req;
+    private UserRegisterDTO req;
 
     private UserInfo admin;
 
     @Override
     protected TokenBean getTokenBean() {
-        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), this.admin.getRole());
+        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), UserRoleEnum.transform(this.admin.getRole()));
     }
 
     @BeforeEach
@@ -48,7 +49,7 @@ class SystemControllerTest extends BaseControllerTest {
         userSettingsMapper.delete(c -> c);
         this.admin = this.insertDefaultAdmin();
 
-        this.req = new UserRegisterReq();
+        this.req = new UserRegisterDTO();
         req.setUserName("王大锤");
         req.setPassword("123456");
         req.setEmail("123@123.com");
@@ -72,20 +73,20 @@ class SystemControllerTest extends BaseControllerTest {
 
     private static Stream<Arguments> systemAdmin_invalid() {
         return Stream.of(
-                Arguments.of(new UserRegisterReq("", "123456", "123@email")),
-                Arguments.of(new UserRegisterReq(null, "123456", "123@email")),
-                Arguments.of(new UserRegisterReq("wqe", "1234", "123@email")),
-                Arguments.of(new UserRegisterReq("wqe", "123456789012345678901234567890", "123@email")),
-                Arguments.of(new UserRegisterReq("wqe", null, "123@email")),
-                Arguments.of(new UserRegisterReq("wqe", "null123", "null")),
-                Arguments.of(new UserRegisterReq("wqe", "null123", "")),
-                Arguments.of(new UserRegisterReq("wqe", "null123", null))
+                Arguments.of(new UserRegisterDTO("", "123456", "123@email")),
+                Arguments.of(new UserRegisterDTO(null, "123456", "123@email")),
+                Arguments.of(new UserRegisterDTO("wqe", "1234", "123@email")),
+                Arguments.of(new UserRegisterDTO("wqe", "123456789012345678901234567890", "123@email")),
+                Arguments.of(new UserRegisterDTO("wqe", null, "123@email")),
+                Arguments.of(new UserRegisterDTO("wqe", "null123", "null")),
+                Arguments.of(new UserRegisterDTO("wqe", "null123", "")),
+                Arguments.of(new UserRegisterDTO("wqe", "null123", null))
         );
     }
 
     @ParameterizedTest
     @MethodSource("systemAdmin_invalid")
-    public void systemAdmin_invalid(UserRegisterReq req) throws Exception {
+    public void systemAdmin_invalid(UserRegisterDTO req) throws Exception {
         userInfoMapper.delete(c -> c);
         userSettingsMapper.delete(c -> c);
         post("/system/admin", req)

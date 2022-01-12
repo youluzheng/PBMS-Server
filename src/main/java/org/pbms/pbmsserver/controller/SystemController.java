@@ -1,8 +1,8 @@
 package org.pbms.pbmsserver.controller;
 
 
-import org.pbms.pbmsserver.common.auth.PublicInterface;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.auth.Role;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("system")
+@Role
 public class SystemController {
     @Autowired
     private SystemService systemManageService;
@@ -25,13 +26,11 @@ public class SystemController {
     private UserInfoDao userInfoDao;
 
     @PostMapping("admin")
-    @PublicInterface
-    public void initAdmin(@RequestBody @Validated UserRegisterReq req) {
+    public void initAdmin(@RequestBody @Validated UserRegisterDTO req) {
         systemManageService.initAdmin(req);
     }
 
     @GetMapping("")
-    @PublicInterface
     public String checkInit() {
         // 以有没有用户作为判断
         return String.valueOf(systemManageService.isInit());

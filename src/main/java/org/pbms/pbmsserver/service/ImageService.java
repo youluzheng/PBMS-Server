@@ -1,7 +1,7 @@
 package org.pbms.pbmsserver.service;
 
 import org.pbms.pbmsserver.common.exception.ParamNullException;
-import org.pbms.pbmsserver.common.request.image.ImageUploadReq;
+import org.pbms.pbmsserver.common.request.image.ImageUploadDTO;
 import org.pbms.pbmsserver.service.lifecycle.after.ResponseProcessor;
 import org.pbms.pbmsserver.service.lifecycle.before.CompressProcessor;
 import org.pbms.pbmsserver.service.lifecycle.before.ImageSizeChecker;
@@ -37,7 +37,7 @@ public class ImageService {
     @Autowired
     private ResponseProcessor responseProcessor;
 
-    public String uploadImage(ImageUploadReq imageUploadReq, MultipartFile image) {
+    public String uploadImage(ImageUploadDTO imageUploadReq, MultipartFile image) {
         if (image == null || image.isEmpty()) {
             throw new ParamNullException(HttpStatus.BAD_REQUEST, "请选择上传文件");
         }

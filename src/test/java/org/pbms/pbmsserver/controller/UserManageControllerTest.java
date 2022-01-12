@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentMatchers;
-import org.mockito.internal.matchers.Equals;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
@@ -24,14 +22,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserManageControllerTest extends BaseControllerTest {
     @Autowired
@@ -51,7 +48,7 @@ class UserManageControllerTest extends BaseControllerTest {
 
     @Override
     protected TokenBean getTokenBean() {
-        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), this.admin.getRole());
+        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), UserRoleEnum.transform(this.admin.getRole()));
     }
 
     @BeforeEach

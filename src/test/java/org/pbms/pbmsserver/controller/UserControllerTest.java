@@ -9,10 +9,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
-import org.pbms.pbmsserver.common.request.user.ChangePasswordReq;
-import org.pbms.pbmsserver.common.request.user.SettingModifyReq;
-import org.pbms.pbmsserver.common.request.user.UserLoginReq;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.request.user.PasswordModifyDTO;
+import org.pbms.pbmsserver.common.request.user.SettingModifyDTO;
+import org.pbms.pbmsserver.common.request.user.UserLoginDTO;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
@@ -51,7 +51,7 @@ public class UserControllerTest extends BaseControllerTest {
     private MailService mailService;
     @Mock
     private TimedCache<Long, String> map;
-    private UserLoginReq req = new UserLoginReq();
+    private UserLoginDTO req = new UserLoginDTO();
     private HashMap<String, String> checkRegisterParams;
     private HashMap<String, String> getCaptchaParams;
 
@@ -61,7 +61,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Override
     protected TokenBean getTokenBean() {
-        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), this.admin.getRole());
+        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), UserRoleEnum.transform(this.admin.getRole()));
     }
 
     @BeforeEach
@@ -100,17 +100,17 @@ public class UserControllerTest extends BaseControllerTest {
 
     private static Stream<Arguments> login_invalid() {
         return Stream.of(
-                Arguments.of(new UserLoginReq("", "123456")),
-                Arguments.of(new UserLoginReq(null, "123456")),
-                Arguments.of(new UserLoginReq("admin", "1234567")),
-                Arguments.of(new UserLoginReq("admin", "")),
-                Arguments.of(new UserLoginReq("admin", null))
+                Arguments.of(new UserLoginDTO("", "123456")),
+                Arguments.of(new UserLoginDTO(null, "123456")),
+                Arguments.of(new UserLoginDTO("admin", "1234567")),
+                Arguments.of(new UserLoginDTO("admin", "")),
+                Arguments.of(new UserLoginDTO("admin", null))
         );
     }
 
     @ParameterizedTest
     @MethodSource("login_invalid")
-    public void login_invalid(UserLoginReq req) throws Exception {
+    public void login_invalid(UserLoginDTO req) throws Exception {
         post("/user/action-login", req)
                 .andExpect(status().is4xxClientError());
     }
@@ -118,7 +118,7 @@ public class UserControllerTest extends BaseControllerTest {
     @Test
     public void register_normal_test() throws Exception {
         doNothing().when(mailService).sendMail(anyString(), anyString(), anyString(), any(Context.class));
-        UserRegisterReq req = new UserRegisterReq();
+        UserRegisterDTO req = new UserRegisterDTO();
         req.setUserName("张三a");
         req.setPassword("123123");
         req.setEmail("123@123.com");
@@ -131,7 +131,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void register_name_repeat_test() throws Exception {
-        UserRegisterReq req = new UserRegisterReq();
+        UserRegisterDTO req = new UserRegisterDTO();
         req.setUserName("admin");
         req.setPassword("123123");
         req.setEmail("123@123.com");
@@ -142,7 +142,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void register_repeat_test() throws Exception {
-        UserRegisterReq req = new UserRegisterReq();
+        UserRegisterDTO req = new UserRegisterDTO();
         req.setUserName("admin");
         req.setPassword("123123");
         req.setEmail("1234@1234.com");
@@ -173,7 +173,7 @@ public class UserControllerTest extends BaseControllerTest {
         userInfo.setCreateTime(new Date());
         userInfo.setRole(UserRoleEnum.NORMAL.getCode());
         userInfoMapper.insert(userInfo);
-        new UserRegisterReq(newName, "123456", newEmail);
+        new UserRegisterDTO(newName, "123456", newEmail);
         post("/user", req)
                 .andExpect(status().is4xxClientError());
     }
@@ -187,7 +187,7 @@ public class UserControllerTest extends BaseControllerTest {
         userSettings.setWatermarkLogoEnable(false);
         userSettings.setResponseReturnType("md");
         userSettingsMapper.insert(userSettings);
-        SettingModifyReq settingModifyReq = new SettingModifyReq();
+        SettingModifyDTO settingModifyReq = new SettingModifyDTO();
         settingModifyReq.setCompressScale((byte) 80);
         settingModifyReq.setResponseReturnType("md");
         settingModifyReq.setWatermarkLogoEnable(false);
@@ -299,7 +299,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void changePassword_test() throws Exception {
-        ChangePasswordReq req = new ChangePasswordReq("12123123");
+        PasswordModifyDTO req = new PasswordModifyDTO("12123123");
         put("/user/password", req)
                 .andExpect(status().isOk());
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(this.admin.getUserId()).orElse(this.admin);

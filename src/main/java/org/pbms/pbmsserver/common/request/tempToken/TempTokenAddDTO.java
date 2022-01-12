@@ -12,7 +12,7 @@ import java.util.Date;
  * @author zqs
  */
 @Data
-public class TempTokenAddReq {
+public class TempTokenAddDTO {
 
     @NotNull
     private Date expireTime;

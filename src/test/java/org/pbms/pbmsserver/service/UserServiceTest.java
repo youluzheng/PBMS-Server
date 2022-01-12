@@ -5,11 +5,12 @@ import cn.hutool.crypto.digest.DigestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.pbms.pbmsserver.common.auth.TokenHandle;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ClientException;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
@@ -18,7 +19,6 @@ import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.service.common.MailService;
-import org.pbms.pbmsserver.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -49,7 +49,7 @@ public class UserServiceTest {
     MailService mailService;
     @MockBean
     TimedCache<Long, String> map;
-    private UserRegisterReq req;
+    private UserRegisterDTO req;
 
 
     @BeforeEach
@@ -64,7 +64,7 @@ public class UserServiceTest {
         // mock成员变量
         ReflectionTestUtils.setField(userService, "codeMap", map);
         // 初始化req
-        req = new UserRegisterReq();
+        req = new UserRegisterDTO();
         req.setUserName("Thanos");
         req.setEmail("123@nb.com");
         req.setPassword("123456");
@@ -222,8 +222,8 @@ public class UserServiceTest {
     @Test
     public void chPassword_test() {
         UserInfo userInfo = this.insertUser();
-        try (MockedStatic<TokenUtil> tokenUtilMockedStatic = mockStatic(TokenUtil.class)) {
-            tokenUtilMockedStatic.when(TokenUtil::getUserId).thenReturn(userInfo.getUserId());
+        try (MockedStatic<TokenHandle> tokenUtilMockedStatic = mockStatic(TokenHandle.class)) {
+            tokenUtilMockedStatic.when(TokenHandle::getUserId).thenReturn(userInfo.getUserId());
             this.userService.changePassword("123123");
             assertEquals(ServerConstant.HASH_METHOD.apply("123123"), userInfoDao.selectByPrimaryKey(userInfo.getUserId()).get().getPassword());
         }

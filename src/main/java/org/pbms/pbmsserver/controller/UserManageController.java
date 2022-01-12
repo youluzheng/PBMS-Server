@@ -1,10 +1,11 @@
 package org.pbms.pbmsserver.controller;
 
 
-import org.pbms.pbmsserver.common.auth.AdminInterface;
-import org.pbms.pbmsserver.common.request.user.UserListReq;
-import org.pbms.pbmsserver.common.vo.PageData;
-import org.pbms.pbmsserver.common.vo.user.UserListVO;
+import org.pbms.pbmsserver.common.auth.Role;
+import org.pbms.pbmsserver.common.auth.RoleEnum;
+import org.pbms.pbmsserver.common.request.user.UserListDTO;
+import org.pbms.pbmsserver.common.response.PageData;
+import org.pbms.pbmsserver.common.response.user.UserListVO;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.service.UserManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,38 +20,34 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("user")
 @Validated
+@Role(role = RoleEnum.ADMIN)
 public class UserManageController {
 
     @Autowired
     private UserManageService userManageService;
 
     @PatchMapping("{userId}/action-forbidden")
-    @AdminInterface
     public void forbiddenUser(@PathVariable long userId) {
         userManageService.updateStatus(userId, UserStatusEnum.FORBID);
     }
 
     @PatchMapping("{userId}/action-unset")
-    @AdminInterface
     public void unsetUser(@PathVariable long userId) {
         userManageService.updateStatus(userId, UserStatusEnum.NORMAL);
     }
 
     @PatchMapping("{userId}/action-audit")
-    @AdminInterface
     public void auditUser(@PathVariable long userId, @RequestParam boolean pass) {
         userManageService.auditUser(userId, pass);
     }
 
     @DeleteMapping("{userId}")
-    @AdminInterface
     public void deleteUser(@PathVariable long userId) {
         this.userManageService.deleteUser(userId);
     }
 
     @GetMapping("/list")
-    @AdminInterface
-    public PageData<UserListVO> userList(UserListReq req) {
+    public PageData<UserListVO> userList(UserListDTO req) {
         return this.userManageService.userList(req);
     }
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.auth.TokenHandle;
 import org.pbms.pbmsserver.common.exception.ParamFormatException;
 import org.pbms.pbmsserver.common.exception.ParamNotSupportException;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
@@ -31,7 +32,7 @@ class TokenUtilTest {
     private static final Logger log = LoggerFactory.getLogger(TokenUtilTest.class);
 
     private TokenBean generateTokenBean() {
-        return new TokenBean(1L, "张三", UserRoleEnum.ADMIN.getCode());
+        return new TokenBean(1L, "张三", UserRoleEnum.ADMIN.transform());
     }
 
     private static Stream<Arguments> generateInvalidData_generateToken() {
@@ -48,13 +49,13 @@ class TokenUtilTest {
     @ParameterizedTest
     @MethodSource("generateInvalidData_generateToken")
     void generateToken_invalidParam(String secret, Map<String, Object> data, long expiration, TimeUnit timeUnit, Class<? extends Exception> exception) {
-        assertThrows(exception, () -> TokenUtil.generateToken(secret, data, expiration, timeUnit));
+        assertThrows(exception, () -> TokenHandle.generateToken(secret, data, expiration, timeUnit));
     }
 
     @Test
     void generateToken_expiration() throws InterruptedException {
         String secret = "123456";
-        String token = TokenUtil.generateToken(secret, new HashMap<>(), 3, TimeUnit.SECONDS);
+        String token = TokenHandle.generateToken(secret, new HashMap<>(), 3, TimeUnit.SECONDS);
         Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
         Thread.sleep(3500);
         JwtParser parser = Jwts.parser().setSigningKey(secret);
@@ -70,6 +71,7 @@ class TokenUtilTest {
                 }
         );
     }
+
     @Test
     void testSecret1() {
         System.out.println(DateUtil.date());

@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.Size;
 
 @Data
-public class ImageUploadReq {
-    @Size(min = 1, message = ImageErrorMessage.IMAGE_NAME_EMPTY)
+public class ImageUploadDTO {
+    @Size(min = 1)
     private String fileName;
 }

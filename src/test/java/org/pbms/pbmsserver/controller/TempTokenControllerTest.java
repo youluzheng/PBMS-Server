@@ -9,7 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.pbms.pbmsserver.common.auth.TokenBean;
-import org.pbms.pbmsserver.common.request.tempToken.TempTokenAddReq;
+import org.pbms.pbmsserver.common.request.tempToken.TempTokenAddDTO;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.mapper.TempTokenInfoMapper;
 import org.pbms.pbmsserver.repository.model.TempTokenInfo;
 import org.pbms.pbmsserver.repository.model.UserInfo;
@@ -37,14 +38,14 @@ class TempTokenControllerTest extends BaseControllerTest {
 
     @Override
     protected TokenBean getTokenBean() {
-        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), this.admin.getRole());
+        return new TokenBean(this.admin.getUserId(), this.admin.getUserName(), UserRoleEnum.transform(this.admin.getRole()));
     }
 
     @BeforeEach
     void setup() {
         this.tempTokenInfoMapper.delete(c -> c);
         this.userInfoMapper.delete(c -> c);
-        
+
         this.admin = this.insertDefaultAdmin();
     }
 
@@ -62,7 +63,7 @@ class TempTokenControllerTest extends BaseControllerTest {
     @ParameterizedTest
     @MethodSource("addTempToken_invalidValues")
     void addTempToken(Date expireDays, Integer uploadTimes) throws Exception {
-        TempTokenAddReq addTempTokenReq = new TempTokenAddReq();
+        TempTokenAddDTO addTempTokenReq = new TempTokenAddDTO();
         addTempTokenReq.setUploadTimes(uploadTimes);
         addTempTokenReq.setExpireTime(expireDays);
         this.post("/tempToken", addTempTokenReq).andExpect(status().isBadRequest());
@@ -74,7 +75,7 @@ class TempTokenControllerTest extends BaseControllerTest {
         Date now = new Date();
         String dateStr = DateUtil.year(now) + "-12-31";
         Date date = DateUtil.parse(dateStr, "yyyy-MM-dd");
-        TempTokenAddReq req = new TempTokenAddReq();
+        TempTokenAddDTO req = new TempTokenAddDTO();
         req.setUploadTimes(100);
         req.setNote("给大家用用");
         req.setExpireTime(date);

@@ -1,15 +1,16 @@
 package org.pbms.pbmsserver.controller;
 
 import org.hibernate.validator.constraints.Length;
-import org.pbms.pbmsserver.common.auth.PublicInterface;
-import org.pbms.pbmsserver.common.request.user.ChangePasswordReq;
-import org.pbms.pbmsserver.common.request.user.SettingModifyReq;
-import org.pbms.pbmsserver.common.request.user.UserLoginReq;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.auth.Role;
+import org.pbms.pbmsserver.common.auth.RoleEnum;
+import org.pbms.pbmsserver.common.auth.TokenHandle;
+import org.pbms.pbmsserver.common.request.user.PasswordModifyDTO;
+import org.pbms.pbmsserver.common.request.user.SettingModifyDTO;
+import org.pbms.pbmsserver.common.request.user.UserLoginDTO;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.UserService;
-import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping("user")
 @Validated
+@Role(role = RoleEnum.ALL_LOGGED_IN)
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     @Autowired
@@ -38,19 +40,19 @@ public class UserController {
     private UserSettingsDao userSettingsDao;
 
     @PostMapping("action-login")
-    @PublicInterface
-    public String login(@Validated @RequestBody UserLoginReq req) {
+    @Role
+    public String login(@Validated @RequestBody UserLoginDTO req) {
         return this.userService.login(req.getUserName(), req.getPassword());
     }
 
     @PostMapping
-    @PublicInterface
-    public void register(@RequestBody @Validated UserRegisterReq req) {
+    @Role
+    public void register(@RequestBody @Validated UserRegisterDTO req) {
         userService.register(req);
     }
 
     @GetMapping("registerLink/action-check")
-    @PublicInterface
+    @Role
     public void checkRegisterLink(@RequestParam @NotNull Long userId, @RequestParam @NotBlank @Length(min = 32, max = 32) String code) {
         log.debug("userId:{}, code:{}", userId, code);
         userService.checkRegisterLink(userId, code);
@@ -63,7 +65,7 @@ public class UserController {
      * @param userName 用户名
      */
     @GetMapping("emailCaptcha")
-    @PublicInterface
+    @Role
     public void getEmailCaptcha(@RequestParam @Email String email, @RequestParam @NotEmpty String userName) {
         userService.getChangePasswordEmailCaptcha(email, userName);
     }
@@ -76,20 +78,20 @@ public class UserController {
      * @return 用户token
      */
     @GetMapping("password-page")
-    @PublicInterface
+    @Role
     public String checkChangeCode(@RequestParam @NotNull Long userId, @RequestParam @NotBlank @Length(min = 32, max = 32) String code) {
         return userService.checkChangePasswordMail(userId, code);
     }
 
     @PutMapping("password")
-    public void changePassword(@RequestBody @Validated ChangePasswordReq req) {
+    public void changePassword(@RequestBody @Validated PasswordModifyDTO req) {
         userService.changePassword(req.getPassword());
     }
 
     @PutMapping("settings")
-    public void modifyUserSettings(@RequestBody @Validated SettingModifyReq req) {
+    public void modifyUserSettings(@RequestBody @Validated SettingModifyDTO req) {
         UserSettings userSettings = req.transform();
-        userSettings.setUserId(TokenUtil.getUserId());
+        userSettings.setUserId(TokenHandle.getUserId());
         this.userSettingsDao.updateByPrimaryKeySelective(userSettings);
     }
 

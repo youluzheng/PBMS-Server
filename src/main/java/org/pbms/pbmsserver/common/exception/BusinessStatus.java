@@ -27,7 +27,9 @@ public enum BusinessStatus {
     TEMP_TOKEN_EXPIRE("02002", "临时token已过期"),
     TEMP_TOKEN_UPLOAD_TIMES_EXCEED("02003", "临时token上传次数超限"),
 
-    BLANK("10000", "占位");
+    /*---------通用模块 10 ------------*/
+    PERMISSION_DENIED("10001", "权限不足"),
+    ;
 
     private String code;
     private String msg;

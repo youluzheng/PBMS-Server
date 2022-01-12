@@ -2,8 +2,8 @@ package org.pbms.pbmsserver.common.constant;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.auth.TokenHandle;
 import org.pbms.pbmsserver.repository.model.UserInfo;
-import org.pbms.pbmsserver.util.TokenUtil;
 
 import java.io.File;
 import java.util.List;
@@ -37,31 +37,31 @@ public final class ServerConstant {
 
     // 获取当前用户根路径
     public static String getAbsolutePath() {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
+        TokenBean tokenBean = TokenHandle.getTokenBean();
         return ServerConstant.SERVER_ROOT_PATH + File.separator + tokenBean.getUserName();
     }
 
     // 获取当前用户图片保存路径
     public static String getAbsoluteUploadPath() {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
+        TokenBean tokenBean = TokenHandle.getTokenBean();
         return ServerConstant.SERVER_ROOT_PATH + File.separator + tokenBean.getUserName() + File.separator + "upload";
     }
 
     // 获取当前用户logo存储路径
     public static String getAbsoluteLogoPath() {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
+        TokenBean tokenBean = TokenHandle.getTokenBean();
         return ServerConstant.SERVER_ROOT_PATH + File.separator + tokenBean.getUserName() + File.separator + "logo";
     }
 
     // 获取当前用户临时文件路径
     public static String getAbsoluteTempPath() {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
+        TokenBean tokenBean = TokenHandle.getTokenBean();
         return ServerConstant.SERVER_ROOT_PATH + File.separator + tokenBean.getUserName() + File.separator + "temp";
     }
 
     // 获取当前用户图片保存路径
     public static String getAbsoluteURLUploadPath() {
-        TokenBean tokenBean = TokenUtil.getTokenBean();
+        TokenBean tokenBean = TokenHandle.getTokenBean();
         return ServerConstant.SERVER_BASEURL + "/image/" + tokenBean.getUserName() + "/upload";
     }
 

@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.util;
+package org.pbms.pbmsserver.common.auth;
 
 
 import cn.hutool.json.JSONUtil;
@@ -6,7 +6,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.ParamFormatException;
 import org.pbms.pbmsserver.common.exception.ParamNotSupportException;
 import org.pbms.pbmsserver.common.exception.UnauthorizedException;
@@ -21,12 +20,13 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-
-public final class TokenUtil {
-    private TokenUtil() {
-    }
-
-    private static final Logger log = LoggerFactory.getLogger(TokenUtil.class);
+/**
+ * token处理
+ *
+ * @author zyl
+ */
+public final class TokenHandle {
+    private static final Logger log = LoggerFactory.getLogger(TokenHandle.class);
 
     private static final Random random = new SecureRandom();
     private static final String SECRET = String.format("%09d", random.nextInt(1000000000));
@@ -46,8 +46,8 @@ public final class TokenUtil {
     public static String generateToken(TokenBean tokenBean) {
         Objects.requireNonNull(tokenBean);
         Map<String, Object> data = new HashMap<>();
-        data.put(TokenUtil.KEY, JSONUtil.toJsonStr(tokenBean));
-        return TokenUtil.generateToken(TokenUtil.SECRET, data, TokenUtil.EXPIRATION, TokenUtil.TIME_UNIT);
+        data.put(TokenHandle.KEY, JSONUtil.toJsonStr(tokenBean));
+        return TokenHandle.generateToken(TokenHandle.SECRET, data, TokenHandle.EXPIRATION, TokenHandle.TIME_UNIT);
     }
 
     public static String generateToken(String secret, Map<String, Object> data, long expiration, TimeUnit timeUnit) {
@@ -69,12 +69,10 @@ public final class TokenUtil {
 
     /**
      * 检查Token是否正确
-     *
-     * @param request 请求头
      */
-    public static TokenBean checkToken(HttpServletRequest request) {
-        Objects.requireNonNull(request);
-        String token = request.getHeader(TokenUtil.TOKEN_HEAD);
+    public static TokenBean checkToken() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String token = request.getHeader(TokenHandle.TOKEN_HEAD);
         Claims data;
         try {
             data = Jwts.parser()
@@ -91,13 +89,13 @@ public final class TokenUtil {
             log.error("token解析异常，token:{}", token);
             throw new UnauthorizedException(UnauthorizedException.MessageEnum.UNAUTHORIZED);
         }
-        return JSONUtil.toBean(data.get(TokenUtil.KEY, String.class), TokenBean.class);
+        return JSONUtil.toBean(data.get(TokenHandle.KEY, String.class), TokenBean.class);
     }
 
-    public static void setTokenBean(TokenBean tokenBean){
+    public static void setTokenBean(TokenBean tokenBean) {
         Objects.requireNonNull(tokenBean);
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        request.setAttribute(TokenUtil.KEY, tokenBean);
+        request.setAttribute(TokenHandle.KEY, tokenBean);
     }
 
     /**
@@ -107,7 +105,7 @@ public final class TokenUtil {
      */
     public static TokenBean getTokenBean() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        return (TokenBean) request.getAttribute(TokenUtil.KEY);
+        return (TokenBean) request.getAttribute(TokenHandle.KEY);
     }
 
     /**
@@ -116,6 +114,6 @@ public final class TokenUtil {
      * @return 用户id
      */
     public static long getUserId() {
-        return TokenUtil.getTokenBean().getUserId();
+        return TokenHandle.getTokenBean().getUserId();
     }
 }

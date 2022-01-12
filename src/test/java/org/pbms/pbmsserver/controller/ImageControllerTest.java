@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
+import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
 import org.pbms.pbmsserver.repository.mapper.TempTokenInfoMapper;
 import org.pbms.pbmsserver.repository.mapper.UserSettingsMapper;
 import org.pbms.pbmsserver.repository.model.TempTokenInfo;
@@ -56,7 +57,8 @@ class ImageControllerTest extends BaseControllerTest {
 
     @Override
     protected TokenBean getTokenBean() {
-        return new TokenBean(this.user.getUserId(), this.user.getUserName(), this.user.getRole());
+        return new TokenBean(this.user.getUserId(), this.user.getUserName(),
+                UserRoleEnum.transform(this.user.getRole()));
     }
 
     @BeforeEach

@@ -3,7 +3,7 @@ package org.pbms.pbmsserver.service;
 
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.ClientException;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
@@ -42,7 +42,7 @@ public class SystemService {
      * @param req 用户信息
      */
     @Transactional(rollbackFor = RuntimeException.class)
-    public void initAdmin(UserRegisterReq req) {
+    public void initAdmin(UserRegisterDTO req) {
         if (isInit()) {
             throw new ClientException("初始用户已建立，接口调用错误！");
         }

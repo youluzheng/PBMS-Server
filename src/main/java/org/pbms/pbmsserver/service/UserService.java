@@ -5,12 +5,13 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import org.pbms.pbmsserver.common.auth.TokenBean;
+import org.pbms.pbmsserver.common.auth.TokenHandle;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ClientException;
 import org.pbms.pbmsserver.common.exception.ResourceNotFoundException;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
 import org.pbms.pbmsserver.repository.enumeration.user.UserRoleEnum;
@@ -19,7 +20,6 @@ import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
 import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.common.MailService;
-import org.pbms.pbmsserver.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,16 +64,16 @@ public class UserService {
         ).orElseThrow(
                 () -> new BusinessException(BusinessStatus.USERNAME_OR_PASSWORD_ERROR)
         );
-        return TokenUtil.generateToken(new TokenBean(user.getUserId(), userName, user.getRole()));
+        return TokenHandle.generateToken(new TokenBean(user.getUserId(), userName, UserRoleEnum.transform(user.getRole())));
     }
 
     public UserSettings getSettings() {
-        return this.userSettingsDao.selectByPrimaryKey(TokenUtil.getUserId())
+        return this.userSettingsDao.selectByPrimaryKey(TokenHandle.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void register(UserRegisterReq req) {
+    public void register(UserRegisterDTO req) {
         List<UserInfo> userInfos = this.userInfoDao.select(c -> c
                 .where(userName, isEqualTo(req.getUserName()))
                 .or(email, isEqualTo(req.getEmail())));
@@ -156,13 +156,13 @@ public class UserService {
 
     public String checkChangePasswordMail(long userId, String code) {
         UserInfo user = checkCode(userId, code);
-        TokenBean tokenBean = new TokenBean(user.getUserId(), user.getUserName(), user.getRole());
-        return TokenUtil.generateToken(tokenBean);
+        TokenBean tokenBean = new TokenBean(user.getUserId(), user.getUserName(), UserRoleEnum.transform(user.getRole()));
+        return TokenHandle.generateToken(tokenBean);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
     public void changePassword(String password) {
-        long userId = TokenUtil.getUserId();
+        long userId = TokenHandle.getUserId();
         UserInfo user = userInfoDao.selectOne(c ->
                 c.where(userInfo.userId, isEqualTo(userId))).orElseThrow(() -> new ClientException("用户错误"));
         user.setPassword(ServerConstant.HASH_METHOD.apply(password));

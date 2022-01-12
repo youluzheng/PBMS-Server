@@ -1,6 +1,8 @@
 package org.pbms.pbmsserver.controller;
 
-import org.pbms.pbmsserver.common.request.tempToken.TempTokenAddReq;
+import org.pbms.pbmsserver.common.auth.Role;
+import org.pbms.pbmsserver.common.auth.RoleEnum;
+import org.pbms.pbmsserver.common.request.tempToken.TempTokenAddDTO;
 import org.pbms.pbmsserver.repository.model.TempTokenInfo;
 import org.pbms.pbmsserver.service.TempTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +18,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("tempToken")
+@Role(role = RoleEnum.ALL_LOGGED_IN)
 public class TempTokenController {
     @Autowired
     private TempTokenService tempTokenService;
 
     @PostMapping
-    public TempTokenInfo addTempToken(@Validated @RequestBody TempTokenAddReq req) {
+    public TempTokenInfo addTempToken(@Validated @RequestBody TempTokenAddDTO req) {
         return tempTokenService.addTempToken(req.getExpireTime(), req.getUploadTimes(), req.getNote());
     }
 

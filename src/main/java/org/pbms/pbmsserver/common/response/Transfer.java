@@ -1,4 +1,4 @@
-package org.pbms.pbmsserver.common.vo;
+package org.pbms.pbmsserver.common.response;
 
 
 @FunctionalInterface

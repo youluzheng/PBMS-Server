@@ -4,9 +4,9 @@ import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ClientException;
-import org.pbms.pbmsserver.common.request.user.UserListReq;
-import org.pbms.pbmsserver.common.vo.PageData;
-import org.pbms.pbmsserver.common.vo.user.UserListVO;
+import org.pbms.pbmsserver.common.request.user.UserListDTO;
+import org.pbms.pbmsserver.common.response.PageData;
+import org.pbms.pbmsserver.common.response.user.UserListVO;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
@@ -97,7 +97,7 @@ public class UserManageService {
         this.userInfoDao.updateByPrimaryKeySelective(updateUser);
     }
 
-    public PageData<UserListVO> userList(UserListReq req) {
+    public PageData<UserListVO> userList(UserListDTO req) {
         return PageData.getPageData(req.getPageNo(), req.getPageSize(),
                 () -> userInfoDao.select(c -> c.where(UserInfoDynamicSqlSupport.status, isEqualToWhenPresent(req.getStatus()))),
                 c -> {

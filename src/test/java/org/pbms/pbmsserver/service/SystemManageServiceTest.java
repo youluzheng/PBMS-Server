@@ -3,7 +3,7 @@ package org.pbms.pbmsserver.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.pbms.pbmsserver.common.request.user.UserRegisterReq;
+import org.pbms.pbmsserver.common.request.user.UserRegisterDTO;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.repository.mapper.UserInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class SystemManageServiceTest {
     @MockBean
     UserManageService userManageService;
 
-    private UserRegisterReq req = new UserRegisterReq("王大锤", "123456", "fff@22.cn");
+    private UserRegisterDTO req = new UserRegisterDTO("王大锤", "123456", "fff@22.cn");
 
     @BeforeEach
     public void beforeEach() {

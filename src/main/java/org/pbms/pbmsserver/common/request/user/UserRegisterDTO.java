@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterReq {
+public class UserRegisterDTO {
     @NotBlank
     @Pattern(regexp = "[\\u4e00-\\u9fa5_a-zA-Z0-9_]{3,10}")
     private String userName;
