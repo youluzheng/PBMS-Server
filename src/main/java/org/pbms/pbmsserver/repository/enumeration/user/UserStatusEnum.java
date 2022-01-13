@@ -19,7 +19,7 @@ public enum UserStatusEnum {
         return code;
     }
 
-    public static UserStatusEnum getEnum(byte code) {
+    public static UserStatusEnum valueOf(byte code) {
         for (UserStatusEnum v : values()) {
             if (v.code == code) {
                 return v;
