@@ -4,7 +4,7 @@ package org.pbms.pbmsserver.controller.user;
 import org.pbms.pbmsserver.common.auth.Role;
 import org.pbms.pbmsserver.common.auth.RoleEnum;
 import org.pbms.pbmsserver.common.request.user.UserListDTO;
-import org.pbms.pbmsserver.common.response.PageData;
+import org.pbms.pbmsserver.common.response.PageVO;
 import org.pbms.pbmsserver.common.response.user.UserListVO;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.service.user.UserAdminService;
@@ -47,7 +47,7 @@ public class UserAdminController {
     }
 
     @GetMapping("page")
-    public PageData<UserListVO> userList(UserListDTO req) {
+    public PageVO<UserListVO> userList(UserListDTO req) {
         return this.userManageService.userList(req);
     }
 }

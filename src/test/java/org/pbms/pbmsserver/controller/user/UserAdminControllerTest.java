@@ -193,7 +193,7 @@ class UserAdminControllerTest extends BaseControllerTest {
         insertUsers(11);
         get("/user/page").andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCount").value(13))
-                .andExpect(jsonPath("$.currentPage").value(1));
+                .andExpect(jsonPath("$.pageId").value(1));
     }
 
     @Test
@@ -201,6 +201,6 @@ class UserAdminControllerTest extends BaseControllerTest {
         insertUsers(11);
         get("/user/page", "pageSize", "1", "pageNo", "3").andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCount").value(13))
-                .andExpect(jsonPath("$.list[0].userName").value("ffff0"));
+                .andExpect(jsonPath("$.data[0].userName").value("ffff0"));
     }
 }

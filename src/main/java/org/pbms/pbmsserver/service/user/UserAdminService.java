@@ -1,15 +1,17 @@
 package org.pbms.pbmsserver.service.user;
 
+import org.mybatis.dynamic.sql.render.RenderingStrategies;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
 import org.pbms.pbmsserver.common.exception.BusinessException;
 import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.exception.ClientException;
 import org.pbms.pbmsserver.common.request.user.UserListDTO;
-import org.pbms.pbmsserver.common.response.PageData;
+import org.pbms.pbmsserver.common.response.PageVO;
 import org.pbms.pbmsserver.common.response.user.UserListVO;
 import org.pbms.pbmsserver.dao.SystemDao;
 import org.pbms.pbmsserver.dao.UserInfoDao;
 import org.pbms.pbmsserver.dao.UserSettingsDao;
+import org.pbms.pbmsserver.repository.Tables;
 import org.pbms.pbmsserver.repository.enumeration.user.UserStatusEnum;
 import org.pbms.pbmsserver.repository.mapper.UserInfoDynamicSqlSupport;
 import org.pbms.pbmsserver.repository.model.UserInfo;
@@ -17,7 +19,6 @@ import org.pbms.pbmsserver.repository.model.UserSettings;
 import org.pbms.pbmsserver.service.common.MailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,14 +98,17 @@ public class UserAdminService {
         this.userInfoDao.updateByPrimaryKeySelective(updateUser);
     }
 
-    public PageData<UserListVO> userList(UserListDTO req) {
-        return PageData.getPageData(req.getPageNo(), req.getPageSize(),
-                () -> userInfoDao.select(c -> c.where(UserInfoDynamicSqlSupport.status, isEqualToWhenPresent(req.getStatus()))),
-                c -> {
-                    UserListVO userListVO = new UserListVO();
-                    BeanUtils.copyProperties(c, userListVO);
-                    return userListVO;
-                });
+    public PageVO<UserListVO> userList(UserListDTO req) {
+        return new PageVO<>(req.getPageNo(), req.getPageSize(),
+                () -> userInfoDao.selectUserList(
+                        select(Tables.userInfoTable.userId.asCamelCase(), Tables.userInfoTable.userName.asCamelCase(),
+                                Tables.userInfoTable.email, Tables.userInfoTable.status,
+                                Tables.userInfoTable.createTime.asCamelCase())
+                                .from(Tables.userInfoTable)
+                                .where(Tables.userInfoTable.status, isEqualToWhenPresent(req.getStatus()))
+                                .build().render(RenderingStrategies.MYBATIS3)
+                )
+        );
     }
 
     public void initDefaultSettings(long userId) {

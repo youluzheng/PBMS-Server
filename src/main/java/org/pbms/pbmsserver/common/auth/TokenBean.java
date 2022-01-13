@@ -16,10 +16,4 @@ public class TokenBean {
     private long userId;
     private String userName;
     private RoleEnum userRole;
-
-    // 因为序列化默认是取得名字
-    // 反序列化直接从string->RoleEnum
-    public void setUserRole(String userRole) {
-        this.userRole = RoleEnum.valueOf(userRole);
-    }
 }
