@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.pbms.pbmsserver.common.auth.TokenBean;
 import org.pbms.pbmsserver.common.constant.ServerConstant;
+import org.pbms.pbmsserver.common.exception.BusinessStatus;
 import org.pbms.pbmsserver.common.request.user.PasswordModifyDTO;
 import org.pbms.pbmsserver.common.request.user.SettingModifyDTO;
 import org.pbms.pbmsserver.common.request.user.UserLoginDTO;
@@ -218,7 +219,7 @@ public class UserControllerTest extends BaseControllerTest {
     public void checkRegisterLink_invalid_test() throws Exception {
         get("/user/registerLink/action-check", checkRegisterParams)
                 .andExpect(status().is(HttpStatus.FORBIDDEN.value()))
-                .andExpect(content().string("{\"code\":01005, \"message\":\"链接已失效\"}"));
+                .andExpect(content().json(BusinessStatus.INVALID_LINK.toString()));
     }
 
     @Test
@@ -261,7 +262,7 @@ public class UserControllerTest extends BaseControllerTest {
         getCaptchaParams.put("userName", name);
         get("/user/emailCaptcha", getCaptchaParams)
                 .andExpect(status().isForbidden())
-                .andExpect(content().string("{\"code\":01002, \"message\":\"用户不存在\"}"));
+                .andExpect(content().json(BusinessStatus.USER_NOT_FOUND.toString()));
     }
 
     @Test
@@ -277,7 +278,7 @@ public class UserControllerTest extends BaseControllerTest {
     public void checkChangeCode_invalid_test() throws Exception {
         get("/user/passwordLink/action-check", checkRegisterParams)
                 .andExpect(status().is(HttpStatus.FORBIDDEN.value()))
-                .andExpect(content().string("{\"code\":01005, \"message\":\"链接已失效\"}"));
+                .andExpect(content().json(BusinessStatus.INVALID_LINK.toString()));
     }
 
     @Test

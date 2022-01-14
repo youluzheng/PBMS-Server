@@ -59,14 +59,14 @@ class SystemControllerTest extends BaseControllerTest {
     public void checkInit_false_test() throws Exception {
         userInfoMapper.delete(c -> c);
         userSettingsMapper.delete(c -> c);
-        get("/system")
+        get("/system/init")
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
     }
 
     @Test
     public void checkInit_true_test() throws Exception {
-        get("/system")
+        get("/system/init")
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }

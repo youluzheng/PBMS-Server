@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class UserRegisterDTO {
     @NotBlank
-    @Pattern(regexp = "[\\u4e00-\\u9fa5_a-zA-Z0-9_]{3,10}")
+    @Pattern(regexp = "[\\u4e00-\\u9fa5_a-zA-Z0-9]{3,10}")
     private String userName;
     @NotBlank
     @Size(min = 6, max = 20)
