@@ -25,7 +25,7 @@ public class SystemController {
         systemManageService.initAdmin(req);
     }
 
-    @GetMapping("")
+    @GetMapping("init")
     public String checkInit() {
         // 以有没有用户作为判断
         return String.valueOf(systemManageService.isInit());
