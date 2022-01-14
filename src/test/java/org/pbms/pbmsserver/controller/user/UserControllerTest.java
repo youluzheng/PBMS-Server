@@ -25,7 +25,6 @@ import org.pbms.pbmsserver.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.thymeleaf.context.Context;
 
@@ -193,7 +192,7 @@ public class UserControllerTest extends BaseControllerTest {
         settingModifyReq.setResponseReturnType("md");
         settingModifyReq.setWatermarkLogoEnable(false);
         settingModifyReq.setWatermarkTextEnable(false);
-        put("/user/settings", settingModifyReq, MediaType.APPLICATION_JSON)
+        put("/user/settings", settingModifyReq)
                 .andExpect(status().isOk());
         assertEquals((byte) 80, userSettingsMapper.selectByPrimaryKey(this.admin.getUserId()).get().getCompressScale());
         assertEquals("md", userSettingsMapper.selectByPrimaryKey(this.admin.getUserId()).get().getResponseReturnType());
