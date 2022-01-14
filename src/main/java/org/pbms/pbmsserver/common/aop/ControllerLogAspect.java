@@ -31,7 +31,7 @@ public class ControllerLogAspect {
      * 切面点
      */
 
-    @Pointcut("execution(* org.pbms.pbmsserver.controller.*.*(..))")
+    @Pointcut("execution(* org.pbms.pbmsserver.controller..*.*(..))")
     private void pointcut() {
     }
 
@@ -57,8 +57,7 @@ public class ControllerLogAspect {
         if (sb.length() >= 3) {
             sb.delete(sb.length() - 3, sb.length() - 1);
         }
-        log.debug("【request-start】:[url:{}, type:{}, method:{}]\n=====>{} : {}", request.getRequestURI(),
-                request.getMethod(), methodName, methodName, sb);
+        log.debug("\n=====>{} : {}", methodName, sb);
     }
 
     @AfterReturning(value = "pointcut()", returning = "result")
