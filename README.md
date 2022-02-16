@@ -20,13 +20,13 @@
 
 ```sh
 ./mvnw clean package
-jar -jar pbms-server-x.x.x-RELEASE.jar
+java -jar pbms-server-x.x.x-RELEASE.jar
 ```
 
 2. 使用打包好的jar
 
 ```sh
-jar -jar pbms-server-x.x.x-RELEASE.jar
+java -jar pbms-server-x.x.x-RELEASE.jar
 ```
 
 3. [docker](https://gitea.965.life/PBMS/PBMS-Server/wiki/docker)
