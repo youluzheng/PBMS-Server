@@ -12,7 +12,7 @@
 
 ## 贡献代码
 
-**[如何协作开发](https://gitea.965.life/PBMS/PBMS-Server/wiki/%E5%A6%82%E4%BD%95%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91)**
+**[如何协作开发](https://github.com/youluzheng/PBMS-Server/wiki/%E5%A6%82%E4%BD%95%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91)**
 
 ## install
 
@@ -29,4 +29,4 @@ java -jar pbms-server-x.x.x-RELEASE.jar
 java -jar pbms-server-x.x.x-RELEASE.jar
 ```
 
-3. [docker](https://gitea.965.life/PBMS/PBMS-Server/wiki/docker)
+3. [docker](https://github.com/youluzheng/PBMS-Server/wiki/Docker%E9%85%8D%E7%BD%AE)
