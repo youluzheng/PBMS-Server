@@ -39,7 +39,7 @@ public class SettingModifyDTO {
             userSettings.setWatermarkLogoAlpha(this.watermarkLogoAlpha);
         }
         userSettings.setWatermarkTextEnable(this.watermarkTextEnable);
-        if (this.watermarkTextEnable != null && this.watermarkLogoEnable) {
+        if (this.watermarkTextEnable != null && this.watermarkTextEnable) {
             userSettings.setWatermarkTextContent(this.watermarkTextContent);
             userSettings.setWatermarkTextAlpha(this.watermarkTextAlpha);
         }
